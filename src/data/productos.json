@@ -140,5 +140,15 @@
     "id": 16,
     "img": "",
     "borrado": false
+  },
+  {
+    "id": 17,
+    "nombre": "prueba de producto",
+    "precio": 1000,
+    "descripcion": "hola hola",
+    "categoria": "Perros",
+    "stock": 1,
+    "img": "default.jpg",
+    "destacado": false
   }
 ]

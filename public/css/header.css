@@ -1,7 +1,14 @@
 :root {
-    --color-principal: #006D77;
-    --color-secundario: #EDF6F9;
-    --celeste: #83C5BE;
+    --color-principal: #FF6B35; /* Naranja vibrante para petshop */
+    --color-secundario: #F7F3E9; /* Crema cálido */
+    --color-accent: #4ECDC4; /* Turquesa moderno */
+    --color-dark: #2C3E50; /* Azul oscuro para textos */
+    --color-light: #FFFFFF;
+    --color-success: #27AE60;
+    --gradient-primary: linear-gradient(135deg, #FF6B35, #F39C12);
+    --gradient-secondary: linear-gradient(135deg, #4ECDC4, #45B7B8);
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 *{
     margin: 0;
@@ -13,148 +20,249 @@
 /* Estilos generales para el encabezado */
 header {
     position: fixed;
-    z-index: 1;
+    z-index: 1000;
     top: 0;
     left: 0;
     width: 100%;
-    background-color: var(--color-principal);
+    background: var(--gradient-primary);
     color: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 15px 25px;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
 }
+
+header:hover {
+    box-shadow: var(--shadow-hover);
+}
+
 nav {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 #logo-header {
     border-radius: 50%;
     object-fit: cover;
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--color-light);
+    transition: transform 0.3s ease;
+}
+
+#logo-header:hover {
+    transform: scale(1.1) rotate(5deg);
 }
 /* Estilos para el menú hamburguesa en pantallas pequeñas */
-/* Estilos para el menú hamburguesa en pantallas pequeñas */
 .mobile-header {
-    background-color: var(--color-principal); /* Color de fondo del encabezado móvil */
-    color: #fff; /* Color del texto del encabezado móvil */ /* Espaciado interno del encabezado móvil */
-    display: flex; /* Diseño de caja flexible para alinear elementos horizontalmente */
-    justify-content: space-between; /* Espacio entre los elementos del encabezado */
-    align-items: center; /* Alinea verticalmente los elementos del encabezado */
+    background: var(--gradient-primary);
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-soft);
 }
 
 .mobile-menu {
-    display: none; /* Inicialmente, oculta el menú hamburguesa en pantallas pequeñas */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
-    width: 80%;
-    height: 100%;
-    background-color: var(--color-principal);
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px var(--color-secundario);
-    z-index: 999; /* Asegura que el menú esté por encima de otros elementos */
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    opacity: 0; /* Inicialmente, el menú es invisible */
-   /* transform: translateY(-10px);  Inicialmente, el menú está ligeramente desplazado hacia arriba */
-
+    width: 85%;
+    height: 100vh;
+    background: linear-gradient(180deg, var(--color-principal) 0%, #E55A2B 100%);
+    border-radius: 0 25px 25px 0;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+    z-index: 999;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+    transform: translateX(-100%);
 }
 
-/* Estilos para mostrar el menú de navegación cuando se agrega la clase show-menu */
 .mobile-menu.show-menu {
     display: block;
-    opacity: 0.8;
-    /*transform: translateY(0);*/
-    
+    opacity: 1;
+    transform: translateX(0);
 }
 
 /* Estilos para las listas dentro del menú hamburguesa */
-/* Estilos para las listas dentro del menú hamburguesa */
 .mobile-menu ul {
-   
     z-index: 1000;
     height: 100%;
     list-style-type: none;
-    display: flex; /* Utiliza flexbox para alinear verticalmente los elementos */
-    flex-direction: column; /* Alinea los elementos en una columna */
-   
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 30px;
 }
 
 .mobile-menu li {
     width: 100%;
-    margin-top: 20px;
-    padding-top: 20px;
-    text-align: center; /* Centra el texto dentro de cada elemento de la lista */
+    margin: 15px 0;
+    padding: 15px 0;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transform: translateX(-50px);
+    opacity: 0;
+    transition: all 0.3s ease;
 }
+
+.mobile-menu.show-menu li {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.mobile-menu.show-menu li:nth-child(1) { transition-delay: 0.1s; }
+.mobile-menu.show-menu li:nth-child(2) { transition-delay: 0.2s; }
+.mobile-menu.show-menu li:nth-child(3) { transition-delay: 0.3s; }
+.mobile-menu.show-menu li:nth-child(4) { transition-delay: 0.4s; }
+.mobile-menu.show-menu li:nth-child(5) { transition-delay: 0.5s; }
 
 .mobile-menu a {
     text-decoration: none;
-    color: var(--color-secundario);
-    font-size: 18px;
-    transition: color 0.2s;
+    color: var(--color-light);
+    font-size: 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: block;
+    padding: 10px 0;
 }
 
 .mobile-menu a:hover {
-    color: var(--celeste); /* Cambia el color al pasar el cursor */
+    color: var(--color-accent);
+    transform: translateX(10px);
 }
 
 
 /* Estilos específicos para el botón de hamburguesa */
 .hamburger-button {
     background: none;
-    border-radius: 4px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
     padding: 10px;
-    padding: 5px;
-    width: 40px;
-    height: 30px;
+    width: 45px;
+    height: 40px;
+    transition: all 0.3s ease;
+    position: relative;
 }
-/* Estilos para las barras del botón de hamburguesa */
 
+.hamburger-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+}
 
 /* Estilos para las barras del botón de hamburguesa */
 .bar {
     width: 100%;
-    height: 4px;
-    background-color: #fff;
-    margin: 3px auto; /* Espaciado entre las barras */
-    transition: 0.4s;
+    height: 3px;
+    background: linear-gradient(90deg, #fff, var(--color-accent));
+    margin: 4px auto;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border-radius: 2px;
+}
+
+.hamburger-button:hover .bar {
+    background: linear-gradient(90deg, var(--color-accent), #fff);
 }
 
 /* Estilos para el menú de escritorio en pantallas grandes */
-/* Estilos para el menú de escritorio en pantallas grandes */
 .desktop-header {
     display: none;
-    background-color: var(--color-principal); /* Color de fondo del encabezado de escritorio */
-    color: #fff; /* Color del texto del encabezado de escritorio */
-    padding: 15px 0; /* Espaciado interno del encabezado de escritorio */
-    height: 10vh;
+    background: var(--gradient-primary);
+    color: #fff;
+    padding: 20px 0;
+    height: auto;
+    min-height: 80px;
+    box-shadow: var(--shadow-soft);
 }
 
 /* Estilos para la barra de navegación */
 .navbar {
-/*     display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.desktop-menu {
+    display: flex;
     justify-content: space-between;
-    align-items: center; */
-    max-width: 1200px; /* Establece un ancho máximo para el contenido del encabezado */
-    margin: 0 auto; /* Centra el contenido horizontalmente */
-    padding: 0 10px; /* Espaciado interno de la barra de navegación */
+    align-items: center;
+    width: 100%;
 }
 
 /* Estilos para el logotipo */
+.logo {
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
 .logo img {
-    max-width: 100px; /* Establece un ancho máximo para el logotipo */
-    
+    max-width: 60px;
+    height: 60px;
+    border: 3px solid var(--color-light);
+    border-radius: 50%;
 }
 
 /* Estilos para los iconos de login y carrito */
+.right-icons {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-name {
+    color: var(--color-light);
+    font-size: 14px;
+    font-weight: 500;
+}
+
 .right-icons a {
     text-decoration: none;
     color: #fff;
-    font-size: 24px;
-    margin-right: 10px;
+    font-size: 28px;
+    padding: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.right-icons a:hover {
+    background: var(--color-accent);
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
 }
 
 /* Estilos para la lista de opciones de navegación */

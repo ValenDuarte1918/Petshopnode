@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <title>📊 Estadísticas - Admin PetShop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-container {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            color: #2E8B57;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #2E8B57 0%, #228B22 100%);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            color: #2E8B57;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            color: #2E8B57;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
+        }
+
+        .category-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .category-count {
+            background: #2E8B57;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #2E8B57 0%, #228B22 100%);
+            transition: width 0.3s ease;
+        }
+
+        .detailed-stats {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .detailed-title {
+            color: #2E8B57;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .detail-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2E8B57;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1rem;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="admin-container">
+        <div class="page-header animate-fadeInUp">
+            <h1 class="page-title">
+                <i class="fas fa-chart-bar"></i>
+                Estadísticas del Negocio
+            </h1>
+            <a href="/admin/dashboard" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Volver al Dashboard
+            </a>
+        </div>
+
+        <div class="stats-overview">
+            <div class="stat-card animate-fadeInUp delay-1">
+                <i class="fas fa-users stat-icon"></i>
+                <div class="stat-number"><%= estadisticas.usuarios.total %></div>
+                <div class="stat-label">Total Usuarios</div>
+            </div>
+            <div class="stat-card animate-fadeInUp delay-2">
+                <i class="fas fa-box stat-icon"></i>
+                <div class="stat-number"><%= estadisticas.productos.total %></div>
+                <div class="stat-label">Total Productos</div>
+            </div>
+            <div class="stat-card animate-fadeInUp delay-3">
+                <i class="fas fa-warehouse stat-icon"></i>
+                <div class="stat-number"><%= estadisticas.productos.stockTotal %></div>
+                <div class="stat-label">Unidades en Stock</div>
+            </div>
+            <div class="stat-card animate-fadeInUp delay-4">
+                <i class="fas fa-dollar-sign stat-icon"></i>
+                <div class="stat-number">$<%= estadisticas.productos.valorInventario.toFixed(2) %></div>
+                <div class="stat-label">Valor del Inventario</div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-container animate-fadeInLeft delay-1">
+                <h3 class="chart-title">
+                    <i class="fas fa-users-cog"></i>
+                    Usuarios por Categoría
+                </h3>
+                <div class="category-item">
+                    <span class="category-name">Clientes</span>
+                    <span class="category-count"><%= estadisticas.usuarios.porCategoria.clientes %></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: <%= (estadisticas.usuarios.porCategoria.clientes / estadisticas.usuarios.total * 100) %>%;"></div>
+                </div>
+                
+                <div class="category-item">
+                    <span class="category-name">Administradores</span>
+                    <span class="category-count"><%= estadisticas.usuarios.porCategoria.administradores %></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: <%= (estadisticas.usuarios.porCategoria.administradores / estadisticas.usuarios.total * 100) %>%;"></div>
+                </div>
+            </div>
+
+            <div class="chart-container animate-fadeInRight delay-2">
+                <h3 class="chart-title">
+                    <i class="fas fa-tags"></i>
+                    Productos por Categoría
+                </h3>
+                <% Object.keys(estadisticas.productos.porCategoria).forEach(categoria => { %>
+                    <div class="category-item">
+                        <span class="category-name"><%= categoria %></span>
+                        <span class="category-count"><%= estadisticas.productos.porCategoria[categoria] %></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: <%= (estadisticas.productos.porCategoria[categoria] / estadisticas.productos.total * 100) %>%;"></div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <div class="detailed-stats animate-fadeInUp delay-3">
+            <h3 class="detailed-title">
+                <i class="fas fa-analytics"></i>
+                Análisis Detallado
+            </h3>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-value"><%= estadisticas.usuarios.porCategoria.clientes %></div>
+                    <div class="detail-label">Clientes Registrados</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value"><%= estadisticas.usuarios.porCategoria.administradores %></div>
+                    <div class="detail-label">Administradores</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value"><%= Object.keys(estadisticas.productos.porCategoria).length %></div>
+                    <div class="detail-label">Categorías de Productos</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">$<%= (estadisticas.productos.valorInventario / estadisticas.productos.total).toFixed(2) %></div>
+                    <div class="detail-label">Valor Promedio por Producto</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value"><%= (estadisticas.productos.stockTotal / estadisticas.productos.total).toFixed(1) %></div>
+                    <div class="detail-label">Stock Promedio por Producto</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value"><%= ((estadisticas.usuarios.porCategoria.clientes / estadisticas.usuarios.total) * 100).toFixed(1) %>%</div>
+                    <div class="detail-label">Porcentaje de Clientes</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+    
+    <script src="/js/petshop-animations.js"></script>
+</body>
+</html>

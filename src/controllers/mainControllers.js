@@ -1,24 +1,153 @@
 const fs = require('fs');
 const path = require('path');
-const db = require('../database/models');
+// Comentamos temporalmente la conexión a la base de datos
+// const db = require('../database/models');
+
 //traigo la lista de productos
 const listaProductos = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/productos.json'), 'utf-8'));
 
 const controller = {
     home: async (req,res)=> {
-        //filtro los productos que no estan borrados
-        let productosListados =  await db.Producto.findAll()
-        res.render('home', {productos: productosListados})
-        
+        try {
+            // Usar datos JSON temporalmente
+            let productosListados = listaProductos.filter(producto => !producto.borrado);
+            // Mapear los datos para que coincidan con la estructura esperada
+            productosListados = productosListados.map(producto => ({
+                id: producto.id,
+                nombre: producto.name,
+                descripcion: producto.description,
+                img: producto.image,
+                categoria: producto.category,
+                color: producto.color,
+                precio: producto.price
+            }));
+            res.render('home', {productos: productosListados})
+        } catch (error) {
+            console.error('Error al cargar productos:', error);
+            res.render('home', {productos: []});
+        }
     },
     
     detail:async (req, res) => {
-        let productFound = await db.Producto.findByPk(req.params.id)
-        return res.render('detail', { producto: productFound })
+        try {
+            // Usar datos JSON temporalmente
+            let productFound = listaProductos.find(producto => producto.id == req.params.id);
+            if (productFound) {
+                // Mapear los datos para que coincidan con la estructura esperada
+                productFound = {
+                    id: productFound.id,
+                    nombre: productFound.name,
+                    descripcion: productFound.description,
+                    img: productFound.image,
+                    categoria: productFound.category,
+                    color: productFound.color,
+                    precio: productFound.price
+                };
+            }
+            return res.render('detail', { producto: productFound || {} });
+        } catch (error) {
+            console.error('Error al cargar producto:', error);
+            return res.render('detail', { producto: {} });
+        }
     },
    
     carrito:(req,res)=> {
-        res.render('carrito')
+        // Obtener carrito de la sesión
+        const carrito = req.session.carrito || [];
+        let total = 0;
+        
+        // Calcular total del carrito
+        carrito.forEach(item => {
+            total += parseFloat(item.precio) * item.cantidad;
+        });
+        
+        res.render('carrito', { 
+            carrito: carrito, 
+            total: total.toFixed(2),
+            cartCount: carrito.reduce((sum, item) => sum + item.cantidad, 0)
+        });
+    },
+
+    // Agregar producto al carrito
+    addToCart: (req, res) => {
+        const productId = parseInt(req.params.id);
+        const producto = listaProductos.find(p => p.id === productId);
+        
+        if (!producto) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+
+        // Inicializar carrito si no existe
+        if (!req.session.carrito) {
+            req.session.carrito = [];
+        }
+
+        // Buscar si el producto ya está en el carrito
+        const existingItem = req.session.carrito.find(item => item.id === productId);
+        
+        if (existingItem) {
+            existingItem.cantidad += 1;
+        } else {
+            req.session.carrito.push({
+                id: producto.id,
+                nombre: producto.name,
+                precio: producto.price,
+                img: producto.image,
+                cantidad: 1
+            });
+        }
+
+        // Calcular total de items en carrito
+        const cartCount = req.session.carrito.reduce((sum, item) => sum + item.cantidad, 0);
+        
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            // Si es una petición AJAX, enviar respuesta JSON
+            return res.json({ 
+                success: true, 
+                message: 'Producto agregado al carrito',
+                cartCount: cartCount 
+            });
+        } else {
+            // Si es navegación normal, redirigir al carrito
+            return res.redirect('/carrito');
+        }
+    },
+
+    // Actualizar cantidad en carrito
+    updateCartItem: (req, res) => {
+        const productId = parseInt(req.params.id);
+        const nuevaCantidad = parseInt(req.body.cantidad);
+        
+        if (req.session.carrito) {
+            const item = req.session.carrito.find(item => item.id === productId);
+            if (item) {
+                if (nuevaCantidad > 0) {
+                    item.cantidad = nuevaCantidad;
+                } else {
+                    // Si cantidad es 0, eliminar del carrito
+                    req.session.carrito = req.session.carrito.filter(item => item.id !== productId);
+                }
+            }
+        }
+        
+        res.redirect('/carrito');
+    },
+
+    // Eliminar producto del carrito
+    removeFromCart: (req, res) => {
+        const productId = parseInt(req.params.id);
+        
+        if (req.session.carrito) {
+            req.session.carrito = req.session.carrito.filter(item => item.id !== productId);
+        }
+        
+        res.redirect('/carrito');
+    },
+
+    // Limpiar carrito
+    clearCart: (req, res) => {
+        req.session.carrito = [];
+        res.redirect('/carrito');
     },
     create:(req,res)=> {
        

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <title>➕ Crear Producto - Admin PetShop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-container {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-title {
+            color: #2E8B57;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2E8B57;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+        }
+
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px dashed #2E8B57;
+            border-radius: 10px;
+            background: #f8f9fa;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input:hover {
+            background: #e9ecef;
+            border-color: #228B22;
+        }
+
+        .file-input input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-input {
+            width: auto;
+            margin: 0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2E8B57 0%, #228B22 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .preview-container {
+            display: none;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="admin-container">
+        <div class="page-header animate-fadeInUp">
+            <h1 class="page-title">
+                <i class="fas fa-plus-circle"></i>
+                Crear Nuevo Producto
+            </h1>
+        </div>
+
+        <div class="form-container animate-fadeInUp delay-1">
+            <form action="/admin/productos/crear" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="nombre" class="form-label">
+                        <i class="fas fa-tag"></i> Nombre del Producto
+                    </label>
+                    <input type="text" id="nombre" name="nombre" class="form-input" required 
+                           placeholder="Ej: Collar Premium para Perros">
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="precio" class="form-label">
+                            <i class="fas fa-dollar-sign"></i> Precio
+                        </label>
+                        <input type="number" id="precio" name="precio" class="form-input" step="0.01" min="0" required
+                               placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock" class="form-label">
+                            <i class="fas fa-boxes"></i> Stock
+                        </label>
+                        <input type="number" id="stock" name="stock" class="form-input" min="0" required
+                               placeholder="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoria" class="form-label">
+                        <i class="fas fa-list"></i> Categoría
+                    </label>
+                    <select id="categoria" name="categoria" class="form-select" required>
+                        <option value="">Seleccionar categoría...</option>
+                        <option value="Perros">Perros</option>
+                        <option value="Gatos">Gatos</option>
+                        <option value="Accesorios">Accesorios</option>
+                        <option value="Alimentos">Alimentos</option>
+                        <option value="Juguetes">Juguetes</option>
+                        <option value="Higiene">Higiene</option>
+                        <option value="Salud">Salud</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion" class="form-label">
+                        <i class="fas fa-align-left"></i> Descripción
+                    </label>
+                    <textarea id="descripcion" name="descripcion" class="form-input form-textarea" required
+                              placeholder="Describe las características y beneficios del producto..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagen" class="form-label">
+                        <i class="fas fa-image"></i> Imagen del Producto
+                    </label>
+                    <div class="file-input-container">
+                        <div class="file-input">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #2E8B57; margin-bottom: 0.5rem;"></i>
+                            <br>
+                            Haz clic aquí para subir una imagen
+                            <input type="file" id="imagen" name="imagen" accept="image/*" onchange="previewImage(this)">
+                        </div>
+                    </div>
+                    <div id="preview-container" class="preview-container">
+                        <img id="preview-image" class="preview-image" alt="Vista previa">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="destacado" name="destacado" class="checkbox-input">
+                        <label for="destacado" class="form-label" style="margin: 0;">
+                            <i class="fas fa-star"></i> Producto Destacado
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Crear Producto
+                    </button>
+                    <a href="/admin/productos" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+    
+    <script src="/js/petshop-animations.js"></script>
+    <script>
+        function previewImage(input) {
+            const file = input.files[0];
+            const previewContainer = document.getElementById('preview-container');
+            const previewImage = document.getElementById('preview-image');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

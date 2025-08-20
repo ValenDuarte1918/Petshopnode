@@ -1,137 +1,164 @@
 [
- {
-  "id": 1,
-  "firstName": "Juan",
-  "lastName": "Pérez",
-  "email": "juan@example.com",
-  "password": "contraseña123",
-  "category": "Cliente",
-  "image": "imagen1.jpg"
- },
- {
-  "id": 2,
-  "firstName": "María",
-  "lastName": "González",
-  "email": "maria@example.com",
-  "password": "clave456",
-  "category": "Cliente",
-  "image": "imagen2.jpg"
- },
- {
-  "id": 3,
-  "firstName": "Carlos",
-  "lastName": "Martínez",
-  "email": "carlos@example.com",
-  "password": "secreto789",
-  "category": "Cliente",
-  "image": "imagen3.jpg"
- },
- {
-  "id": 4,
-  "firstName": "Ana",
-  "lastName": "López",
-  "email": "ana@example.com",
-  "password": "contraseña123",
-  "category": "Administrador",
-  "image": "imagen4.jpg"
- },
- {
-  "id": 5,
-  "firstName": "Luis",
-  "lastName": "Sánchez",
-  "email": "luis@example.com",
-  "password": "clave456",
-  "category": "Cliente",
-  "image": "imagen5.jpg"
- },
- {
-  "id": 6,
-  "firstName": "Elena",
-  "lastName": "Ramírez",
-  "email": "elena@example.com",
-  "password": "secreto789",
-  "category": "Cliente",
-  "image": "imagen6.jpg"
- },
- {
-  "id": 7,
-  "firstName": "Pedro",
-  "lastName": "Díaz",
-  "email": "pedro@example.com",
-  "password": "contraseña123",
-  "category": "Cliente",
-  "image": "imagen7.jpg"
- },
- {
-  "id": 8,
-  "firstName": "Laura",
-  "lastName": "Fernández",
-  "email": "laura@example.com",
-  "password": "clave456",
-  "category": "Cliente",
-  "image": "imagen8.jpg"
- },
- {
-  "id": 9,
-  "firstName": "Miguel",
-  "lastName": "Hernández",
-  "email": "miguel@example.com",
-  "password": "secreto789",
-  "category": "Cliente",
-  "image": "imagen9.jpg"
- },
- {
-  "id": 10,
-  "firstName": "Isabel",
-  "lastName": "Torres",
-  "email": "isabel@example.com",
-  "password": "contraseña123",
-  "category": "Cliente",
-  "image": "imagen10.jpg"
- },
- {
-  "id": 11,
-  "nombre": "liliana elisa",
-  "apellido": "engel",
-  "correo": "lili@gmail.com",
-  "contrasena": "$2a$10$gI2BOJpwQNyxhRibm8rapugA813YrR6iBooARoGZBj2jsTeQRsU.2",
-  "categoria": "Administrador",
-  "foto_perfil": "user-1695599737320.jpg"
- },
- {
-  "id": 12,
-  "nombre": "Valentin ",
-  "apellido": "duarte",
-  "correo": "isabel@example.com",
-  "contrasena": "$2a$10$uy3IqRgLTa7I9e7ySQZWBeY/yioKzCFXtIdEV3MGwXKpXLoQn.FLu",
-  "categoria": "Administrador",
-  "foto_perfil": "user-1700763481326.jpg"
- },
- {
-  "id": 13,
-  "nombre": "Valentin ",
-  "apellido": "duarte",
-  "correo": "valentinduarte1@hotmail.com",
-  "contrasena": "$2a$10$MOl0ApAIDCGCP1Z5.hQKd.eABDDjcG6vpSOvQFzrhYTa2o1PP69Ge",
-  "categoria": "Cliente",
-  "foto_perfil": "user-1700763608576.jpg"
- },
- {
-  "id": 14,
-  "nombre": "marcos valentin",
-  "apellido": "duarte",
-  "correo": "valentinduarte@hotmail.com",
-  "contrasena": "$2a$10$K1QM5kT7c/jfKBPfn0qg2eMsZ..go4ePvGpUDi9AdkUiqf5b3nmlq",
-  "categoria": "Cliente",
-  "foto_perfil": "user-1700765147274.jpg"
- },
- {
-  "id": 15,
-  "nombre": "marcos valentin",
-  "apellido": "duarte",
-  "correo": "valentin@hotmail.com",
-  "contrasena": "$2a$10$rd3iRjFb4JCaPslI42W/P.wMPhvqGsf1B/GDqI4l2PKtmWezn7EBm",
-  "categoria": "Cliente",
-  "foto_perfil": "user-1700765176463.jpg"
- }
+  {
+    "id": 1,
+    "firstName": "Juan",
+    "lastName": "Pérez",
+    "email": "juan@example.com",
+    "password": "contraseña123",
+    "category": "Cliente",
+    "image": "imagen1.jpg"
+  },
+  {
+    "id": 2,
+    "firstName": "María",
+    "lastName": "González",
+    "email": "maria@example.com",
+    "password": "clave456",
+    "category": "Cliente",
+    "image": "imagen2.jpg"
+  },
+  {
+    "id": 3,
+    "firstName": "Carlos",
+    "lastName": "Martínez",
+    "email": "carlos@example.com",
+    "password": "secreto789",
+    "category": "Cliente",
+    "image": "imagen3.jpg"
+  },
+  {
+    "id": 4,
+    "firstName": "Ana",
+    "lastName": "López",
+    "email": "ana@example.com",
+    "password": "contraseña123",
+    "category": "Administrador",
+    "image": "imagen4.jpg"
+  },
+  {
+    "id": 5,
+    "firstName": "Luis",
+    "lastName": "Sánchez",
+    "email": "luis@example.com",
+    "password": "clave456",
+    "category": "Cliente",
+    "image": "imagen5.jpg"
+  },
+  {
+    "id": 6,
+    "firstName": "Elena",
+    "lastName": "Ramírez",
+    "email": "elena@example.com",
+    "password": "secreto789",
+    "category": "Cliente",
+    "image": "imagen6.jpg"
+  },
+  {
+    "id": 7,
+    "firstName": "Pedro",
+    "lastName": "Díaz",
+    "email": "pedro@example.com",
+    "password": "contraseña123",
+    "category": "Cliente",
+    "image": "imagen7.jpg"
+  },
+  {
+    "id": 8,
+    "firstName": "Laura",
+    "lastName": "Fernández",
+    "email": "laura@example.com",
+    "password": "clave456",
+    "category": "Cliente",
+    "image": "imagen8.jpg"
+  },
+  {
+    "id": 9,
+    "firstName": "Miguel",
+    "lastName": "Hernández",
+    "email": "miguel@example.com",
+    "password": "secreto789",
+    "category": "Cliente",
+    "image": "imagen9.jpg"
+  },
+  {
+    "id": 10,
+    "firstName": "Isabel",
+    "lastName": "Torres",
+    "email": "isabel@example.com",
+    "password": "contraseña123",
+    "category": "Cliente",
+    "image": "imagen10.jpg"
+  },
+  {
+    "id": 11,
+    "nombre": "liliana elisa",
+    "apellido": "engel",
+    "correo": "lili@gmail.com",
+    "contrasena": "$2a$10$gI2BOJpwQNyxhRibm8rapugA813YrR6iBooARoGZBj2jsTeQRsU.2",
+    "categoria": "Administrador",
+    "foto_perfil": "user-1695599737320.jpg"
+  },
+  {
+    "id": 12,
+    "nombre": "Valentin ",
+    "apellido": "duarte",
+    "correo": "isabel@example.com",
+    "contrasena": "$2a$10$uy3IqRgLTa7I9e7ySQZWBeY/yioKzCFXtIdEV3MGwXKpXLoQn.FLu",
+    "categoria": "Administrador",
+    "foto_perfil": "user-1700763481326.jpg"
+  },
+  {
+    "id": 13,
+    "nombre": "Valentin ",
+    "apellido": "duarte",
+    "correo": "valentinduarte1@hotmail.com",
+    "contrasena": "$2a$10$MOl0ApAIDCGCP1Z5.hQKd.eABDDjcG6vpSOvQFzrhYTa2o1PP69Ge",
+    "categoria": "Cliente",
+    "foto_perfil": "user-1700763608576.jpg"
+  },
+  {
+    "id": 14,
+    "nombre": "marcos valentin",
+    "apellido": "duarte",
+    "correo": "valentinduarte@hotmail.com",
+    "contrasena": "$2a$10$K1QM5kT7c/jfKBPfn0qg2eMsZ..go4ePvGpUDi9AdkUiqf5b3nmlq",
+    "categoria": "Cliente",
+    "foto_perfil": "user-1700765147274.jpg"
+  },
+  {
+    "id": 15,
+    "nombre": "marcos valentin",
+    "apellido": "duarte",
+    "correo": "valentin@hotmail.com",
+    "contrasena": "$2a$10$rd3iRjFb4JCaPslI42W/P.wMPhvqGsf1B/GDqI4l2PKtmWezn7EBm",
+    "categoria": "Cliente",
+    "foto_perfil": "user-1700765176463.jpg"
+  },
+  {
+    "id": 16,
+    "firstName": "marcos valentin",
+    "lastName": "duarte",
+    "email": "valentinduarte1@hotmail.com",
+    "password": "$2a$10$SS6dIUS0b8ywITnVLlWK4./H5G/hgWTgtQFRhR4KePnQSLGec/tRi",
+    "category": "Cliente",
+    "image": "user-1755725788429.png"
+  },
+  {
+    "id": 17,
+    "firstName": "Carlos Sebastian",
+    "lastName": "Duarte",
+    "email": "procesosmet@hotmail.com",
+    "password": "$2a$10$qS2E9HBarHbhdRyZ3nWrreDGbfdbw9yPZCqn5yuhvv.4DxmjCmZ8e",
+    "category": "Cliente",
+    "image": "user-1755726458000.png"
+  },
+  {
+    "id": 18,
+    "firstName": "Admin",
+    "lastName": "PetShop",
+    "email": "admin@petshop.com",
+    "password": "$2a$10$SS6dIUS0b8ywITnVLlWK4./H5G/hgWTgtQFRhR4KePnQSLGec/tRi",
+    "category": "Administrador",
+    "image": "default.jpg"
+  }
 ]

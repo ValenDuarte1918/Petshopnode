@@ -20,7 +20,9 @@
             <p id="categoria">categoria: <%= producto.categoria %></p>
             <p id="color">color disponible: <%= producto.color%></p>
             <p id="precio">$<%= producto.precio %></p>
-            <a href="/carrito"><button class="add-to-cart-button">Añadir al carro</button></a>
+            <form action="/carrito/add/<%= producto.id %>" method="POST" class="add-to-cart-form">
+              <button type="submit" class="add-to-cart-button">Añadir al carro</button>
+            </form>
           </div>
         </div>  
       </main>

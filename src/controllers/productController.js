@@ -1,41 +1,108 @@
 const path = require('path')
 const fs = require('fs')
-const db = require('../database/models');
+// Comentamos temporalmente la conexión a la base de datos
+// const db = require('../database/models');
 const { validationResult } = require('express-validator')
+
+// Cargar productos desde JSON
+const productosPath = path.join(__dirname, '../data/productos.json');
+const getProductos = () => {
+  try {
+    return JSON.parse(fs.readFileSync(productosPath, 'utf-8'));
+  } catch (error) {
+    return [];
+  }
+};
+
+const saveProductos = (productos) => {
+  fs.writeFileSync(productosPath, JSON.stringify(productos, null, 2), 'utf-8');
+};
 
 
 const controller ={
     list: async (req, res)=>{
-        let productosListados =  await db.Producto.findAll()
-        res.render('home',{listaProductos: productosListados}) 
+        try {
+            const productos = getProductos();
+            let productosListados = productos.filter(producto => !producto.borrado);
+            // Mapear los datos para que coincidan con la estructura esperada
+            productosListados = productosListados.map(producto => ({
+                id: producto.id,
+                nombre: producto.name,
+                descripcion: producto.description,
+                img: producto.image,
+                categoria: producto.category,
+                color: producto.color,
+                precio: producto.price
+            }));
+            res.render('home',{listaProductos: productosListados});
+        } catch (error) {
+            console.error('Error al cargar productos:', error);
+            res.render('home', {listaProductos: []});
+        }
     },    
     detail:async (req, res) => {
-        let productFound = await db.Producto.findByPk(req.params.id,{include:[{association:"Categoria"}]});
-        console.log("detalle de producto " + productFound.Categoria.categoria); 
-        return res.render('detail', { producto: productFound })
+        try {
+            const productos = getProductos();
+            let productFound = productos.find(producto => producto.id == req.params.id);
+            if (productFound) {
+                // Mapear los datos para que coincidan con la estructura esperada
+                productFound = {
+                    id: productFound.id,
+                    nombre: productFound.name,
+                    descripcion: productFound.description,
+                    img: productFound.image,
+                    categoria: productFound.category,
+                    color: productFound.color,
+                    precio: productFound.price
+                };
+            }
+            return res.render('detail', { producto: productFound || {} });
+        } catch (error) {
+            console.error('Error al cargar producto:', error);
+            return res.render('detail', { producto: {} });
+        }
     },
     crear: async (req, res) => {
-        let producto = await db.Producto.findAll();
-        let categoria = await db.Categoria.findAll();
-        return res.render('create'),{producto:producto,categoria:categoria}
+        try {
+            // Para la vista de crear, podemos renderizar sin datos específicos
+            return res.render('crearProducto'); // o 'create' dependiendo del nombre de la vista
+        } catch (error) {
+            console.error('Error al cargar página de crear:', error);
+            return res.render('crearProducto');
+        }
     },
     crearProcess:async (req,res) =>{  
-        let errors = validationResult(req)
-        if(errors.errors.length > 0){} 
-        console.log(req.body)
-        let newProduct = await db.Producto.create({
-            "nombre": req.body.name.toLowerCase(),
-            "descripcion": req.body.description.toLowerCase(),
-            "precio": req.body.price,
-            "img": req.file ? req.file.filename : 'logo.png',                    
-        })
-            /*             productsList.push(newProduct)
+        try {
+            let errors = validationResult(req)
+            if(errors.errors.length > 0){
+                return res.render('crearProducto', {errors: errors.mapped(), old: req.body});
+            } 
             
-            fs.writeFileSync(path.join(__dirname,'../data/productData.json'),JSON.stringify(productsList,null,2),'utf-8')
-            res.redirect('/') */
-            return res.redirect('/')
-            console.log(newProduct)
-        },
+            console.log(req.body);
+            const productos = getProductos();
+            
+            let newProduct = {
+                "id": productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1,
+                "name": req.body.name,
+                "description": req.body.description,
+                "category": req.body.category || "general",
+                "price": req.body.price,
+                "color": req.body.color || "sin especificar",
+                "image": req.file ? req.file.filename : 'logo.png',
+                "borrado": false
+            }
+            
+            productos.push(newProduct);
+            saveProductos(productos);
+            return res.redirect('/');
+        } catch (error) {
+            console.error('Error al crear producto:', error);
+            return res.render('crearProducto', {
+                errors: {general: {msg: 'Error del servidor'}},
+                old: req.body
+            });
+        }
+    },
         edit: async (req,res)=>{
             let producto = await db.Producto.findAll();
             let categoria = await db.Categoria.findAll();

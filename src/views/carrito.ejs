@@ -1,94 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
-    <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-            <link rel="stylesheet" href="/css/carrito.css">
-            <title>PetShop Innovador - Carrito</title>
-        </head>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/carrito.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <title>🛒 PetShop Innovador - Carrito de Compras</title>
+</head>
 <body>
     <%- include('partials/header') %>
 
-    <main class="carritoContainer">
-<div class="icon-div">
-    <a href="/">       
-<i class="fas fa-arrow-left"></i>
-</a>
-</div>    
-<div class="div-img">
-    <img class="img-carrito" src="https://media.lmneuquen.com/p/8e66f9ee5d71ae3c2987078238c338cd/adjuntos/195/imagenes/003/530/0003530994/p21-collar-perrosce_id303988jpg.jpg" alt="Imagen 1" />
-    <div class="div-contenido">
-        <h3>Titulo del producto</h3>
-    <select name="cantidad">
-        <option name="cantidad" value="1">1 u.</option>
-        <option name="cantidad" value="2">2 u.</option>
-        <option name="cantidad" value="3">3 u.</option>
-        <option name="cantidad" value="4">4 u.</option>
-        <option name="cantidad" value="5">5 u.</option>
-        <option name="cantidad" value="6">6 u.</option>
-        <option name="cantidad" value="7">7 u.</option>
-        <option name="cantidad" value="8">8 u.</option>
-        <option name="cantidad" value="9">9 u.</option>
-        <option name="cantidad" value="10">10 u.</option>
-    </select>
-    <div class="div-botones-precio">
-    <div class="div-button">
-        <button>Eliminar</button>
-        <button>Guardar</button>
-    </div> 
-    <div class="precio">
-        <p>$5000</p>
-    </div>
-    </div>
-    </div>
-</div>
-<div class="div-img">
-    <img class="img-carrito" src="https://media.lmneuquen.com/p/8e66f9ee5d71ae3c2987078238c338cd/adjuntos/195/imagenes/003/530/0003530994/p21-collar-perrosce_id303988jpg.jpg" alt="Imagen 1" />
-    <div class="div-contenido">
-        <h3>Titulo del producto</h3>
-    <select name="cantidad">
-        <option name="cantidad" value="1">1 u.</option>
-        <option name="cantidad" value="2">2 u.</option>
-        <option name="cantidad" value="3">3 u.</option>
-        <option name="cantidad" value="4">4 u.</option>
-        <option name="cantidad" value="5">5 u.</option>
-        <option name="cantidad" value="6">6 u.</option>
-        <option name="cantidad" value="7">7 u.</option>
-        <option name="cantidad" value="8">8 u.</option>
-        <option name="cantidad" value="9">9 u.</option>
-        <option name="cantidad" value="10">10 u.</option>
-    </select>
-    <div class="div-botones-precio"> 
-    <div class="div-button">
-        <button>Eliminar</button>
-    <button>Guardar</button>
-    </div> 
-    <div class="precio">
-        <p>$5000</p>
-    </div>
-</div>
-    </div>
-</div>
-<div class="div-final-productos">
-    <div class="div-precio-total">
-        <h4>Cantidad de productos</h4>
-        <p>2</p>
-    </div>
-    <div class="div-precio-total">
-        <h4>Envio</h4>
-        <p>$3000</p>
-    </div>
-    <div class="div-precio-total">
-        <h4>Total</h4>
-        <p>$5000</p>
-    </div>
-    <button class="continuar-compra">Continuar compra</button>
-</div>
-</main>
-<script src="/js/cart.js"></script>
-<%- include('partials/footer') %>
-</body>
+    <main class="carrito-container">
+        <div class="carrito-header animate-fadeInUp">
+            <div class="back-button">
+                <a href="/" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Seguir Comprando
+                </a>
+            </div>
+            <h1><i class="fas fa-shopping-cart"></i> Mi Carrito de Compras</h1>
+        </div>
 
+        <% if (carrito && carrito.length > 0) { %>
+            <div class="carrito-content animate-fadeInUp delay-1">
+                <div class="carrito-items">
+                    <% carrito.forEach((item, index) => { %>
+                        <div class="carrito-item animate-fadeInLeft delay-<%= (index % 3) + 1 %>">
+                            <div class="item-image">
+                                <img src="/images/products/<%= item.img %>" alt="<%= item.nombre %>" />
+                            </div>
+                            <div class="item-details">
+                                <h3><%= item.nombre %></h3>
+                                <p class="item-price">$<%= item.precio %></p>
+                            </div>
+                            <div class="item-quantity">
+                                <form action="/carrito/update/<%= item.id %>?_method=PUT" method="POST" class="quantity-form">
+                                    <label for="cantidad-<%= item.id %>">Cantidad:</label>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="qty-btn" onclick="decreaseQuantity(<%= item.id %>)">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" 
+                                               id="cantidad-<%= item.id %>" 
+                                               name="cantidad" 
+                                               value="<%= item.cantidad %>" 
+                                               min="1" 
+                                               max="10"
+                                               onchange="updateQuantity(<%= item.id %>)">
+                                        <button type="button" class="qty-btn" onclick="increaseQuantity(<%= item.id %>)">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="item-total">
+                                <p class="subtotal">$<%= (parseFloat(item.precio) * item.cantidad).toFixed(2) %></p>
+                            </div>
+                            <div class="item-actions">
+                                <form action="/carrito/remove/<%= item.id %>?_method=DELETE" method="POST" class="remove-form">
+                                    <button type="submit" class="btn-remove" onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <div class="carrito-summary animate-fadeInRight delay-2">
+                    <div class="summary-card">
+                        <h3><i class="fas fa-calculator"></i> Resumen del Pedido</h3>
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span>$<%= total %></span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Envío:</span>
+                            <span class="free-shipping">GRATIS</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>Total:</span>
+                            <span class="total-amount">$<%= total %></span>
+                        </div>
+                        
+                        <div class="checkout-actions">
+                            <% if (locals.isLoggedIn) { %>
+                                <button class="btn-checkout" onclick="proceedToCheckout()">
+                                    <i class="fas fa-credit-card"></i>
+                                    Proceder al Pago
+                                </button>
+                            <% } else { %>
+                                <a href="/user/login" class="btn-login">
+                                    <i class="fas fa-user"></i>
+                                    Iniciar Sesión para Continuar
+                                </a>
+                            <% } %>
+                            
+                            <form action="/carrito/clear" method="POST" class="clear-cart-form">
+                                <button type="submit" class="btn-clear" onclick="return confirm('¿Estás seguro de vaciar el carrito?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                    Vaciar Carrito
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="carrito-empty animate-bounceIn">
+                <div class="empty-state">
+                    <i class="fas fa-shopping-cart empty-icon"></i>
+                    <h2>Tu carrito está vacío</h2>
+                    <p>¡Descubre nuestros increíbles productos para tu mascota!</p>
+                    <a href="/" class="btn-shop">
+                        <i class="fas fa-paw"></i>
+                        Comenzar a Comprar
+                    </a>
+                </div>
+            </div>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer') %>
+    
+    <script src="/js/carrito.js"></script>
+    <script src="/js/petshop-animations.js"></script>
+</body>
 </html>

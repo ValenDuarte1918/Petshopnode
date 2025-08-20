@@ -1,41 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="/css/home.css">
-    <title>PetShop Innovador - Home</title>
+    <link rel="stylesheet" href="/css/animations.css">
+    <title>🐾 PetShop Innovador - Todo para tu mascota</title>
 </head>
 <body>
   <%- include('partials/header') %>
-    <div class="product-container">
+    
+    <!-- Hero Section -->
+    <section class="hero-section floating-particles">
+      <div class="hero-content animate-fadeInLeft">
+        <h1 class="text-shimmer">🐾 Bienvenido a PetShop Innovador</h1>
+        <p>Todo lo que tu mascota necesita en un solo lugar</p>
+        <div class="hero-buttons">
+          <a href="#productos" class="btn-primary btn-magic">Ver Productos</a>
+          <a href="/user/registro" class="btn-secondary">Únete Ahora</a>
+        </div>
+      </div>
+      <div class="hero-image animate-fadeInRight">
+        <img src="https://img.freepik.com/foto-gratis/endecha-plana-juguetes-plato-comida-cepillo-pelo-perros_23-2148949620.jpg?w=1480&t=st=1701047160~exp=1701047760~hmac=80abfdcf2f4388093d581b028634fa98a714eac6f70e01cae4fafc04c0a87186" alt="Productos para mascotas" />
+      </div>
+    </section>
 
-      <div class="product-link">
-        <a href="#">
-          <img src="https://img.freepik.com/foto-gratis/endecha-plana-juguetes-plato-comida-cepillo-pelo-perros_23-2148949620.jpg?w=1480&t=st=1701047160~exp=1701047760~hmac=80abfdcf2f4388093d581b028634fa98a714eac6f70e01cae4fafc04c0a87186" alt="Imagen del producto" />
-        </a>
+    <div class="product-container" id="productos">
+      <div class="section-header animate-fadeInUp">
+        <h2>🛍️ Nuestros Productos</h2>
+        <p>Descubre la mejor selección de productos para tu mascota</p>
       </div>
 
       <main>
-        <% productos.forEach(product => { %>
-          <div class="product-card">
-            <div>
+        <% productos.forEach((product, index) => { %>
+          <div class="product-card fade-in-on-scroll delay-<%= (index % 5) + 1 %>">
+            <div class="image-container">
               <a href="/detail/<%= product.id %>">
-              <img src='/images/products/<%= product.img %>'/>
+                <img src='/images/products/<%= product.img %>' alt="<%= product.nombre %>"/>
               </a>
+              <div class="product-badge animate-pulse">¡Nuevo!</div>
             </div>
             <div class="product-info">
               <h2><%= product.nombre %></h2>
-              <p><%= product.precio %></p>
-              <a href="/carrito"><button class="add-to-cart-button">Añadir al carro</button></a>
+              <p>$<%= product.precio %></p>
+              <form action="/carrito/add/<%= product.id %>" method="POST" class="add-to-cart-form">
+                <button type="submit" class="add-to-cart-button btn-magic">
+                  <i class="fas fa-shopping-cart"></i>
+                  Añadir al carro
+                </button>
+              </form>
             </div>
           </div>
-      <%  }); %>
-    </div>
-    </main>
+        <%  }); %>
+      </main>
     </div>
     <%- include('partials/footer') %>
+    <script src="/js/petshop-animations.js"></script>
   </body>
-
 </html>

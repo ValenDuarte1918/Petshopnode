@@ -62,11 +62,31 @@
 
         <!--iconos de login y carrito-->
         <div class="right-icons">
-          <a href="/user/login">
-            <i class="fas fa-user"></i>
-          </a>
-          <a href="/carrito">
+          <% if (locals.isLoggedIn) { %>
+            <div class="user-menu">
+              <span class="user-name">Hola, <%= userLogged.firstName %>!</span>
+              <% if (userLogged.category === 'Administrador') { %>
+                <a href="/admin/dashboard" title="Panel de Administración" style="color: #FFD700;">
+                  <i class="fas fa-tachometer-alt"></i>
+                </a>
+              <% } %>
+              <a href="/user/profile" title="Mi Perfil">
+                <i class="fas fa-user"></i>
+              </a>
+              <a href="/user/logout" title="Cerrar Sesión">
+                <i class="fas fa-sign-out-alt"></i>
+              </a>
+            </div>
+          <% } else { %>
+            <a href="/user/login" title="Iniciar Sesión">
+              <i class="fas fa-user"></i>
+            </a>
+          <% } %>
+          <a href="/carrito" title="Carrito de Compras">
             <i class="fas fa-shopping-cart"></i>
+            <% if (locals.cartCount && cartCount > 0) { %>
+              <span class="cart-count"><%= cartCount %></span>
+            <% } %>
           </a>
         </div>
 
