@@ -483,8 +483,8 @@
                     <% productos.forEach(producto => { %>
                         <li class="recent-item">
                             <div class="item-info">
-                                <span class="item-name"><%= producto.nombre %></span>
-                                <span class="item-detail">$<%= producto.precio %> - Stock: <%= producto.stock %></span>
+                                <span class="item-name"><%= producto.name %></span>
+                                <span class="item-detail">$<%= producto.price %> - Stock: <%= producto.stock || 0 %></span>
                             </div>
                         </li>
                     <% }); %>

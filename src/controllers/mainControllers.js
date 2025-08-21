@@ -3,13 +3,21 @@ const path = require('path');
 // Comentamos temporalmente la conexión a la base de datos
 // const db = require('../database/models');
 
-//traigo la lista de productos
-const listaProductos = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/productos.json'), 'utf-8'));
+// Función para leer productos dinámicamente
+const getProductos = () => {
+    try {
+        return JSON.parse(fs.readFileSync(path.join(__dirname, '../data/productos.json'), 'utf-8'));
+    } catch (error) {
+        console.error('Error al leer productos:', error);
+        return [];
+    }
+};
 
 const controller = {
     home: async (req,res)=> {
         try {
             // Usar datos JSON temporalmente
+            const listaProductos = getProductos();
             let productosListados = listaProductos.filter(producto => !producto.borrado);
             // Mapear los datos para que coincidan con la estructura esperada
             productosListados = productosListados.map(producto => ({
@@ -31,6 +39,7 @@ const controller = {
     detail:async (req, res) => {
         try {
             // Usar datos JSON temporalmente
+            const listaProductos = getProductos();
             let productFound = listaProductos.find(producto => producto.id == req.params.id);
             if (productFound) {
                 // Mapear los datos para que coincidan con la estructura esperada
@@ -71,6 +80,7 @@ const controller = {
     // Agregar producto al carrito
     addToCart: (req, res) => {
         const productId = parseInt(req.params.id);
+        const listaProductos = getProductos();
         const producto = listaProductos.find(p => p.id === productId);
         
         if (!producto) {
@@ -150,7 +160,7 @@ const controller = {
         res.redirect('/carrito');
     },
     create:(req,res)=> {
-       
+            let listaProductos = getProductos();
             let nuevoProducto = {
               "id": listaProductos[listaProductos.length - 1].id + 1,
               "name": req.body.name,
@@ -171,6 +181,7 @@ const controller = {
     store:(req,res)=> {
         //creo un nuevo producto con los datos que me llegan por body
         if(req.file){
+            let listaProductos = getProductos();
             let nuevoProducto = {
                 "id": listaProductos[listaProductos.length - 1].id + 1,
                 "name": req.body.name,
@@ -216,6 +227,7 @@ const controller = {
 },
     delete:(req,res)=> {
         //borrado logico del producto que coincida con el id que me llega por parametro
+        let listaProductos = getProductos();
         let productoEncontrado = listaProductos.find((producto)=> producto.id == req.params.id)
        productoEncontrado.borrado = true
     

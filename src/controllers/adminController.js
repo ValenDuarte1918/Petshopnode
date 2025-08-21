@@ -33,17 +33,19 @@ const saveProductos = (productos) => {
 const adminController = {
   // Verificar si el usuario es administrador
   isAdmin: (req, res, next) => {
+    // Verificar si hay sesión de usuario logueado
     if (!req.session.userLogged) {
-      return res.redirect('/user/login');
+      return res.redirect('/users/login?redirect=' + encodeURIComponent(req.originalUrl));
     }
-    
+
+    // Verificar si es administrador
     if (req.session.userLogged.category !== 'Administrador') {
       return res.status(403).render('error', { 
         message: 'Acceso denegado. Solo administradores pueden acceder a esta sección.',
         backUrl: '/'
       });
     }
-    
+
     next();
   },
 
@@ -51,21 +53,22 @@ const adminController = {
   dashboard: (req, res) => {
     const usuarios = getUsuarios();
     const productos = getProductos();
+    const productosActivos = productos.filter(p => !p.borrado); // Solo productos no borrados
     
     const stats = {
       totalUsuarios: usuarios.length,
-      totalProductos: productos.length,
+      totalProductos: productosActivos.length, // Contar solo productos activos
       clientesRegulares: usuarios.filter(u => u.category === 'Cliente').length,
       administradores: usuarios.filter(u => u.category === 'Administrador').length,
-      productosActivos: productos.filter(p => p.stock > 0).length,
-      productosSinStock: productos.filter(p => p.stock === 0).length
+      productosActivos: productosActivos.filter(p => (p.stock || 0) > 0).length,
+      productosSinStock: productosActivos.filter(p => (p.stock || 0) === 0).length
     };
 
     res.render('admin/dashboard', { 
       user: req.session.userLogged,
       stats,
       usuarios: usuarios.slice(0, 5), // Últimos 5 usuarios
-      productos: productos.slice(0, 5) // Últimos 5 productos
+      productos: productosActivos.slice(0, 5) // Últimos 5 productos activos
     });
   },
 
@@ -112,9 +115,10 @@ const adminController = {
   // Gestión de productos
   productos: (req, res) => {
     const productos = getProductos();
+    const productosActivos = productos.filter(p => !p.borrado); // Solo productos activos
     res.render('admin/productos', { 
       user: req.session.userLogged,
-      productos 
+      productos: productosActivos
     });
   },
 
@@ -132,13 +136,14 @@ const adminController = {
     
     const newProduct = {
       id: newId,
-      nombre: req.body.nombre,
-      precio: parseFloat(req.body.precio),
-      descripcion: req.body.descripcion,
-      categoria: req.body.categoria,
-      stock: parseInt(req.body.stock),
-      img: req.file ? req.file.filename : 'default.jpg',
-      destacado: req.body.destacado === 'on'
+      name: req.body.nombre,
+      price: parseFloat(req.body.precio),
+      description: req.body.descripcion,
+      category: req.body.categoria,
+      stock: parseInt(req.body.stock) || 0,
+      image: req.file ? req.file.filename : 'default.jpg',
+      destacado: req.body.destacado === 'on',
+      borrado: false
     };
     
     productos.push(newProduct);
@@ -159,10 +164,22 @@ const adminController = {
         backUrl: '/admin/productos'
       });
     }
+
+    // Mapear los campos del JSON a los nombres esperados en la vista
+    const productoMapeado = {
+      id: producto.id,
+      nombre: producto.name,
+      precio: producto.price,
+      descripcion: producto.description,
+      categoria: producto.category,
+      stock: producto.stock || 0,
+      img: producto.image,
+      destacado: producto.destacado || false
+    };
     
     res.render('admin/editar-producto', { 
       user: req.session.userLogged,
-      producto 
+      producto: productoMapeado
     });
   },
 
@@ -173,14 +190,15 @@ const adminController = {
     const productIndex = productos.findIndex(p => p.id === productId);
     
     if (productIndex !== -1) {
+      // Mapear los campos del formulario al formato del JSON
       productos[productIndex] = {
         ...productos[productIndex],
-        nombre: req.body.nombre,
-        precio: parseFloat(req.body.precio),
-        descripcion: req.body.descripcion,
-        categoria: req.body.categoria,
-        stock: parseInt(req.body.stock),
-        img: req.file ? req.file.filename : productos[productIndex].img,
+        name: req.body.nombre,
+        price: parseFloat(req.body.precio),
+        description: req.body.descripcion,
+        category: req.body.categoria,
+        stock: parseInt(req.body.stock) || 0,
+        image: req.file ? req.file.filename : productos[productIndex].image,
         destacado: req.body.destacado === 'on'
       };
       
@@ -195,8 +213,10 @@ const adminController = {
     const productId = parseInt(req.params.id);
     let productos = getProductos();
     
+    console.log(`🗑️ Eliminando producto ID: ${productId}`);
     productos = productos.filter(p => p.id !== productId);
     saveProductos(productos);
+    console.log('✅ Producto eliminado exitosamente');
     
     res.redirect('/admin/productos');
   },

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Edición de Productos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-form {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        input, select, textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            margin: 5px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .link-btn {
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test de Edición de Productos</h1>
+        <p>Prueba el formulario de edición de productos con datos precompletados.</p>
+        
+        <div class="test-form">
+            <h3>📝 Simulador de Edición - Producto ID: 3</h3>
+            <form action="http://localhost:3000/admin/productos/editar/3?_method=PUT" method="POST">
+                <label><strong>Nombre:</strong></label>
+                <input type="text" name="nombre" value="Collar Premium para Perros - EDITADO" required>
+                
+                <label><strong>Precio:</strong></label>
+                <input type="number" name="precio" value="12.99" step="0.01" required>
+                
+                <label><strong>Stock:</strong></label>
+                <input type="number" name="stock" value="25" required>
+                
+                <label><strong>Categoría:</strong></label>
+                <select name="categoria" required>
+                    <option value="Perros" selected>Perros</option>
+                    <option value="Gatos">Gatos</option>
+                    <option value="Accesorios">Accesorios</option>
+                </select>
+                
+                <label><strong>Descripción:</strong></label>
+                <textarea name="descripcion" rows="3" required>Collar resistente y ajustable para perros, ahora con materiales premium y diseño mejorado. Ideal para paseos seguros y cómodos.</textarea>
+                
+                <button type="submit">💾 Guardar Cambios</button>
+            </form>
+        </div>
+
+        <div class="test-form">
+            <h3>🔗 Enlaces de Verificación</h3>
+            <a href="http://localhost:3000/admin/productos/editar/3" class="link-btn" target="_blank">✏️ Abrir Formulario Real</a>
+            <a href="http://localhost:3000/admin/productos" class="link-btn" target="_blank">📋 Ver Lista de Productos</a>
+            <a href="http://localhost:3000/" class="link-btn" target="_blank">🏠 Ver Home</a>
+        </div>
+
+        <div class="test-form">
+            <h3>📊 Productos Disponibles para Editar</h3>
+            <ul>
+                <li><strong>ID 3:</strong> Collar para Perros - $7.99</li>
+                <li><strong>ID 4:</strong> Cama para Gatos Suave - $19.99</li>
+                <li><strong>ID 5:</strong> Hueso de Cuero para Perros - $5.99</li>
+                <li><strong>ID 6:</strong> Arena para Gatos Absorbente - $8.99</li>
+                <li><strong>ID 7:</strong> Correa Extensible para Perros - $14.99</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

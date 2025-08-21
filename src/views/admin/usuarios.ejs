@@ -319,7 +319,7 @@
                                             <img src="/images/users/<%= usuario.image %>" alt="<%= usuario.firstName %>" class="user-avatar">
                                         <% } else { %>
                                             <div class="user-avatar" style="background: #2E8B57; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                                                <%= usuario.firstName.charAt(0).toUpperCase() %>
+                                                <%= (usuario.firstName || 'U').charAt(0).toUpperCase() %>
                                             </div>
                                         <% } %>
                                         <div class="user-details">

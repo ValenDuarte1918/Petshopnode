@@ -20,6 +20,11 @@
         <% } %>
     <form action="/user/login" method="post" >
         <h1>Iniciar Sesión</h1>
+        
+        <% if (locals.redirectUrl) { %>
+            <input type="hidden" name="redirectUrl" value="<%= redirectUrl %>">
+        <% } %>
+        
         <div class="textbox">
             <i class="fas fa-user"></i>
             <input class="errors" type="text" placeholder="Email" id="email" name="email" value="">

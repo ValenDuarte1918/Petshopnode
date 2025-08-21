@@ -26,7 +26,10 @@ const controller = {
     if (req.session.userLogged) {
       return res.redirect('/');
     }
-    res.render('login', {errors: null, old: req.body})
+    
+    // Capturar URL de redirección si existe
+    const redirectUrl = req.query.redirect || null;
+    res.render('login', {errors: null, old: req.body, redirectUrl})
   },
   loginProcess: async(req, res) => {
     try {
@@ -50,27 +53,47 @@ const controller = {
             category: userToLogin.category,
             image: userToLogin.image
           };
-          return res.redirect('/')
+          
+          console.log(`✅ Login exitoso: ${userToLogin.email} (${userToLogin.category})`);
+          
+          // Redirigir a la URL original o al home
+          const redirectUrl = req.body.redirectUrl || '/';
+          return res.redirect(redirectUrl);
         }
-        res.render('login', {errors: {
-          usuario: {
-            msg: 'Las credenciales son invalidas'
-          }
-        }})
+        
+        const redirectUrl = req.body.redirectUrl || null;
+        res.render('login', {
+          errors: {
+            usuario: {
+              msg: 'Las credenciales son invalidas'
+            }
+          },
+          old: req.body,
+          redirectUrl
+        })
       } else {
-        res.render('login', {errors: {
-          usuario: {
-            msg: 'No se encuentra este email en nuestra base de datos'
-          }
-        }})
+        const redirectUrl = req.body.redirectUrl || null;
+        res.render('login', {
+          errors: {
+            usuario: {
+              msg: 'No se encuentra este email en nuestra base de datos'
+            }
+          },
+          old: req.body,
+          redirectUrl
+        })
       }
     } catch (error) {
       console.error('Error en login:', error);
-      res.render('login', {errors: {
-        usuario: {
-          msg: 'Error del servidor'
-        }
-      }})
+      res.render('login', {
+        errors: {
+          usuario: {
+            msg: 'Error del servidor'
+          }
+        },
+        old: req.body,
+        redirectUrl: req.body.redirectUrl || null
+      })
     }
   },
     registro:(req,res)=> {

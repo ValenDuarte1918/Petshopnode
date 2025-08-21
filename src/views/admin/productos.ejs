@@ -281,15 +281,15 @@
                 <div class="stat-label">Total Productos</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number"><%= productos.filter(p => p.stock > 0).length %></div>
+                <div class="stat-number"><%= productos.filter(p => (p.stock || 0) > 0).length %></div>
                 <div class="stat-label">Con Stock</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number"><%= productos.filter(p => p.stock === 0).length %></div>
+                <div class="stat-number"><%= productos.filter(p => (p.stock || 0) === 0).length %></div>
                 <div class="stat-label">Sin Stock</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number">$<%= productos.reduce((sum, p) => sum + (p.precio * p.stock), 0).toFixed(2) %></div>
+                <div class="stat-number">$<%= productos.reduce((sum, p) => sum + ((p.price || 0) * (p.stock || 0)), 0).toFixed(2) %></div>
                 <div class="stat-label">Valor Inventario</div>
             </div>
         </div>
@@ -299,21 +299,21 @@
                 <% productos.forEach((producto, index) => { %>
                     <div class="product-card animate-fadeInUp delay-<%= (index % 6) + 1 %>">
                         <div class="product-image">
-                            <% if (producto.img && producto.img !== 'default.jpg') { %>
-                                <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>">
+                            <% if (producto.image && producto.image !== 'default.jpg') { %>
+                                <img src="/images/products/<%= producto.image %>" alt="<%= producto.name %>">
                             <% } else { %>
                                 <i class="fas fa-image" style="font-size: 3rem; color: #ddd;"></i>
                             <% } %>
                         </div>
                         <div class="product-info">
-                            <h3 class="product-name"><%= producto.nombre %></h3>
-                            <p class="product-price">$<%= producto.precio %></p>
-                            <p class="product-stock stock-<%= producto.stock > 10 ? 'high' : producto.stock > 5 ? 'medium' : 'low' %>">
-                                Stock: <%= producto.stock %> unidades
+                            <h3 class="product-name"><%= producto.name %></h3>
+                            <p class="product-price">$<%= producto.price %></p>
+                            <p class="product-stock stock-<%= (producto.stock || 0) > 10 ? 'high' : (producto.stock || 0) > 5 ? 'medium' : 'low' %>">
+                                Stock: <%= producto.stock || 0 %> unidades
                             </p>
-                            <% if (producto.categoria) { %>
+                            <% if (producto.category) { %>
                                 <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
-                                    <i class="fas fa-tag"></i> <%= producto.categoria %>
+                                    <i class="fas fa-tag"></i> <%= producto.category %>
                                 </p>
                             <% } %>
                             <div class="product-actions">

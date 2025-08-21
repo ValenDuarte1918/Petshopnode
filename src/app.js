@@ -9,13 +9,17 @@ const userRouter = require('./routes/usersRoutes')
 const productRouter = require('./routes/productRouter')
 const adminRouter = require('./routes/adminRoutes')
 
-// Configuración de sesiones
+// Configuración de sesiones mejorada
 app.use(session({
-    secret: 'petshop-innovador-secret-key',
+    secret: 'petshop-innovador-secret-key-2025',
     resave: false,
     saveUninitialized: false,
+    name: 'petshop.session',
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 // 24 horas
+        maxAge: 1000 * 60 * 60 * 24, // 24 horas
+        secure: false, // Para desarrollo local (no HTTPS)
+        httpOnly: true, // Más seguro - no accesible desde JavaScript
+        sameSite: 'lax'
     }
 }));
 
