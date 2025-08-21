@@ -1,26 +1,397 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/footer.css">
-    </head>
-<footer>
-    <article>
-        <h3>Contactanos</h3>
-        <a href="#">petshop7@gmail.com</a>
-        <p>Tel: 555-555-555</p>
-        <p><i class="fas fa-map-marker-alt"></i> Av. Gral Paz 1234</p>
-    </article>
-    <article>
-    <h3>Seguinos</h3>
-    <i class="fab fa-instagram"></i>
-    <i class="fab fa-facebook-square"></i>
-    <i class="fab fa-tiktok"></i>
-    </article>
-    <article>
-    <h3>Metodos de pago</h3>
-    <p><i class="far fa-credit-card"></i>Tarjeta</p>
-    <p><i class="fas fa-hand-holding-usd"></i>Efectivo</p>
-    <p><i class="fas fa-comments-dollar"></i>Transferencia</p>
-    </article>
+<!-- Footer -->
+<style>
+.main-footer {
+  background: linear-gradient(135deg, #2C3E50, #34495E) !important;
+  color: #FFFFFF !important;
+  padding: 25px 20px 20px !important;
+  margin-top: auto !important;
+  width: 100% !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+.footer-content {
+  max-width: 1000px !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 20px !important;
+  padding: 0 15px !important;
+}
+
+.footer-section {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 5px !important;
+}
+
+.footer-logo {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+}
+
+.footer-logo-img {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 4px !important;
+  object-fit: cover !important;
+}
+
+.footer-brand {
+  color: #FFFFFF !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+}
+
+.footer-description {
+  color: #BDC3C7 !important;
+  line-height: 1.4 !important;
+  margin-bottom: 10px !important;
+  font-size: 0.85rem !important;
+}
+
+.footer-title {
+  color: #FFFFFF !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 10px !important;
+  position: relative !important;
+}
+
+.footer-title::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -4px !important;
+  left: 0 !important;
+  width: 25px !important;
+  height: 2px !important;
+  background: #4A90E2 !important;
+  border-radius: 2px !important;
+}
+
+.footer-links {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.footer-links li {
+  margin-bottom: 5px !important;
+}
+
+.footer-links a {
+  color: #BDC3C7 !important;
+  text-decoration: none !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  padding-left: 12px !important;
+  font-size: 0.85rem !important;
+}
+
+.footer-links a:hover {
+  color: #FFFFFF !important;
+  padding-left: 16px !important;
+}
+
+.footer-links a::before {
+  content: '→' !important;
+  position: absolute !important;
+  left: 0 !important;
+  opacity: 0 !important;
+  transition: all 0.3s ease !important;
+}
+
+.footer-links a:hover::before {
+  opacity: 1 !important;
+}
+
+.social-links {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: 10px !important;
+}
+
+.social-link {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+  border-radius: 50% !important;
+  text-decoration: none !important;
+  transition: all 0.3s ease !important;
+  font-size: 0.9rem !important;
+}
+
+.social-link:hover {
+  background: #4A90E2 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(74, 144, 226, 0.3) !important;
+}
+
+.contact-info {
+  margin-top: 10px !important;
+}
+
+.contact-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 6px !important;
+  color: #BDC3C7 !important;
+  font-size: 0.8rem !important;
+}
+
+.contact-item i {
+  width: 14px !important;
+  color: #4A90E2 !important;
+  font-size: 0.8rem !important;
+}
+
+.payment-methods {
+  display: flex !important;
+  gap: 6px !important;
+  margin-top: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+.payment-badge {
+  padding: 4px 8px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 3px !important;
+  font-size: 0.75rem !important;
+  color: #BDC3C7 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.footer-bottom {
+  margin-top: 15px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+.footer-bottom p {
+  margin: 0 !important;
+  color: #BDC3C7 !important;
+  font-size: 0.75rem !important;
+}
+
+.footer-legal {
+  display: flex !important;
+  gap: 12px !important;
+}
+
+.footer-legal a {
+  color: #BDC3C7 !important;
+  text-decoration: none !important;
+  font-size: 0.75rem !important;
+  transition: color 0.3s ease !important;
+}
+
+.footer-legal a:hover {
+  color: #FFFFFF !important;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+    text-align: center !important;
+  }
+  
+  .footer-bottom {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+  
+  .footer-legal {
+    justify-content: center !important;
+  }
+  
+  .social-links {
+    justify-content: center !important;
+  }
+  
+  .payment-methods {
+    justify-content: center !important;
+  }
+}
+</style>
+<footer class="main-footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <div class="footer-logo">
+        <img src="/images/logo_petshop.jpeg" alt="PetShop Innovador" class="footer-logo-img">
+        <h3 class="footer-brand">PetShop Innovador</h3>
+      </div>
+      <p class="footer-description">
+        Tu tienda de confianza para el cuidado y bienestar de tu mascota. 
+        Productos de calidad premium para compañeros especiales.
+      </p>
+      <div class="social-links">
+        <a href="#" class="social-link" title="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="#" class="social-link" title="Facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+        <a href="#" class="social-link" title="TikTok">
+          <i class="fab fa-tiktok"></i>
+        </a>
+        <a href="#" class="social-link" title="YouTube">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="footer-title">Navegación</h4>
+      <ul class="footer-links">
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/productos">Productos</a></li>
+        <li><a href="/productos/categoria/perros">Para Perros</a></li>
+        <li><a href="/productos/categoria/gatos">Para Gatos</a></li>
+        <li><a href="/productos/categoria/accesorios">Accesorios</a></li>
+        <li><a href="/ofertas">Ofertas</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="footer-title">Ayuda</h4>
+      <ul class="footer-links">
+        <li><a href="/ayuda/envios">Información de Envíos</a></li>
+        <li><a href="/ayuda/devoluciones">Cambios y Devoluciones</a></li>
+        <li><a href="/ayuda/faq">Preguntas Frecuentes</a></li>
+        <li><a href="/ayuda/cuidados">Guía de Cuidados</a></li>
+        <li><a href="/ayuda/contacto">Contacto</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="footer-title">Contacto</h4>
+      <div class="contact-info">
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <div>
+            <strong>Email:</strong>
+            <a href="mailto:info@petshopinnovador.com">info@petshopinnovador.com</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-phone"></i>
+          <div>
+            <strong>Teléfono:</strong>
+            <a href="tel:+56912345678">+56 9 1234 5678</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <div>
+            <strong>Dirección:</strong>
+            <span>Av. Gral Paz 1234, Santiago, Chile</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-clock"></i>
+          <div>
+            <strong>Horarios:</strong>
+            <span>Lun - Vie: 9:00 - 19:00<br>Sáb: 10:00 - 18:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="footer-title">Métodos de Pago</h4>
+      <div class="payment-methods">
+        <div class="payment-item">
+          <i class="far fa-credit-card"></i>
+          <span>Tarjetas de Crédito/Débito</span>
+        </div>
+        <div class="payment-item">
+          <i class="fas fa-university"></i>
+          <span>Transferencia Bancaria</span>
+        </div>
+        <div class="payment-item">
+          <i class="fas fa-money-bill-wave"></i>
+          <span>Efectivo (Contraentrega)</span>
+        </div>
+      </div>
+      
+      <div class="security-badges">
+        <div class="badge">
+          <i class="fas fa-shield-alt"></i>
+          <span>Compra Segura</span>
+        </div>
+        <div class="badge">
+          <i class="fas fa-shipping-fast"></i>
+          <span>Envío Garantizado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-bottom-content">
+      <div class="copyright">
+        <p>&copy; 2024 PetShop Innovador. Todos los derechos reservados.</p>
+      </div>
+      <div class="footer-bottom-links">
+        <a href="/legal/privacidad">Política de Privacidad</a>
+        <a href="/legal/terminos">Términos y Condiciones</a>
+        <a href="/legal/cookies">Política de Cookies</a>
+      </div>
+      <div class="developed-by">
+        <p>Desarrollado con <i class="fas fa-heart"></i> para las mascotas</p>
+      </div>
+    </div>
+  </div>
 </footer>
+
+<!-- Back to Top Button -->
+<button id="backToTop" class="back-to-top" title="Volver arriba">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Back to top functionality
+  const backToTopButton = document.getElementById('backToTop');
+  
+  window.addEventListener('scroll', function() {
+    if (window.pageYOffset > 300) {
+      backToTopButton.classList.add('visible');
+    } else {
+      backToTopButton.classList.remove('visible');
+    }
+  });
+  
+  backToTopButton.addEventListener('click', function() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+
+  // Animate social links on hover
+  document.querySelectorAll('.social-link').forEach(link => {
+    link.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-3px) scale(1.1)';
+    });
+    
+    link.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0) scale(1)';
+    });
+  });
+});
+</script>

@@ -29,10 +29,10 @@ const controller = {
                 color: producto.color,
                 precio: producto.price
             }));
-            res.render('home', {productos: productosListados})
+            res.render('home', {listaProductos: productosListados})
         } catch (error) {
             console.error('Error al cargar productos:', error);
-            res.render('home', {productos: []});
+            res.render('home', {listaProductos: []});
         }
     },
     

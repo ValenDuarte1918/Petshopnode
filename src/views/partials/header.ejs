@@ -1,98 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/header.css">
-  <title>PetShop Innovador - Home</title>
-  <!-- Agrega esto en tu archivo EJS -->
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-      const hamburgerButton = document.getElementById('hamburger-button');
-      const mobileMenu = document.querySelector('.mobile-menu');
-      let menuOpen = false;
-
-      // Agregar un evento click al botón hamburguesa
-      hamburgerButton.addEventListener('click', function () {
-          // Toggle para mostrar u ocultar el menú de navegación
-          mobileMenu.classList.toggle('show-menu');
-          menuOpen = !menuOpen;
-      });
- 
-        // Agregar un evento click al documento para cerrar el menú si se hace clic fuera de él
-        document.addEventListener('click', function (event) {
-            if (menuOpen && !mobileMenu.contains(event.target) && event.target !== hamburgerButton) {
-                // Si el menú está abierto, se hace clic fuera de él y no en el botón hamburguesa, cierra el menú
-                mobileMenu.classList.remove('show-menu');
-                menuOpen = false; // Asegurarse de que el menú esté cerrado
-            }
-        });
-  });
-  
-  
-</script>
-
+  <link rel="stylesheet" href="/css/footer.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <% if (typeof page !== 'undefined' && page === 'home') { %>
+    <link rel="stylesheet" href="/css/home.css">
+    <title>🐾 PetShop Innovador - Todo para tu mascota</title>
+  <% } else if (typeof page !== 'undefined' && page === 'login') { %>
+    <link rel="stylesheet" href="/css/login.css">
+    <title>PetShop Innovador - Iniciar Sesión</title>
+  <% } else if (typeof page !== 'undefined' && page === 'registro') { %>
+    <link rel="stylesheet" href="/css/registro.css">
+    <title>PetShop Innovador - Crear Cuenta</title>
+  <% } else { %>
+    <title>PetShop Innovador</title>
+  <% } %>
 </head>
-<!-- Encabezado para pantallas pequeñas (menú hamburguesa) -->
-<header class="mobile-header">
-  <button class="hamburger-button" id="hamburger-button">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-  </button>
-  <nav class="mobile-menu">
-      <ul>
-        <li><a href="/">Inicio</a></li>
-        <li><a href="#">Perros</a></li>
-        <li><a href="#">Gatos</a></li>
-        <li><a href="#">Accesorios</a></li>
-        <li><a href="#">Contacto</a></li>
-      </ul>
-  </nav>
-</header>
-<!--Encabezado para pantallas grandes -->
-<header class="desktop-header">
-    <div class="navbar"> 
-        <nav class="desktop-menu">
-          <!-- div con logo y un search input -->
-        <div class="logo">
-          <a href="/">
-          <img id="logo-header" src="/images/logo_petshop.jpeg" alt="Logo">
-        </a>
-        </div>
+<body>
 
-        <!--iconos de login y carrito-->
-        <div class="right-icons">
-          <% if (locals.isLoggedIn) { %>
-            <div class="user-menu">
-              <span class="user-name">Hola, <%= userLogged.firstName %>!</span>
-              <% if (userLogged.category === 'Administrador') { %>
-                <a href="/admin/dashboard" title="Panel de Administración" style="color: #FFD700;">
-                  <i class="fas fa-tachometer-alt"></i>
-                </a>
-              <% } %>
-              <a href="/user/profile" title="Mi Perfil">
-                <i class="fas fa-user"></i>
+<!-- Header Principal Responsivo -->
+<header class="main-header">
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="logo-section">
+      <a href="/" class="logo-link">
+        <img src="/images/logo_petshop.jpeg" alt="PetShop Innovador" class="logo-img">
+        <span class="logo-text">PetShop Innovador</span>
+      </a>
+    </div>
+
+    <!-- Navegación Principal (Desktop) -->
+    <nav class="main-nav desktop-nav">
+      <ul class="nav-list">
+        <!-- Dropdown Alimentos -->
+        <li class="dropdown">
+          <a href="/productos/categoria/alimentos" class="nav-link dropdown-toggle">
+            <i class="fas fa-utensils"></i> Alimentos
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/productos/categoria/alimentos/perros"><i class="fas fa-dog"></i> Para Perros</a></li>
+            <li><a href="/productos/categoria/alimentos/gatos"><i class="fas fa-cat"></i> Para Gatos</a></li>
+            <li><a href="/productos/categoria/alimentos/cachorros"><i class="fas fa-heart"></i> Cachorros</a></li>
+            <li><a href="/productos/categoria/alimentos/senior"><i class="fas fa-clock"></i> Senior</a></li>
+          </ul>
+        </li>
+        
+        <!-- Dropdown Accesorios -->
+        <li class="dropdown">
+          <a href="/productos/categoria/accesorios" class="nav-link dropdown-toggle">
+            <i class="fas fa-bone"></i> Accesorios
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/productos/categoria/accesorios/collares"><i class="fas fa-circle"></i> Collares</a></li>
+            <li><a href="/productos/categoria/accesorios/correas"><i class="fas fa-link"></i> Correas</a></li>
+            <li><a href="/productos/categoria/accesorios/arneses"><i class="fas fa-vest"></i> Arneses</a></li>
+            <li><a href="/productos/categoria/transporte"><i class="fas fa-suitcase"></i> Transporte</a></li>
+          </ul>
+        </li>
+        
+        <!-- Dropdown Higiene y Salud -->
+        <li class="dropdown">
+          <a href="/productos/categoria/higiene" class="nav-link dropdown-toggle">
+            <i class="fas fa-spa"></i> Higiene & Salud
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/productos/categoria/higiene/shampoos"><i class="fas fa-shower"></i> Shampoos</a></li>
+            <li><a href="/productos/categoria/higiene/arena"><i class="fas fa-box"></i> Arena Gatos</a></li>
+            <li><a href="/productos/categoria/higiene/cepillos"><i class="fas fa-brush"></i> Cepillos</a></li>
+            <li><a href="/productos/categoria/salud"><i class="fas fa-heartbeat"></i> Salud</a></li>
+          </ul>
+        </li>
+        
+        <!-- Dropdown Juguetes y Comodidad -->
+        <li class="dropdown">
+          <a href="/productos/categoria/juguetes" class="nav-link dropdown-toggle">
+            <i class="fas fa-gamepad"></i> Juguetes & Comodidad
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/productos/categoria/juguetes/perros"><i class="fas fa-dog"></i> Juguetes Perros</a></li>
+            <li><a href="/productos/categoria/juguetes/gatos"><i class="fas fa-cat"></i> Juguetes Gatos</a></li>
+            <li><a href="/productos/categoria/comodidad"><i class="fas fa-bed"></i> Camas & Comodidad</a></li>
+            <li><a href="/productos/categoria/comederos"><i class="fas fa-bowl-food"></i> Comederos</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Iconos de Usuario y Carrito -->
+    <div class="header-actions">
+      <% if (locals.isLoggedIn) { %>
+        <div class="user-menu">
+          <div class="user-info">
+            <span class="user-greeting">Hola, <%= userLogged.firstName %>!</span>
+            <% if (userLogged.category === 'Administrador') { %>
+              <span class="admin-badge">Admin</span>
+            <% } %>
+          </div>
+          <div class="user-actions">
+            <% if (userLogged.category === 'Administrador') { %>
+              <a href="/admin/dashboard" title="Panel de Administración" class="header-icon admin-icon">
+                <i class="fas fa-tachometer-alt"></i>
               </a>
-              <a href="/user/logout" title="Cerrar Sesión">
-                <i class="fas fa-sign-out-alt"></i>
-              </a>
-            </div>
-          <% } else { %>
-            <a href="/user/login" title="Iniciar Sesión">
+            <% } %>
+            <a href="/users/profile" title="Mi Perfil" class="header-icon">
               <i class="fas fa-user"></i>
             </a>
-          <% } %>
-          <a href="/carrito" title="Carrito de Compras">
-            <i class="fas fa-shopping-cart"></i>
-            <% if (locals.cartCount && cartCount > 0) { %>
-              <span class="cart-count"><%= cartCount %></span>
-            <% } %>
+            <a href="/users/logout" title="Cerrar Sesión" class="header-icon logout-icon">
+              <i class="fas fa-sign-out-alt"></i>
+            </a>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="auth-links">
+          <a href="/users/login" class="header-icon login-btn" title="Iniciar Sesión">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Ingresar</span>
+          </a>
+          <a href="/users/registro" class="header-icon register-btn" title="Registrarse">
+            <i class="fas fa-user-plus"></i>
+            <span>Registro</span>
           </a>
         </div>
-
-    </nav>
-        
+      <% } %>
+      
+      <!-- Carrito -->
+      <a href="/carrito" title="Carrito de Compras" class="header-icon cart-icon">
+        <i class="fas fa-shopping-cart"></i>
+        <% if (locals.cartCount && cartCount > 0) { %>
+          <span class="cart-badge"><%= cartCount %></span>
+        <% } %>
+      </a>
     </div>
- </header>
+
+    <!-- Botón Menu Mobile -->
+    <button class="mobile-menu-btn" id="mobile-menu-btn">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </div>
+
+  <!-- Menu Mobile -->
+  <nav class="mobile-nav" id="mobile-nav">
+    <ul class="mobile-nav-list">
+      <li><a href="/productos/categoria/alimentos" class="mobile-nav-link"><i class="fas fa-utensils"></i> Alimentos</a></li>
+      <li><a href="/productos/categoria/accesorios" class="mobile-nav-link"><i class="fas fa-bone"></i> Accesorios</a></li>
+      <li><a href="/productos/categoria/higiene" class="mobile-nav-link"><i class="fas fa-spa"></i> Higiene & Salud</a></li>
+      <li><a href="/productos/categoria/juguetes" class="mobile-nav-link"><i class="fas fa-gamepad"></i> Juguetes & Comodidad</a></li>
+      
+      <% if (locals.isLoggedIn) { %>
+        <li class="mobile-user-section">
+          <div class="mobile-user-info">
+            <span>Hola, <%= userLogged.firstName %>!</span>
+            <% if (userLogged.category === 'Administrador') { %>
+              <span class="admin-badge">Admin</span>
+            <% } %>
+          </div>
+        </li>
+        <% if (userLogged.category === 'Administrador') { %>
+          <li><a href="/admin/dashboard" class="mobile-nav-link admin-link"><i class="fas fa-tachometer-alt"></i> Panel Admin</a></li>
+        <% } %>
+        <li><a href="/users/profile" class="mobile-nav-link"><i class="fas fa-user"></i> Mi Perfil</a></li>
+        <li><a href="/users/logout" class="mobile-nav-link logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+      <% } else { %>
+        <li><a href="/users/login" class="mobile-nav-link"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a></li>
+        <li><a href="/users/registro" class="mobile-nav-link"><i class="fas fa-user-plus"></i> Registrarse</a></li>
+      <% } %>
+    </ul>
+  </nav>
+</header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileNav = document.getElementById('mobile-nav');
+  let isMenuOpen = false;
+
+  mobileMenuBtn.addEventListener('click', function() {
+    isMenuOpen = !isMenuOpen;
+    mobileNav.classList.toggle('active', isMenuOpen);
+    mobileMenuBtn.classList.toggle('active', isMenuOpen);
+    document.body.classList.toggle('menu-open', isMenuOpen);
+  });
+
+  // Cerrar menu al hacer click fuera
+  document.addEventListener('click', function(e) {
+    if (isMenuOpen && !mobileNav.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+      isMenuOpen = false;
+      mobileNav.classList.remove('active');
+      mobileMenuBtn.classList.remove('active');
+      document.body.classList.remove('menu-open');
+    }
+  });
+
+  // Cerrar menu al cambiar de página
+  window.addEventListener('beforeunload', function() {
+    mobileNav.classList.remove('active');
+    mobileMenuBtn.classList.remove('active');
+    document.body.classList.remove('menu-open');
+  });
+});
+</script>
 
 

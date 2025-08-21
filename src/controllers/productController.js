@@ -39,6 +39,61 @@ const controller ={
             console.error('Error al cargar productos:', error);
             res.render('home', {listaProductos: []});
         }
+    },
+    
+    // Nueva función para filtrar por categoría
+    category: async (req, res) => {
+        try {
+            const { categoria, subcategoria } = req.params;
+            const productos = getProductos();
+            let productosFiltrados = productos.filter(producto => !producto.borrado);
+            
+            // Filtrar por categoría principal
+            if (categoria) {
+                const categoriaCapitalized = categoria.charAt(0).toUpperCase() + categoria.slice(1);
+                productosFiltrados = productosFiltrados.filter(producto => 
+                    producto.category.toLowerCase() === categoria.toLowerCase()
+                );
+            }
+            
+            // Filtrar por subcategoría si existe
+            if (subcategoria) {
+                const subcategoriaCapitalized = subcategoria.charAt(0).toUpperCase() + subcategoria.slice(1);
+                productosFiltrados = productosFiltrados.filter(producto => 
+                    producto.subcategory && producto.subcategory.toLowerCase() === subcategoria.toLowerCase()
+                );
+            }
+            
+            // Mapear los datos para que coincidan con la estructura esperada
+            productosFiltrados = productosFiltrados.map(producto => ({
+                id: producto.id,
+                nombre: producto.name,
+                descripcion: producto.description,
+                img: producto.image,
+                categoria: producto.category,
+                subcategoria: producto.subcategory,
+                brand: producto.brand,
+                color: producto.color,
+                precio: producto.price,
+                stock: producto.stock
+            }));
+            
+            const categoriaTitle = categoria ? categoria.charAt(0).toUpperCase() + categoria.slice(1) : 'Productos';
+            const subcategoriaTitle = subcategoria ? ` - ${subcategoria.charAt(0).toUpperCase() + subcategoria.slice(1)}` : '';
+            
+            res.render('productos', {
+                productos: productosFiltrados,
+                categoria: categoriaTitle + subcategoriaTitle,
+                totalProductos: productosFiltrados.length
+            });
+        } catch (error) {
+            console.error('Error al filtrar productos:', error);
+            res.render('productos', {
+                productos: [],
+                categoria: 'Productos',
+                totalProductos: 0
+            });
+        }
     },    
     detail:async (req, res) => {
         try {

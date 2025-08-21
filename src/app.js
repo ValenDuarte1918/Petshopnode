@@ -43,15 +43,16 @@ app.use(methodOverride('_method'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Rutas - DEBEN ir antes de app.listen()
+app.use('/', mainRouter)
+app.use('/users', userRouter)  // Cambié de '/user' a '/users'
+app.use('/productos', productRouter)  // Ruta específica para productos
+app.use('/', productRouter)
+app.use('/admin', adminRouter)
 
 app.listen(3000, ()=>{
     console.log("Servidor corriendo en el puerto 3000")
 })
-
-app.use('/', mainRouter)
-app.use('/user', userRouter)
-app.use('/', productRouter)
-app.use('/admin', adminRouter)
 
 
 

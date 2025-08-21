@@ -1,0 +1,219 @@
+<%- include('partials/header', { page: 'productos' }) %>
+
+<main class="productos-main">
+  <div class="container">
+    <!-- Header de la sección -->
+    <div class="productos-header">
+      <div class="breadcrumb">
+        <a href="/" class="breadcrumb-link">
+          <i class="fas fa-home"></i> Inicio
+        </a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current"><%= categoria %></span>
+      </div>
+      
+      <h1 class="productos-title">
+        <i class="fas fa-paw"></i>
+        <%= categoria %>
+      </h1>
+      
+      <p class="productos-subtitle">
+        Encontramos <%= totalProductos %> producto<%= totalProductos !== 1 ? 's' : '' %> para ti
+      </p>
+    </div>
+
+    <!-- Filtros y ordenamiento -->
+    <div class="productos-filters">
+      <div class="filters-left">
+        <div class="filter-group">
+          <label for="ordenar">Ordenar por:</label>
+          <select id="ordenar" class="filter-select">
+            <option value="relevancia">Relevancia</option>
+            <option value="precio-menor">Menor precio</option>
+            <option value="precio-mayor">Mayor precio</option>
+            <option value="nombre">Nombre A-Z</option>
+            <option value="stock">Disponibilidad</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="marcas">Marca:</label>
+          <select id="marcas" class="filter-select">
+            <option value="">Todas las marcas</option>
+            <% if (productos.length > 0) { %>
+              <% const marcas = [...new Set(productos.map(p => p.brand).filter(Boolean))]; %>
+              <% marcas.forEach(marca => { %>
+                <option value="<%= marca %>"><%= marca %></option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+      </div>
+      
+      <div class="filters-right">
+        <div class="view-toggle">
+          <button class="view-btn active" data-view="grid">
+            <i class="fas fa-th"></i>
+          </button>
+          <button class="view-btn" data-view="list">
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid de productos -->
+    <div class="productos-grid" id="productosGrid">
+      <% if (productos && productos.length > 0) { %>
+        <% productos.forEach(producto => { %>
+          <article class="producto-card" data-marca="<%= producto.brand || '' %>" data-precio="<%= producto.precio %>">
+            <div class="card-image">
+              <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'">
+              <% if (producto.stock && producto.stock < 5) { %>
+                <span class="stock-badge low-stock">¡Últimas <%= producto.stock %>!</span>
+              <% } else if (!producto.stock || producto.stock === 0) { %>
+                <span class="stock-badge out-stock">Sin stock</span>
+              <% } %>
+              <div class="card-overlay">
+                <a href="/productos/detalle/<%= producto.id %>" class="btn-ver-detalle">
+                  <i class="fas fa-eye"></i> Ver detalle
+                </a>
+                <button class="btn-add-cart" data-id="<%= producto.id %>">
+                  <i class="fas fa-shopping-cart"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="card-content">
+              <% if (producto.brand) { %>
+                <span class="producto-marca"><%= producto.brand %></span>
+              <% } %>
+              <h3 class="producto-nombre">
+                <a href="/productos/detalle/<%= producto.id %>"><%= producto.nombre %></a>
+              </h3>
+              <p class="producto-descripcion"><%= producto.descripcion %></p>
+              
+              <div class="producto-footer">
+                <div class="precio-container">
+                  <span class="precio-actual">$<%= Number(producto.precio).toLocaleString('es-AR') %></span>
+                </div>
+                
+                <% if (producto.stock && producto.stock > 0) { %>
+                  <button class="btn-comprar" data-id="<%= producto.id %>">
+                    <i class="fas fa-cart-plus"></i> Agregar
+                  </button>
+                <% } else { %>
+                  <button class="btn-comprar disabled" disabled>
+                    <i class="fas fa-times"></i> Sin stock
+                  </button>
+                <% } %>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      <% } else { %>
+        <div class="no-productos">
+          <div class="no-productos-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3>No se encontraron productos</h3>
+          <p>No hay productos disponibles en esta categoría en este momento.</p>
+          <a href="/" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Volver al inicio
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<!-- CSS específico para productos -->
+<link rel="stylesheet" href="/css/productos.css">
+
+<!-- JavaScript para funcionalidad -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Funcionalidad de filtros
+    const ordenarSelect = document.getElementById('ordenar');
+    const marcasSelect = document.getElementById('marcas');
+    const grid = document.getElementById('productosGrid');
+    
+    function aplicarFiltros() {
+        const orden = ordenarSelect.value;
+        const marcaSeleccionada = marcasSelect.value;
+        const productos = Array.from(grid.querySelectorAll('.producto-card'));
+        
+        // Filtrar por marca
+        productos.forEach(producto => {
+            const marca = producto.dataset.marca;
+            if (!marcaSeleccionada || marca === marcaSeleccionada) {
+                producto.style.display = 'block';
+            } else {
+                producto.style.display = 'none';
+            }
+        });
+        
+        // Ordenar productos visibles
+        const productosVisibles = productos.filter(p => p.style.display !== 'none');
+        
+        productosVisibles.sort((a, b) => {
+            switch(orden) {
+                case 'precio-menor':
+                    return parseFloat(a.dataset.precio) - parseFloat(b.dataset.precio);
+                case 'precio-mayor':
+                    return parseFloat(b.dataset.precio) - parseFloat(a.dataset.precio);
+                case 'nombre':
+                    return a.querySelector('.producto-nombre a').textContent.localeCompare(
+                        b.querySelector('.producto-nombre a').textContent
+                    );
+                default:
+                    return 0;
+            }
+        });
+        
+        // Reorganizar en el DOM
+        productosVisibles.forEach(producto => {
+            grid.appendChild(producto);
+        });
+    }
+    
+    ordenarSelect.addEventListener('change', aplicarFiltros);
+    marcasSelect.addEventListener('change', aplicarFiltros);
+    
+    // Toggle de vista
+    const viewBtns = document.querySelectorAll('.view-btn');
+    viewBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            viewBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const view = this.dataset.view;
+            grid.className = view === 'list' ? 'productos-grid list-view' : 'productos-grid';
+        });
+    });
+    
+    // Funcionalidad del carrito
+    const addCartBtns = document.querySelectorAll('.btn-add-cart, .btn-comprar:not(.disabled)');
+    addCartBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.dataset.id;
+            
+            // Simulación de agregar al carrito
+            this.innerHTML = '<i class="fas fa-check"></i> Agregado';
+            this.classList.add('success');
+            
+            setTimeout(() => {
+                if (this.classList.contains('btn-add-cart')) {
+                    this.innerHTML = '<i class="fas fa-shopping-cart"></i>';
+                } else {
+                    this.innerHTML = '<i class="fas fa-cart-plus"></i> Agregar';
+                }
+                this.classList.remove('success');
+            }, 2000);
+        });
+    });
+});
+</script>
+
+<%- include('partials/footer') %>

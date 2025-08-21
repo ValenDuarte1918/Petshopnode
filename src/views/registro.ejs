@@ -1,85 +1,253 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/registro.css">
-    <title>PetShop Innovador - Home</title>
-</head>
-<body>
-    <%- include('partials/header') %> 
-    <h1>Registro de Usuario</h1>
-    <main class="main">  
-        <ul class="errores"></ul> 
-        <form action="/user/registro" method="POST" enctype="multipart/form-data">
-        <h2>Registrate</h2>
-        <div class="textbox">
-            <i class="fas fa-user"></i>
-            <label  for="nombre">Nombre:</label>
-        <input class="errors" value="<%= locals.old? old.nombre: null %>" type="text" id="nombre" name="nombre">
-                 <% if(locals.errors && errors.nombre){ %>
-                    <div style='color:red'>
-                   <p><%= errors.nombre.msg %></p>
-                    </div>
-        <% } %>
-        </div>
-        <div class="textbox">
-            <i class="fas fa-user"></i>
-            <label for="apellido">Apellido:</label>
-        <input value="<%= locals.old? old.apellido: null %>" type="text" id="apellido" name="apellido">
-                 <% if(locals.errors && errors.apellido){ %>
-                    <div style='color:red'>
-                   <p><%= errors.apellido.msg %></p>
-                    </div>
-                    
-        <% } %>
-        </div>
-        <div class="textbox">
-            <i class="fas fa-envelope"></i>
-            <label for="correo">Correo Electrónico:</label>
-        <input value="<%= locals.old? old.correo: null %>" type="email" id="correo" name="correo">
-        <% if(locals.errors && errors.correo){ %>
-            <div style='color:red'>
-            <p><%= errors.correo.msg %></p>
-</div>
-<% } %>
+<%- include('partials/header', { page: 'registro' }) %>
+
+<!-- Main Content -->
+<main class="registro-main">
+  <div class="registro-container">
+    <!-- Header Section -->
+    <div class="registro-header">
+      <div class="registro-icon">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <h1 class="registro-title">Crear Cuenta</h1>
+      <p class="registro-subtitle">Únete a nuestra comunidad de amantes de las mascotas</p>
+    </div>
+
+    <!-- Form Section -->
+    <div class="registro-form-container">
+      <form action="/users/registro" method="POST" enctype="multipart/form-data" class="registro-form">
         
-        <div class="textbox">
-            <i class="fas fa-lock"></i>
-            <input value="<%= locals.old? old.contrasena: null %>" type="password" id="contrasena" name="contrasena">
-            <% if(locals.errors && errors.contrasena){ %>
-                <div style='color:red'>
-                    <p><%= errors.contrasena.msg %></p>
-    </div>
-    <% } %>
+        <!-- Personal Info Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fas fa-user"></i>
+            Información Personal
+          </h3>
+          
+          <div class="form-row">
+            <div class="input-group">
+              <label for="nombre" class="input-label">
+                <i class="fas fa-user"></i>
+                Nombre
+              </label>
+              <input 
+                type="text" 
+                id="nombre" 
+                name="nombre" 
+                class="form-input <%= locals.errors && errors.nombre ? 'error' : '' %>"
+                value="<%= locals.old ? old.nombre : '' %>"
+                placeholder="Ingresa tu nombre"
+                required
+              >
+              <% if(locals.errors && errors.nombre) { %>
+                <div class="error-message">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <%= errors.nombre.msg %>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="input-group">
+              <label for="apellido" class="input-label">
+                <i class="fas fa-user"></i>
+                Apellido
+              </label>
+              <input 
+                type="text" 
+                id="apellido" 
+                name="apellido" 
+                class="form-input <%= locals.errors && errors.apellido ? 'error' : '' %>"
+                value="<%= locals.old ? old.apellido : '' %>"
+                placeholder="Ingresa tu apellido"
+                required
+              >
+              <% if(locals.errors && errors.apellido) { %>
+                <div class="error-message">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <%= errors.apellido.msg %>
+                </div>
+              <% } %>
+            </div>
+          </div>
         </div>
-        <label for="categoria">Categoria:</label>
-        <select id="categoria" name="categoria">
-            <option value="">Seleccionar categoria</option>
-            <% let categorias = ['Administrador', 'Cliente'] %>
-            <% for(let categoria of categorias) {%>
-                <option value="<%= categoria %>" <%= locals.old && (categoria == old.categoria)? 'selected' : null %>><%= categoria %></option>
-                <% } %>
-            <!-- Agrega más opciones de países aquí -->
-        </select>
-        <% if(locals.errors && errors.categoria){ %>
-            <div style='color:red'>
-                <p><%= errors.categoria.msg %></p>
-</div>
-<% } %>
-<div>
-<label for="foto_perfil">Foto de Perfil:</label>
-<input type="file" id="foto_perfil" name="foto_perfil">
-<% if(locals.errors && errors.foto_perfil){ %>
-    <div style='color:red'>
-        <p><%= errors.foto_perfil.msg %></p>
-</div>
-<% } %>
-        <input class="btn" type="submit" name="" value="Registrarse">
-        <a href="/user/login">¿Ya tienes cuenta? Inicia sesión</a>
+
+        <!-- Account Info Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fas fa-envelope"></i>
+            Información de Cuenta
+          </h3>
+          
+          <div class="input-group">
+            <label for="correo" class="input-label">
+              <i class="fas fa-envelope"></i>
+              Correo Electrónico
+            </label>
+            <input 
+              type="email" 
+              id="correo" 
+              name="correo" 
+              class="form-input <%= locals.errors && errors.correo ? 'error' : '' %>"
+              value="<%= locals.old ? old.correo : '' %>"
+              placeholder="ejemplo@correo.com"
+              required
+            >
+            <% if(locals.errors && errors.correo) { %>
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <%= errors.correo.msg %>
+              </div>
+            <% } %>
+          </div>
+
+          <div class="input-group">
+            <label for="contrasena" class="input-label">
+              <i class="fas fa-lock"></i>
+              Contraseña
+            </label>
+            <input 
+              type="password" 
+              id="contrasena" 
+              name="contrasena" 
+              class="form-input <%= locals.errors && errors.contrasena ? 'error' : '' %>"
+              placeholder="Mínimo 8 caracteres"
+              required
+            >
+            <% if(locals.errors && errors.contrasena) { %>
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <%= errors.contrasena.msg %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Profile Info Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fas fa-camera"></i>
+            Foto de Perfil
+          </h3>
+          
+          <div class="input-group">
+            <label for="foto_perfil" class="input-label">
+              <i class="fas fa-camera"></i>
+              Foto de Perfil (Opcional)
+            </label>
+            <div class="file-input-wrapper">
+              <input 
+                type="file" 
+                id="foto_perfil" 
+                name="foto_perfil" 
+                class="file-input"
+                accept="image/*"
+              >
+              <label for="foto_perfil" class="file-label">
+                <i class="fas fa-upload"></i>
+                Seleccionar imagen
+              </label>
+            </div>
+            <% if(locals.errors && errors.foto_perfil) { %>
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <%= errors.foto_perfil.msg %>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Campo oculto para tipo de usuario -->
+          <input type="hidden" name="categoria" value="Cliente">
+        </div>
+
+        <!-- Submit Section -->
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-user-plus"></i>
+            Crear Cuenta
+          </button>
+          
+          <div class="login-link">
+            ¿Ya tienes cuenta? 
+            <a href="/users/login" class="link-primary">
+              Inicia sesión aquí
+            </a>
+          </div>
+        </div>
+      </form>
     </div>
-    </form>
-    </main>    
-    <%- include('partials/footer') %>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/js/registroValidations.js"></script>
-</body>
+
+    <!-- Benefits Section -->
+    <div class="benefits-section">
+      <h3 class="benefits-title">
+        <i class="fas fa-star"></i>
+        Beneficios de crear tu cuenta
+      </h3>
+      <div class="benefits-grid">
+        <div class="benefit-item">
+          <i class="fas fa-shopping-cart"></i>
+          <span>Compras más rápidas</span>
+        </div>
+        <div class="benefit-item">
+          <i class="fas fa-heart"></i>
+          <span>Lista de favoritos</span>
+        </div>
+        <div class="benefit-item">
+          <i class="fas fa-bell"></i>
+          <span>Ofertas exclusivas</span>
+        </div>
+        <div class="benefit-item">
+          <i class="fas fa-history"></i>
+          <span>Historial de pedidos</span>
+        </div>
+        <div class="benefit-item">
+          <i class="fas fa-shipping-fast"></i>
+          <span>Envío gratuito</span>
+        </div>
+        <div class="benefit-item">
+          <i class="fas fa-gift"></i>
+          <span>Puntos de recompensa</span>
+        </div>
+      </div>
+      
+      <div class="user-type-info">
+        <p>
+          <i class="fas fa-info-circle"></i>
+          Te registrarás como <strong>Cliente</strong> con acceso completo a la tienda
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+
+<!-- Scripts -->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/registroValidations.js"></script>
+<script>
+  // Preview de imagen
+  document.getElementById('foto_perfil').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const label = document.querySelector('.file-label');
+    
+    if (file) {
+      label.innerHTML = `<i class="fas fa-check"></i> ${file.name}`;
+      label.classList.add('file-selected');
+    } else {
+      label.innerHTML = '<i class="fas fa-upload"></i> Seleccionar imagen';
+      label.classList.remove('file-selected');
+    }
+  });
+
+  // Validación en tiempo real
+  document.querySelectorAll('.form-input, .form-select').forEach(input => {
+    input.addEventListener('input', function() {
+      if (this.classList.contains('error')) {
+        this.classList.remove('error');
+        const errorMsg = this.parentNode.querySelector('.error-message');
+        if (errorMsg) {
+          errorMsg.style.display = 'none';
+        }
+      }
+    });
+  });
+</script>
