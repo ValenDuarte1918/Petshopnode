@@ -11,6 +11,15 @@
   <% if (typeof page !== 'undefined' && page === 'home') { %>
     <link rel="stylesheet" href="/css/home.css">
     <title>🐾 PetShop Innovador - Todo para tu mascota</title>
+  <% } else if (typeof page !== 'undefined' && page === 'detail') { %>
+    <link rel="stylesheet" href="/css/detail.css">
+    <title>PetShop Innovador - Detalle del Producto</title>
+  <% } else if (typeof page !== 'undefined' && page === 'productos') { %>
+    <link rel="stylesheet" href="/css/productos.css">
+    <title>PetShop Innovador - Productos</title>
+  <% } else if (typeof page !== 'undefined' && page === 'carrito') { %>
+    <link rel="stylesheet" href="/css/carrito.css">
+    <title>PetShop Innovador - Carrito de Compras</title>
   <% } else if (typeof page !== 'undefined' && page === 'login') { %>
     <link rel="stylesheet" href="/css/login.css">
     <title>PetShop Innovador - Iniciar Sesión</title>
@@ -20,6 +29,24 @@
   <% } else { %>
     <title>PetShop Innovador</title>
   <% } %>
+  
+  <!-- Variables globales para JavaScript -->
+  <script>
+    window.petshopConfig = {
+      isLoggedIn: <%= locals.isLoggedIn ? 'true' : 'false' %>,
+      userInfo: {
+        <% if (locals.isLoggedIn && locals.userLogged) { %>
+          firstName: '<%= userLogged.firstName %>',
+          email: '<%= userLogged.email %>',
+          category: '<%= userLogged.category %>'
+        <% } else { %>
+          firstName: null,
+          email: null,
+          category: null
+        <% } %>
+      }
+    };
+  </script>
 </head>
 <body>
 
@@ -207,4 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+</header>
 
+<!-- Incluir Hero Banner en todas las páginas -->
+<%- include('hero-banner') %>

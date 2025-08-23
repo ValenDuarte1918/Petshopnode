@@ -288,5 +288,27 @@
     "stock": 78,
     "borrado": false,
     "destacado": false
+  },
+  {
+    "id": 21,
+    "name": "prueba de producto-3",
+    "price": 50,
+    "description": "prueba de producto",
+    "category": "Gatos",
+    "stock": 5,
+    "image": "default.jpg",
+    "destacado": false,
+    "borrado": false
+  },
+  {
+    "id": 22,
+    "name": "prueba de producto-4",
+    "price": 100,
+    "description": "prueba",
+    "category": "Juguetes",
+    "stock": 10,
+    "image": "default.jpg",
+    "destacado": false,
+    "borrado": false
   }
 ]

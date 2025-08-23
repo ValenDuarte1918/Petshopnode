@@ -41,6 +41,7 @@ const controller = {
             // Usar datos JSON temporalmente
             const listaProductos = getProductos();
             let productFound = listaProductos.find(producto => producto.id == req.params.id);
+            
             if (productFound) {
                 // Mapear los datos para que coincidan con la estructura esperada
                 productFound = {
@@ -52,11 +53,35 @@ const controller = {
                     color: productFound.color,
                     precio: productFound.price
                 };
+
+                // Obtener productos relacionados de la misma categoría (máximo 4)
+                const productosRelacionados = listaProductos
+                    .filter(producto => 
+                        producto.category === productFound.categoria && 
+                        producto.id != productFound.id
+                    )
+                    .slice(0, 4)
+                    .map(producto => ({
+                        id: producto.id,
+                        nombre: producto.name,
+                        descripcion: producto.description,
+                        img: producto.image,
+                        categoria: producto.category,
+                        color: producto.color,
+                        precio: producto.price
+                    }));
+
+                console.log(`🔗 Productos relacionados encontrados: ${productosRelacionados.length}`);
+                
+                return res.render('detail', { 
+                    producto: productFound, 
+                    productosRelacionados: productosRelacionados 
+                });
             }
-            return res.render('detail', { producto: productFound || {} });
+            return res.render('detail', { producto: {}, productosRelacionados: [] });
         } catch (error) {
             console.error('Error al cargar producto:', error);
-            return res.render('detail', { producto: {} });
+            return res.render('detail', { producto: {}, productosRelacionados: [] });
         }
     },
    

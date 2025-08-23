@@ -1,0 +1,35 @@
+<!-- Hero Banner Section -->
+<section class="hero-banner">
+  <div class="banner-carousel">
+    <div class="banner-slide active">
+      <div class="banner-content">
+        <div class="container">
+          <div class="banner-text">
+            <span class="banner-tag">🏷️ Oferta Especial</span>
+            <h1 class="banner-title">
+              <span class="highlight">50% OFF</span> en Alimentos Premium
+            </h1>
+            <p class="banner-subtitle">Royal Canin, Pro Plan y más marcas líderes</p>
+            <div class="banner-buttons">
+              <a href="/productos/categoria/alimentos" class="btn btn-primary">
+                <i class="fas fa-utensils"></i> Ver Ofertas
+              </a>
+              <% if (typeof page !== 'undefined' && page === 'home') { %>
+                <a href="#categorias" class="btn btn-outline">
+                  <i class="fas fa-arrow-down"></i> Explorar
+                </a>
+              <% } else { %>
+                <a href="/" class="btn btn-outline">
+                  <i class="fas fa-home"></i> Ir al Inicio
+                </a>
+              <% } %>
+            </div>
+          </div>
+          <div class="banner-image">
+            <img src="/images/home/hero-main.jpg" alt="Mascotas Felices - Todo lo que necesitan" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -55,29 +55,91 @@ const adminController = {
     const productos = getProductos();
     const productosActivos = productos.filter(p => !p.borrado); // Solo productos no borrados
     
+    // Estadísticas de usuarios
+    const usuariosRecientes = usuarios.filter(u => {
+      // Considerar usuarios de los últimos 30 días como recientes
+      if (!u.fechaRegistro) return false;
+      const fechaRegistro = new Date(u.fechaRegistro);
+      const hace30Dias = new Date();
+      hace30Dias.setDate(hace30Dias.getDate() - 30);
+      return fechaRegistro >= hace30Dias;
+    });
+
+    // Estadísticas de productos por categoría
+    const productosPorCategoria = productosActivos.reduce((acc, producto) => {
+      const categoria = producto.category || 'Sin categoría';
+      acc[categoria] = (acc[categoria] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Productos más populares (simulado basado en ID más bajo = más antiguo = más popular)
+    const productosPopulares = productosActivos
+      .sort((a, b) => a.id - b.id)
+      .slice(0, 5);
+
+    // Valor total del inventario
+    const valorInventario = productosActivos.reduce((total, producto) => {
+      const precio = parseFloat(producto.precio) || 0;
+      const stock = parseInt(producto.stock) || 0;
+      return total + (precio * stock);
+    }, 0);
+
+    // Productos con stock crítico (menos de 5 unidades)
+    const stockCritico = productosActivos.filter(p => {
+      const stock = parseInt(p.stock) || 0;
+      return stock > 0 && stock < 5;
+    });
+
     const stats = {
+      // Usuarios
       totalUsuarios: usuarios.length,
-      totalProductos: productosActivos.length, // Contar solo productos activos
-      clientesRegulares: usuarios.filter(u => u.category === 'Cliente').length,
+      clientesRegulares: usuarios.filter(u => (u.category || 'Cliente') === 'Cliente').length,
       administradores: usuarios.filter(u => u.category === 'Administrador').length,
+      usuariosRecientes: usuariosRecientes.length,
+      
+      // Productos
+      totalProductos: productosActivos.length,
       productosActivos: productosActivos.filter(p => (p.stock || 0) > 0).length,
-      productosSinStock: productosActivos.filter(p => (p.stock || 0) === 0).length
+      productosSinStock: productosActivos.filter(p => (p.stock || 0) === 0).length,
+      stockCritico: stockCritico.length,
+      
+      // Financiero
+      valorInventario: valorInventario.toFixed(2),
+      
+      // Categorías
+      productosPorCategoria,
+      categoriaPopular: Object.keys(productosPorCategoria).reduce((a, b) => 
+        productosPorCategoria[a] > productosPorCategoria[b] ? a : b, 'N/A'
+      ),
+      
+      // Crecimiento (simulado)
+      crecimientoUsuarios: usuariosRecientes.length > 0 ? '+' + Math.round((usuariosRecientes.length / usuarios.length) * 100) + '%' : '0%',
+      eficienciaStock: productosActivos.length > 0 ? Math.round((productosActivos.filter(p => (p.stock || 0) > 0).length / productosActivos.length) * 100) + '%' : '0%'
     };
 
     res.render('admin/dashboard', { 
       user: req.session.userLogged,
       stats,
-      usuarios: usuarios.slice(0, 5), // Últimos 5 usuarios
-      productos: productosActivos.slice(0, 5) // Últimos 5 productos activos
+      usuarios: usuarios.slice(-5).reverse(), // Últimos 5 usuarios registrados
+      productos: productosActivos.slice(-5).reverse(), // Últimos 5 productos agregados
+      productosPopulares,
+      stockCritico: stockCritico.slice(0, 5) // Top 5 productos con stock crítico
     });
   },
 
   // Gestión de usuarios
   usuarios: (req, res) => {
     const usuarios = getUsuarios();
+    
+    // Asegurar que todos los usuarios tengan una categoría
+    const usuariosConCategoria = usuarios.map(usuario => ({
+      ...usuario,
+      category: usuario.category || 'Cliente'
+    }));
+    
     res.render('admin/usuarios', { 
       user: req.session.userLogged,
-      usuarios 
+      usuarios: usuariosConCategoria 
     });
   },
 

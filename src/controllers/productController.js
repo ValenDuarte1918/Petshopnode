@@ -94,11 +94,58 @@ const controller ={
                 totalProductos: 0
             });
         }
-    },    
+    },
+    
+    mascota: async (req, res) => {
+        try {
+            const { mascota } = req.params;
+            const productos = getProductos();
+            
+            // Filtrar productos por subcategoría (tipo de mascota)
+            const mascotaCapitalized = mascota.charAt(0).toUpperCase() + mascota.slice(1);
+            const productosFiltrados = productos
+                .filter(producto => !producto.borrado)
+                .filter(producto => 
+                    producto.subcategory && 
+                    producto.subcategory.toLowerCase() === mascota.toLowerCase()
+                );
+            
+            // Mapear los datos para que coincidan con la estructura esperada
+            const productosMappeados = productosFiltrados.map(producto => ({
+                id: producto.id,
+                nombre: producto.name,
+                descripcion: producto.description,
+                img: producto.image,
+                categoria: producto.category,
+                subcategoria: producto.subcategory,
+                brand: producto.brand,
+                color: producto.color,
+                precio: producto.price,
+                stock: producto.stock
+            }));
+            
+            console.log(`🐕 Productos encontrados para ${mascotaCapitalized}: ${productosMappeados.length}`);
+            
+            res.render('productos', {
+                productos: productosMappeados,
+                categoria: `Productos para ${mascotaCapitalized}`,
+                totalProductos: productosMappeados.length
+            });
+        } catch (error) {
+            console.error('Error al filtrar productos por mascota:', error);
+            res.render('productos', {
+                productos: [],
+                categoria: 'Productos',
+                totalProductos: 0
+            });
+        }
+    },
+    
     detail:async (req, res) => {
         try {
             const productos = getProductos();
             let productFound = productos.find(producto => producto.id == req.params.id);
+            
             if (productFound) {
                 // Mapear los datos para que coincidan con la estructura esperada
                 productFound = {
@@ -110,11 +157,35 @@ const controller ={
                     color: productFound.color,
                     precio: productFound.price
                 };
+
+                // Obtener productos relacionados de la misma categoría (máximo 4)
+                const productosRelacionados = productos
+                    .filter(producto => 
+                        producto.category === productFound.categoria && 
+                        producto.id != productFound.id
+                    )
+                    .slice(0, 4)
+                    .map(producto => ({
+                        id: producto.id,
+                        nombre: producto.name,
+                        descripcion: producto.description,
+                        img: producto.image,
+                        categoria: producto.category,
+                        color: producto.color,
+                        precio: producto.price
+                    }));
+
+                console.log(`🔗 Productos relacionados encontrados: ${productosRelacionados.length}`);
+                
+                return res.render('detail', { 
+                    producto: productFound, 
+                    productosRelacionados: productosRelacionados 
+                });
             }
-            return res.render('detail', { producto: productFound || {} });
+            return res.render('detail', { producto: {}, productosRelacionados: [] });
         } catch (error) {
             console.error('Error al cargar producto:', error);
-            return res.render('detail', { producto: {} });
+            return res.render('detail', { producto: {}, productosRelacionados: [] });
         }
     },
     crear: async (req, res) => {
@@ -178,31 +249,39 @@ const controller ={
             } */
         },
         editProcess: async(req,res)=>{
+            console.log('🔄 editProcess - Iniciando edición...');
+            console.log('🔄 Session ID:', req.sessionID);
+            console.log('🔄 Usuario logueado:', req.session.userLogged ? 'SÍ' : 'NO');
+            console.log('🔄 Usuario email:', req.session.userLogged?.email);
+            
             let producto = await db.Producto.findAll();
             let categoria = await db.Categoria.findAll();
             let errors = validationResult(req)  
 
             let productFound = await db.Producto.findByPk(req.params.id);
 
-
-            if (errors.isEmpty()) {db.Producto.update({
-                nombre: req.body.nombre,
-                descripcion: req.body.descripcion,
-                precio: req.body.precio,
-                img: req.file ? req.file.image : 'logo.png',  
-                categoria_id: req.body.categoria,
-    
-            }, { where: { id: req.params.id } })
-            return res.redirect('/' + req.params.id)}
-            else {
+            if (errors.isEmpty()) {
+                console.log('✅ Sin errores de validación - Actualizando producto...');
+                
+                await db.Producto.update({
+                    nombre: req.body.nombre,
+                    descripcion: req.body.descripcion,
+                    precio: req.body.precio,
+                    img: req.file ? req.file.filename : productFound.img,  
+                    categoria_id: req.body.categoria,
+                }, { where: { id: req.params.id } });
+                
+                console.log('✅ Producto actualizado exitosamente');
+                console.log('🔄 Session después de update - ID:', req.sessionID);
+                console.log('🔄 Usuario después de update:', req.session.userLogged ? 'SÍ' : 'NO');
+                
+                // Redireccionar a la lista de productos del admin
+                return res.redirect('/admin/productos');
+            } else {
+                console.log('❌ Errores de validación encontrados:', errors.array());
                 let productFound = await db.Producto.findByPk(req.params.id);
-                return res.render("editar", { errores:errors.array(),categoria:categoria, producto: producto })
+                return res.render("editar", { errores:errors.array(),categoria:categoria, producto: productFound })
             } 
-
-/* 
-            fs.writeFileSync(path.join(__dirname,'../data/productData.json'),JSON.stringify(productsList,null,2),'utf-8')
-            res.redirect('/') */
-
         },
         add: function (req, res) {
             res.render('create')  

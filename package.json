@@ -10,7 +10,8 @@
     "mysql2": "^3.6.3",
     "nodemon": "^3.0.1",
     "sequelize": "^6.35.0",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "session-file-store": "^1.5.0"
   },
   "name": "grupo_7_petshop",
   "description": "![Logo del Pethshop](./logo_petshop.gif)",

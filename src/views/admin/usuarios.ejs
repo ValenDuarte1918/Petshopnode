@@ -330,14 +330,15 @@
                                 </td>
                                 <td><%= usuario.email %></td>
                                 <td>
-                                    <span class="user-role role-<%= usuario.category.toLowerCase() %>">
-                                        <%= usuario.category %>
+                                    <% const userCategory = usuario.category || 'Cliente'; %>
+                                    <span class="user-role role-<%= userCategory.toLowerCase() %>">
+                                        <%= userCategory %>
                                     </span>
                                 </td>
                                 <td>
                                     <div class="actions-cell">
                                         <% if (usuario.id !== user.id) { %>
-                                            <% if (usuario.category === 'Cliente') { %>
+                                            <% if ((usuario.category || 'Cliente') === 'Cliente') { %>
                                                 <form action="/admin/usuarios/<%= usuario.id %>/role?_method=PUT" method="POST" style="display: inline;">
                                                     <input type="hidden" name="newRole" value="Administrador">
                                                     <button type="submit" class="btn-action btn-promote" title="Hacer Administrador" onclick="return confirm('¿Convertir en administrador?')">

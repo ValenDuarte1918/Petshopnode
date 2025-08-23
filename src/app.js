@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
 const path = require("path");
 const methodOverride = require('method-override');
@@ -9,22 +10,57 @@ const userRouter = require('./routes/usersRoutes')
 const productRouter = require('./routes/productRouter')
 const adminRouter = require('./routes/adminRoutes')
 
-// Configuración de sesiones mejorada
+// Manejo de errores de sesión EPERM
+process.on('uncaughtException', (err) => {
+    if (err.code === 'EPERM' && err.path && err.path.includes('sessions')) {
+        console.log('⚠️ Error de permisos en sesiones (ignorado):', err.message);
+        return; // Continuar sin crash
+    }
+    console.error('💥 Error crítico:', err);
+    process.exit(1);
+});
+
+// Configuración de sesiones con almacenamiento persistente
 app.use(session({
+    store: new FileStore({
+        path: './sessions',
+        ttl: 60 * 60 * 24, // 24 horas
+        retries: 3,
+        factor: 2,
+        minTimeout: 100,
+        maxTimeout: 1000,
+        reapInterval: 60 * 60, // Limpiar archivos expirados cada hora
+        logFn: function() {
+            // Deshabilitar completamente los logs del FileStore
+            // para evitar mensajes confusos
+        },
+        fileExtension: '.json',
+        encoding: 'utf8',
+        encoder: JSON.stringify,
+        decoder: JSON.parse
+    }),
     secret: 'petshop-innovador-secret-key-2025',
-    resave: false,
+    resave: false, // No forzar guardado con FileStore
     saveUninitialized: false,
     name: 'petshop.session',
+    rolling: true, // Renovar sesión en cada request
     cookie: {
         maxAge: 1000 * 60 * 60 * 24, // 24 horas
         secure: false, // Para desarrollo local (no HTTPS)
-        httpOnly: true, // Más seguro - no accesible desde JavaScript
+        httpOnly: true, // Prevenir acceso desde JavaScript del cliente
         sameSite: 'lax'
     }
 }));
 
 // Middleware para hacer la sesión disponible en todas las vistas
 app.use((req, res, next) => {
+    // Debug solo para rutas de edición y admin
+    if (req.url.includes('/admin') || req.url.includes('/edit')) {
+        console.log(`📊 [${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+        console.log(`📊 Session ID: ${req.sessionID}`);
+        console.log(`📊 Usuario logueado: ${req.session.userLogged ? req.session.userLogged.email : 'NO'}`);
+    }
+    
     res.locals.userLogged = req.session.userLogged;
     res.locals.isLoggedIn = !!req.session.userLogged;
     

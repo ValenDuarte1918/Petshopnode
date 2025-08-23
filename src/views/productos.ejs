@@ -175,10 +175,32 @@ document.addEventListener('DOMContentLoaded', function() {
         productosVisibles.forEach(producto => {
             grid.appendChild(producto);
         });
+        
+        // Verificar si queda un solo producto visible después del filtro
+        checkSingleProduct();
     }
     
     ordenarSelect.addEventListener('change', aplicarFiltros);
     marcasSelect.addEventListener('change', aplicarFiltros);
+    
+    // Verificar si hay un solo producto y ajustar el grid
+    function checkSingleProduct() {
+        const productCards = grid.querySelectorAll('.producto-card');
+        const visibleCards = Array.from(productCards).filter(card => 
+            card.style.display !== 'none'
+        );
+        
+        if (visibleCards.length === 1) {
+            grid.classList.add('single-product');
+            console.log('Se agregó la clase single-product');
+        } else {
+            grid.classList.remove('single-product');
+            console.log('Se removió la clase single-product');
+        }
+    }
+    
+    // Ejecutar al cargar la página
+    checkSingleProduct();
     
     // Toggle de vista
     const viewBtns = document.querySelectorAll('.view-btn');
@@ -188,7 +210,13 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
             
             const view = this.dataset.view;
-            grid.className = view === 'list' ? 'productos-grid list-view' : 'productos-grid';
+            if (view === 'list') {
+                grid.className = 'productos-grid list-view';
+            } else {
+                grid.className = 'productos-grid';
+                // Verificar nuevamente si hay un solo producto
+                checkSingleProduct();
+            }
         });
     });
     

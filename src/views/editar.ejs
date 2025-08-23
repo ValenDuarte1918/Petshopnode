@@ -12,7 +12,7 @@
   <%- include('partials/header') %>
     <div class="mobile-container">
       <main>
-        <form class="form-editar" action="/producto/edit/<%=producto.id %>" method="post"
+        <form class="form-editar" action="/admin/productos/editar/<%=producto.id %>?_method=PUT" method="POST"
           enctype="multipart/form-data">
           <label for="producto_id">ID </label>
           <select type="select" class="producto_id" name="producto_id" id="producto_id">
@@ -26,28 +26,24 @@
           <label for="nombre">Nombre del producto</label>
             <input type="text" id="nombre" name="nombre" value="<%=producto.nombre %>" >
             <label for="descripcion">Descripcion:</label>
-            <input type="text" name="description" id="description" value="<%=producto.descripcion %>" >
+            <input type="text" name="descripcion" id="descripcion" value="<%=producto.descripcion %>" >
             <label for="precio">Precio: </label>
             <input type="text" id="precio" name="precio" value="<%=producto.precio %>">
             <label for="img">Imagen: </label>
-            <input type="file" name="image" id="image" class="width:200px height: 200px" value="<%= producto.image %>" >
+            <input type="file" name="imagen" id="imagen" class="width:200px height: 200px">
             <label for="categoria">Categoria</label>
-            <select name="category" value="<%= producto.category%>">
-            <option value="perros">Perros</option>
-            <option value="gatos">Gatos</option>
-            <option value="aves">Aves</option>
+            <select name="categoria" id="categoria">
+            <option value="perros" <%= producto.categoria === 'perros' ? 'selected' : '' %>>Perros</option>
+            <option value="gatos" <%= producto.categoria === 'gatos' ? 'selected' : '' %>>Gatos</option>
+            <option value="aves" <%= producto.categoria === 'aves' ? 'selected' : '' %>>Aves</option>
             </select>
-            <label for="color">Color</label>
-            <select value=<%= producto.color %> name="color">
-                <option value="blanco">Blanco</option>
-                <option value="negro">Negro</option>
-                <option value="gris">Gris</option>
-                </select>
-                <button type="submit">Modifcar Producto</button>
+            <label for="stock">Stock</label>
+            <input type="number" id="stock" name="stock" value="<%=producto.stock || 0 %>">
+                <button type="submit">Modificar Producto</button>
         </form>
 
-        <form action='/producto/delete/<%= producto.id %>?_method=delete'  method="post">
-            <button type="submit">Eliminar Producto</button>
+        <form action='/admin/productos/<%= producto.id %>?_method=DELETE'  method="POST">
+            <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este producto?')">Eliminar Producto</button>
         </form>
 
     </main>

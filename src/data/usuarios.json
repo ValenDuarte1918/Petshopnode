@@ -32,7 +32,7 @@
     "lastName": "López",
     "email": "ana@example.com",
     "password": "contraseña123",
-    "category": "Administrador",
+    "category": "Cliente",
     "image": "imagen4.jpg"
   },
   {
@@ -88,51 +88,6 @@
     "password": "contraseña123",
     "category": "Cliente",
     "image": "imagen10.jpg"
-  },
-  {
-    "id": 11,
-    "nombre": "liliana elisa",
-    "apellido": "engel",
-    "correo": "lili@gmail.com",
-    "contrasena": "$2a$10$gI2BOJpwQNyxhRibm8rapugA813YrR6iBooARoGZBj2jsTeQRsU.2",
-    "categoria": "Administrador",
-    "foto_perfil": "user-1695599737320.jpg"
-  },
-  {
-    "id": 12,
-    "nombre": "Valentin ",
-    "apellido": "duarte",
-    "correo": "isabel@example.com",
-    "contrasena": "$2a$10$uy3IqRgLTa7I9e7ySQZWBeY/yioKzCFXtIdEV3MGwXKpXLoQn.FLu",
-    "categoria": "Administrador",
-    "foto_perfil": "user-1700763481326.jpg"
-  },
-  {
-    "id": 13,
-    "nombre": "Valentin ",
-    "apellido": "duarte",
-    "correo": "valentinduarte1@hotmail.com",
-    "contrasena": "$2a$10$MOl0ApAIDCGCP1Z5.hQKd.eABDDjcG6vpSOvQFzrhYTa2o1PP69Ge",
-    "categoria": "Cliente",
-    "foto_perfil": "user-1700763608576.jpg"
-  },
-  {
-    "id": 14,
-    "nombre": "marcos valentin",
-    "apellido": "duarte",
-    "correo": "valentinduarte@hotmail.com",
-    "contrasena": "$2a$10$K1QM5kT7c/jfKBPfn0qg2eMsZ..go4ePvGpUDi9AdkUiqf5b3nmlq",
-    "categoria": "Cliente",
-    "foto_perfil": "user-1700765147274.jpg"
-  },
-  {
-    "id": 15,
-    "nombre": "marcos valentin",
-    "apellido": "duarte",
-    "correo": "valentin@hotmail.com",
-    "contrasena": "$2a$10$rd3iRjFb4JCaPslI42W/P.wMPhvqGsf1B/GDqI4l2PKtmWezn7EBm",
-    "categoria": "Cliente",
-    "foto_perfil": "user-1700765176463.jpg"
   },
   {
     "id": 16,

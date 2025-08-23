@@ -1,35 +1,518 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/detail.css">
-    <title>PetShop Innovador - Detalle del Producto</title>
-</head>
-<body>
-  <%- include('partials/header') %>
-    <div class="mobile-container">
-      <main>
-        <div class="product-card">
-          <img src="/images/products/<%= producto.img?producto.img:'logo.png' %>" id="imagen" alt="<%= producto.image %>" />
-          <div class="product-info">
-            <p class="id"><%= producto.id %></p>
-            <h2 id="nombre"><%= producto.nombre %></h2>
-            <p id="descripcion"><%= producto.descripcion %></p>
-            <p id="categoria">categoria: <%= producto.categoria %></p>
-            <p id="color">color disponible: <%= producto.color%></p>
-            <p id="precio">$<%= producto.precio %></p>
-            <form action="/carrito/add/<%= producto.id %>" method="POST" class="add-to-cart-form">
-              <button type="submit" class="add-to-cart-button">Añadir al carro</button>
-            </form>
-          </div>
-        </div>  
-      </main>
+<%- include('partials/header', { page: 'detail' }) %>
+
+<main class="product-detail-main">
+  <!-- Breadcrumb Navigation -->
+  <section class="breadcrumb-section">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/" class="breadcrumb-link">
+          <i class="fas fa-home"></i> Inicio
+        </a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="/productos" class="breadcrumb-link">Productos</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="/productos/categoria/<%= producto.categoria %>" class="breadcrumb-link">
+          <%= producto.categoria ? producto.categoria.charAt(0).toUpperCase() + producto.categoria.slice(1) : 'Productos' %>
+        </a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current"><%= producto.nombre %></span>
+      </nav>
     </div>
-    <script src="/js/agregarCarrito.js"></script>
-  </body>
-  <%- include('partials/footer') %>
-</html>
+  </section>
+
+  <!-- Product Detail Section -->
+  <section class="product-detail-section">
+    <div class="container">
+      <div class="product-detail-grid">
+        
+        <!-- Product Images -->
+        <div class="product-images">
+          <div class="main-image-container">
+            <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" 
+                 alt="<%= producto.nombre %>" 
+                 id="main-product-image"
+                 class="main-product-image" 
+                 onerror="this.src='/images/logo_petshop.jpeg'" />
+            
+            <!-- Image Zoom Overlay -->
+            <div class="image-zoom-trigger" title="Click para ampliar">
+              <i class="fas fa-search-plus"></i>
+            </div>
+            
+            <!-- Product Badges -->
+            <div class="product-badges">
+              <span class="badge badge-bestseller">🔥 Más Vendido</span>
+              <span class="badge badge-guarantee">✅ Garantía Premium</span>
+            </div>
+          </div>
+          
+          <!-- Thumbnail Images -->
+          <div class="thumbnail-images">
+            <div class="thumbnail active">
+              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 1">
+            </div>
+            <div class="thumbnail">
+              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 2">
+            </div>
+            <div class="thumbnail">
+              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 3">
+            </div>
+            <div class="thumbnail">
+              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 4">
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-info">
+          
+          <!-- Brand and Category -->
+          <div class="product-meta">
+            <span class="product-brand">PetShop Premium</span>
+            <span class="product-category">
+              <i class="fas fa-tag"></i>
+              <%= producto.categoria ? producto.categoria.charAt(0).toUpperCase() + producto.categoria.slice(1) : 'Productos' %>
+            </span>
+          </div>
+
+          <!-- Product Title -->
+          <h1 class="product-title" id="nombre"><%= producto.nombre %></h1>
+
+          <!-- Rating and Reviews -->
+          <div class="product-rating">
+            <div class="stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+            </div>
+            <span class="rating-score">4.8</span>
+            <span class="reviews-count">(234 reseñas)</span>
+            <a href="#reviews" class="write-review">Escribir reseña</a>
+          </div>
+
+          <!-- Price Section -->
+          <div class="price-section">
+            <div class="current-price">
+              <span class="price-label">Precio:</span>
+              <span class="price-amount" id="precio">$<%= Number(producto.precio).toLocaleString('es-AR') %></span>
+            </div>
+            <div class="price-benefits">
+              <div class="price-benefit">
+                <i class="fas fa-credit-card"></i>
+                <span>12 cuotas sin interés de $<%= Number(producto.precio / 12).toLocaleString('es-AR') %></span>
+              </div>
+              <div class="price-benefit">
+                <i class="fas fa-shipping-fast"></i>
+                <span>Envío GRATIS en compras +$45.000</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Options -->
+          <div class="product-options">
+            <% if (producto.color) { %>
+            <div class="option-group">
+              <label class="option-label">Color disponible:</label>
+              <div class="color-options">
+                <div class="color-option active" data-color="<%= producto.color %>">
+                  <span class="color-name" id="color"><%= producto.color %></span>
+                </div>
+              </div>
+            </div>
+            <% } %>
+
+            <div class="option-group">
+              <label class="option-label">Cantidad:</label>
+              <div class="quantity-selector">
+                <button type="button" class="quantity-btn decrease">-</button>
+                <input type="number" class="quantity-input" value="1" min="1" max="10">
+                <button type="button" class="quantity-btn increase">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add to Cart Section -->
+          <div class="add-to-cart-section">
+            <button type="button" 
+                    class="btn-add-to-cart"
+                    data-id="<%= producto.id %>"
+                    data-nombre="<%= producto.nombre %>"
+                    data-precio="<%= producto.precio %>"
+                    data-imagen="<%= producto.img %>">
+              <i class="fas fa-shopping-cart"></i>
+              Agregar al Carrito
+            </button>
+            
+            <div class="secondary-actions">
+              <button class="btn-wishlist" title="Agregar a favoritos">
+                <i class="far fa-heart"></i>
+                Favoritos
+              </button>
+              <button class="btn-compare" title="Comparar producto">
+                <i class="fas fa-balance-scale"></i>
+                Comparar
+              </button>
+              <button class="btn-share" title="Compartir producto">
+                <i class="fas fa-share-alt"></i>
+                Compartir
+              </button>
+            </div>
+          </div>
+
+          <!-- Delivery Information -->
+          <div class="delivery-info">
+            <h4>Información de Entrega</h4>
+            <div class="delivery-options">
+              <div class="delivery-option">
+                <i class="fas fa-truck"></i>
+                <div class="delivery-details">
+                  <strong>Envío a domicilio</strong>
+                  <span>3-5 días hábiles • Gratis en compras +$45.000</span>
+                </div>
+              </div>
+              <div class="delivery-option">
+                <i class="fas fa-store"></i>
+                <div class="delivery-details">
+                  <strong>Retiro en tienda</strong>
+                  <span>Disponible hoy • Gratis</span>
+                </div>
+              </div>
+              <div class="delivery-option">
+                <i class="fas fa-clock"></i>
+                <div class="delivery-details">
+                  <strong>Entrega el mismo día</strong>
+                  <span>CABA y GBA • $1.500</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="trust-badges">
+            <div class="trust-badge">
+              <i class="fas fa-shield-alt"></i>
+              <span>Garantía extendida</span>
+            </div>
+            <div class="trust-badge">
+              <i class="fas fa-undo"></i>
+              <span>30 días para cambios</span>
+            </div>
+            <div class="trust-badge">
+              <i class="fas fa-award"></i>
+              <span>Producto certificado</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Tabs Section -->
+  <section class="product-tabs-section">
+    <div class="container">
+      <div class="product-tabs">
+        <div class="tab-nav">
+          <button class="tab-button active" data-tab="description">Descripción</button>
+          <button class="tab-button" data-tab="specifications">Especificaciones</button>
+          <button class="tab-button" data-tab="reviews">Reseñas (234)</button>
+          <button class="tab-button" data-tab="shipping">Envío y Devoluciones</button>
+        </div>
+
+        <div class="tab-content">
+          <div class="tab-pane active" id="description">
+            <div class="description-content">
+              <h3>Descripción del Producto</h3>
+              <p id="descripcion"><%= producto.descripcion || 'Producto de alta calidad para el cuidado y bienestar de tu mascota. Fabricado con los mejores materiales y siguiendo estrictos estándares de calidad.' %></p>
+              
+              <div class="features-grid">
+                <div class="feature-item">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Ingredientes naturales y nutritivos</span>
+                </div>
+                <div class="feature-item">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Sin conservantes artificiales</span>
+                </div>
+                <div class="feature-item">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Recomendado por veterinarios</span>
+                </div>
+                <div class="feature-item">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Ideal para todas las razas</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane" id="specifications">
+            <div class="specifications-content">
+              <h3>Especificaciones Técnicas</h3>
+              <div class="specs-table">
+                <div class="spec-row">
+                  <span class="spec-label">ID del Producto:</span>
+                  <span class="spec-value" id="product-id"><%= producto.id %></span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Categoría:</span>
+                  <span class="spec-value" id="categoria"><%= producto.categoria || 'General' %></span>
+                </div>
+                <% if (producto.color) { %>
+                <div class="spec-row">
+                  <span class="spec-label">Color:</span>
+                  <span class="spec-value"><%= producto.color %></span>
+                </div>
+                <% } %>
+                <div class="spec-row">
+                  <span class="spec-label">Marca:</span>
+                  <span class="spec-value">PetShop Premium</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Garantía:</span>
+                  <span class="spec-value">12 meses</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane" id="reviews">
+            <div class="reviews-content">
+              <h3>Reseñas de Clientes</h3>
+              <!-- Reviews would be loaded here -->
+              <div class="review-summary">
+                <div class="rating-breakdown">
+                  <div class="overall-rating">
+                    <span class="rating-number">4.8</span>
+                    <div class="rating-stars">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <span class="rating-count">Basado en 234 reseñas</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane" id="shipping">
+            <div class="shipping-content">
+              <h3>Envío y Devoluciones</h3>
+              <div class="shipping-info-detailed">
+                <div class="shipping-section">
+                  <h4><i class="fas fa-truck"></i> Opciones de Envío</h4>
+                  <ul>
+                    <li>Envío estándar: 3-5 días hábiles - GRATIS en compras +$45.000</li>
+                    <li>Envío express: 1-2 días hábiles - $2.500</li>
+                    <li>Entrega el mismo día: CABA y GBA - $1.500</li>
+                  </ul>
+                </div>
+                <div class="return-section">
+                  <h4><i class="fas fa-undo"></i> Política de Devoluciones</h4>
+                  <ul>
+                    <li>30 días para devolver o cambiar</li>
+                    <li>Producto debe estar en condición original</li>
+                    <li>Devolución gratuita por defectos de fábrica</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Products Section -->
+  <section class="related-products-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Productos Relacionados</h2>
+        <p class="section-subtitle">
+          <% if (producto.categoria) { %>
+            Otros productos en <%= producto.categoria.charAt(0).toUpperCase() + producto.categoria.slice(1) %>
+          <% } else { %>
+            Otros productos que podrían interesarte
+          <% } %>
+        </p>
+      </div>
+      
+      <% if (typeof productosRelacionados !== 'undefined' && productosRelacionados.length > 0) { %>
+        <div class="related-products-grid">
+          <% productosRelacionados.forEach(productoRelacionado => { %>
+            <div class="related-product-card">
+              <a href="/productos/detalle/<%= productoRelacionado.id %>" class="product-link">
+                <div class="product-image">
+                  <img src="/images/products/<%= productoRelacionado.img %>" 
+                       alt="<%= productoRelacionado.nombre %>" 
+                       onerror="this.src='/images/logo_petshop.jpeg'">
+                  <div class="product-overlay">
+                    <i class="fas fa-eye"></i>
+                    <span>Ver detalle</span>
+                  </div>
+                </div>
+                <div class="product-info">
+                  <h4><%= productoRelacionado.nombre %></h4>
+                  <div class="product-price">$<%= Number(productoRelacionado.precio).toLocaleString('es-AR') %></div>
+                  <button class="btn-quick-add" 
+                          data-id="<%= productoRelacionado.id %>"
+                          data-nombre="<%= productoRelacionado.nombre %>"
+                          data-precio="<%= productoRelacionado.precio %>"
+                          data-imagen="<%= productoRelacionado.img %>"
+                          onclick="event.preventDefault(); event.stopPropagation();">
+                    <i class="fas fa-cart-plus"></i>
+                    Agregar
+                  </button>
+                </div>
+              </a>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div class="no-related-products">
+          <div class="empty-state">
+            <i class="fas fa-paw"></i>
+            <h3>No hay productos relacionados disponibles</h3>
+            <p>Te invitamos a explorar nuestro catálogo completo</p>
+            <a href="/productos" class="btn btn-primary">
+              <i class="fas fa-store"></i>
+              Ver todos los productos
+            </a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+</main>
+
+<%- include('partials/footer') %>
+
+<!-- Scripts -->
+<script src="/js/agregarCarrito.js"></script>
+<script>
+// Product Detail Functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Quantity selector - comentado porque agregarCarrito.js ya lo maneja
+  /*
+  const decreaseBtn = document.querySelector('.quantity-btn.decrease');
+  const increaseBtn = document.querySelector('.quantity-btn.increase');
+  const quantityInput = document.querySelector('.quantity-input');
+
+  decreaseBtn?.addEventListener('click', function() {
+    const currentValue = parseInt(quantityInput.value);
+    if (currentValue > 1) {
+      quantityInput.value = currentValue - 1;
+    }
+  });
+
+  increaseBtn?.addEventListener('click', function() {
+    const currentValue = parseInt(quantityInput.value);
+    const maxValue = parseInt(quantityInput.max) || 10;
+    if (currentValue < maxValue) {
+      quantityInput.value = currentValue + 1;
+    }
+  });
+  */
+
+  // Tab functionality
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const targetTab = this.dataset.tab;
+      
+      // Remove active class from all buttons and panes
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabPanes.forEach(pane => pane.classList.remove('active'));
+      
+      // Add active class to clicked button and corresponding pane
+      this.classList.add('active');
+      document.getElementById(targetTab)?.classList.add('active');
+    });
+  });
+
+  // Thumbnail image switching
+  const thumbnails = document.querySelectorAll('.thumbnail');
+  const mainImage = document.getElementById('main-product-image');
+
+  thumbnails.forEach(thumbnail => {
+    thumbnail.addEventListener('click', function() {
+      // Remove active class from all thumbnails
+      thumbnails.forEach(thumb => thumb.classList.remove('active'));
+      
+      // Add active class to clicked thumbnail
+      this.classList.add('active');
+      
+      // Change main image
+      const newImageSrc = this.querySelector('img').src;
+      mainImage.src = newImageSrc;
+    });
+  });
+
+  // Wishlist, compare, and share functionality
+  document.querySelector('.btn-wishlist')?.addEventListener('click', function() {
+    this.classList.toggle('active');
+    const icon = this.querySelector('i');
+    if (this.classList.contains('active')) {
+      icon.className = 'fas fa-heart';
+      showNotification('Agregado a favoritos ❤️');
+    } else {
+      icon.className = 'far fa-heart';
+      showNotification('Removido de favoritos');
+    }
+  });
+
+  // Share functionality
+  document.querySelector('.btn-share')?.addEventListener('click', function() {
+    if (navigator.share) {
+      navigator.share({
+        title: document.querySelector('.product-title').textContent,
+        text: 'Mira este producto increíble!',
+        url: window.location.href
+      });
+    } else {
+      // Fallback: copy URL to clipboard
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        showNotification('URL copiada al portapapeles 📋');
+      });
+    }
+  });
+});
+
+function showNotification(message) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  
+  // Style the notification
+  Object.assign(notification.style, {
+    position: 'fixed',
+    top: '20px',
+    right: '20px',
+    background: '#27AE60',
+    color: 'white',
+    padding: '15px 20px',
+    borderRadius: '8px',
+    zIndex: '9999',
+    fontSize: '14px',
+    fontWeight: '600'
+  });
+  
+  document.body.appendChild(notification);
+  
+  // Remove notification after 3 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+</script>
 
 
