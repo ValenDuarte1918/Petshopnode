@@ -174,7 +174,11 @@
                       <span class="discount">-23%</span>
                     <% } %>
                   </div>
-                  <button class="btn-add-cart" data-id="<%= producto.id %>">
+                  <button class="btn-add-cart" 
+                          data-id="<%= producto.id %>"
+                          data-nombre="<%= producto.nombre %>"
+                          data-precio="<%= producto.precio %>"
+                          data-imagen="<%= producto.img %>">
                     <i class="fas fa-cart-plus"></i>
                     Agregar al carrito
                   </button>
@@ -382,5 +386,8 @@
       this.reset();
     });
   </script>
+  
+  <!-- Carrito JavaScript -->
+  <script src="/js/agregarCarrito.js"></script>
 </body>
 </html>

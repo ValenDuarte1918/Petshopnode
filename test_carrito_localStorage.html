@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Carrito - localStorage</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { border: 2px solid #007bff; margin: 20px 0; padding: 15px; border-radius: 8px; }
+        .btn { padding: 10px 15px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test del Sistema de Carrito con localStorage</h1>
+    
+    <div class="test-section">
+        <h3>1. Agregar productos de prueba al localStorage</h3>
+        <button class="btn btn-primary" onclick="agregarProductosPrueba()">Agregar Productos de Prueba</button>
+        <button class="btn btn-danger" onclick="limpiarLocalStorage()">Limpiar localStorage</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Estado actual del localStorage</h3>
+        <button class="btn btn-primary" onclick="mostrarLocalStorage()">Mostrar localStorage</button>
+        <pre id="localStorage-content"></pre>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Ir al carrito</h3>
+        <a href="/carrito" class="btn btn-success">Ir a la página del carrito</a>
+    </div>
+    
+    <script>
+        function agregarProductosPrueba() {
+            const productosTest = [
+                {
+                    id: "test1",
+                    nombre: "Alimento Premium Perro Test",
+                    imagen: "imagen1.jpg",
+                    precio: 25000,
+                    descripcion: "Alimento de prueba para perros adultos",
+                    categoria: "alimentos",
+                    color: "marrón",
+                    cantidad: 2,
+                    subtotal: 50000
+                },
+                {
+                    id: "test2", 
+                    nombre: "Juguete Gato Test",
+                    imagen: "imagen2.jpg",
+                    precio: 15000,
+                    descripcion: "Juguete interactivo de prueba",
+                    categoria: "juguetes",
+                    color: "azul",
+                    cantidad: 1,
+                    subtotal: 15000
+                },
+                {
+                    id: "test3",
+                    nombre: "Collar Cuero Test",
+                    imagen: "collar.jpg", 
+                    precio: 18500,
+                    descripcion: "Collar de cuero premium de prueba",
+                    categoria: "accesorios",
+                    color: "negro",
+                    cantidad: 1,
+                    subtotal: 18500
+                }
+            ];
+            
+            localStorage.setItem('carrito', JSON.stringify(productosTest));
+            alert('✅ Productos de prueba agregados al localStorage');
+            mostrarLocalStorage();
+        }
+        
+        function limpiarLocalStorage() {
+            localStorage.removeItem('carrito');
+            alert('🗑️ localStorage limpiado');
+            document.getElementById('localStorage-content').textContent = 'localStorage vacío';
+        }
+        
+        function mostrarLocalStorage() {
+            const carrito = localStorage.getItem('carrito');
+            const contentDiv = document.getElementById('localStorage-content');
+            
+            if (carrito) {
+                try {
+                    const parsed = JSON.parse(carrito);
+                    contentDiv.textContent = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    contentDiv.textContent = 'Error al parsear: ' + carrito;
+                }
+            } else {
+                contentDiv.textContent = 'No hay datos en localStorage';
+            }
+        }
+        
+        // Mostrar estado inicial
+        document.addEventListener('DOMContentLoaded', mostrarLocalStorage);
+    </script>
+</body>
+</html>
