@@ -316,12 +316,14 @@ main {
 }
 
 .product-card-featured {
-  background: var(--white);
+  background: #FFFFFF !important; /* Forzar color blanco */
   border-radius: var(--card-border-radius);
   overflow: hidden;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important; /* Sombra más visible */
   transition: var(--transition);
   position: relative;
+  border: 2px solid #e0e0e0; /* Borde para hacer visible la card */
+  min-height: 400px; /* Altura mínima para debugging */
 }
 
 .product-card-featured:hover {

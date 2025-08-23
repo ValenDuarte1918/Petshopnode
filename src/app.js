@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const helmet = require('helmet');
+const cors = require('cors');
+require('dotenv').config();
 
 const path = require("path");
 const methodOverride = require('method-override');
@@ -9,6 +12,10 @@ const mainRouter = require('./routes/mainRouter')
 const userRouter = require('./routes/usersRoutes')
 const productRouter = require('./routes/productRouter')
 const adminRouter = require('./routes/adminRoutes')
+
+// Middlewares de seguridad
+const { generalLimiter } = require('./middlewares/rateLimiting');
+const { sanitizeInput, validateFileAccess, logSecurityEvent } = require('./middlewares/security');
 
 // Manejo de errores de sesión EPERM
 process.on('uncaughtException', (err) => {
@@ -19,6 +26,27 @@ process.on('uncaughtException', (err) => {
     console.error('💥 Error crítico:', err);
     process.exit(1);
 });
+
+// Configuración de seguridad con Helmet (CSP más permisivo para debugging)
+app.use(helmet({
+    contentSecurityPolicy: false, // Temporalmente deshabilitado para debugging
+    crossOriginEmbedderPolicy: false // Para compatibilidad con imágenes
+}));
+
+// CORS configuration
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' ? 'https://tu-dominio.com' : true,
+    credentials: true
+}));
+
+// Rate limiting general
+app.use(generalLimiter);
+
+// Middleware de sanitización
+app.use(sanitizeInput);
+
+// Trust proxy para obtener IP real (importante para rate limiting)
+app.set('trust proxy', 1);
 
 // Configuración de sesiones con almacenamiento persistente
 app.use(session({
@@ -39,14 +67,14 @@ app.use(session({
         encoder: JSON.stringify,
         decoder: JSON.parse
     }),
-    secret: 'petshop-innovador-secret-key-2025',
+    secret: process.env.SESSION_SECRET || 'petshop-fallback-secret-change-in-production',
     resave: false, // No forzar guardado con FileStore
     saveUninitialized: false,
     name: 'petshop.session',
     rolling: true, // Renovar sesión en cada request
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24, // 24 horas
-        secure: false, // Para desarrollo local (no HTTPS)
+        maxAge: parseInt(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24, // 24 horas
+        secure: process.env.NODE_ENV === 'production', // HTTPS en producción
         httpOnly: true, // Prevenir acceso desde JavaScript del cliente
         sameSite: 'lax'
     }
@@ -71,6 +99,21 @@ app.use((req, res, next) => {
     next();
 });
 
+
+// Middleware de validación de archivos estáticos aplicado selectivamente
+app.use((req, res, next) => {
+    const isStaticFile = req.path.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg|webp)$/i);
+    const isInPublicDir = req.path.startsWith('/css/') || 
+                         req.path.startsWith('/js/') || 
+                         req.path.startsWith('/images/');
+    
+    if (isStaticFile && !isInPublicDir) {
+        // Solo validar archivos estáticos que no estén en directorios permitidos
+        return validateFileAccess(req, res, next);
+    }
+    
+    next();
+});
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));

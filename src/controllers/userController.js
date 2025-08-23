@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs')
 const fs = require('fs');
 const path = require('path');
+const { logSecurityEvent, recordFailedAttempt, clearFailedAttempts } = require('../middlewares/security');
 // Comentamos temporalmente la conexión a la base de datos
 // const db = require("../database/models");
 // const Usuario = require('../database/models/Usuario');
@@ -44,6 +45,9 @@ const controller = {
                              bcrypt.compareSync(req.body.contraseña, userToLogin.password);
         
         if(isOkThePassword){
+          // Limpiar intentos fallidos
+          clearFailedAttempts(req);
+          
           // Guardar usuario en sesión
           req.session.userLogged = {
             id: userToLogin.id,
@@ -54,11 +58,29 @@ const controller = {
             image: userToLogin.image
           };
           
+          // Log de seguridad para login exitoso
+          logSecurityEvent('successful_login', {
+            userId: userToLogin.id,
+            email: userToLogin.email,
+            ip: req.ip,
+            userAgent: req.get('User-Agent')
+          });
+          
           console.log(`✅ Login exitoso: ${userToLogin.email} (${userToLogin.category})`);
           
           // Redirigir a la URL original o al home
           const redirectUrl = req.body.redirectUrl || '/';
           return res.redirect(redirectUrl);
+        } else {
+          // Registrar intento fallido de contraseña incorrecta
+          recordFailedAttempt(req);
+          
+          logSecurityEvent('failed_login', {
+            email: req.body.email,
+            reason: 'invalid_password',
+            ip: req.ip,
+            userAgent: req.get('User-Agent')
+          });
         }
         
         const redirectUrl = req.body.redirectUrl || null;
@@ -72,6 +94,16 @@ const controller = {
           redirectUrl
         })
       } else {
+        // Registrar intento fallido de email no encontrado
+        recordFailedAttempt(req);
+        
+        logSecurityEvent('failed_login', {
+          email: req.body.email,
+          reason: 'email_not_found',
+          ip: req.ip,
+          userAgent: req.get('User-Agent')
+        });
+        
         const redirectUrl = req.body.redirectUrl || null;
         res.render('login', {
           errors: {

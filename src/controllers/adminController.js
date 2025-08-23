@@ -318,6 +318,76 @@ const adminController = {
       user: req.session.userLogged,
       estadisticas 
     });
+  },
+
+  // Panel de seguridad
+  seguridad: (req, res) => {
+    // Leer logs de seguridad
+    const fs = require('fs');
+    const path = require('path');
+    
+    let securityLogs = [];
+    let securityStats = {
+      totalLoginAttempts: 0,
+      failedAttempts: 0,
+      successfulLogins: 0,
+      blockedIPs: 0
+    };
+    
+    try {
+      const logPath = path.join(__dirname, '../logs/security.log');
+      if (fs.existsSync(logPath)) {
+        const logContent = fs.readFileSync(logPath, 'utf-8');
+        const logLines = logContent.trim().split('\n');
+        
+        // Parsear logs y filtrar últimas 24 horas
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        securityLogs = logLines
+          .filter(line => line.trim())
+          .map(line => {
+            try {
+              return JSON.parse(line);
+            } catch (e) {
+              return null;
+            }
+          })
+          .filter(log => log && new Date(log.timestamp) >= yesterday)
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+          .slice(0, 50); // Últimos 50 eventos
+        
+        // Calcular estadísticas
+        securityStats.totalLoginAttempts = securityLogs.filter(log => 
+          log.event === 'failed_login' || log.event === 'successful_login'
+        ).length;
+        
+        securityStats.failedAttempts = securityLogs.filter(log => 
+          log.event === 'failed_login'
+        ).length;
+        
+        securityStats.successfulLogins = securityLogs.filter(log => 
+          log.event === 'successful_login'
+        ).length;
+        
+        // Contar IPs únicas con intentos fallidos
+        const failedIPs = new Set(
+          securityLogs
+            .filter(log => log.event === 'failed_login')
+            .map(log => log.data.ip)
+        );
+        securityStats.blockedIPs = failedIPs.size;
+        
+      }
+    } catch (error) {
+      console.error('Error leyendo logs de seguridad:', error);
+    }
+    
+    res.render('admin/seguridad', {
+      user: req.session.userLogged,
+      securityLogs,
+      securityStats
+    });
   }
 };
 

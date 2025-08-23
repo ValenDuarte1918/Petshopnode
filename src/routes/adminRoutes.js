@@ -3,9 +3,11 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 const upload = require('../middlewares/multerMiddleware');
 const uploadProduct = require('../middlewares/multerProductMiddleware');
+const { requireAdmin } = require('../middlewares/security');
+const { uploadLimiter } = require('../middlewares/rateLimiting');
 
 // Middleware para verificar que sea administrador en todas las rutas
-router.use(adminController.isAdmin);
+router.use(requireAdmin); // Reemplazamos adminController.isAdmin con el nuevo middleware
 
 // Dashboard principal
 router.get('/', adminController.dashboard);
@@ -26,5 +28,8 @@ router.delete('/productos/:id', adminController.deleteProduct);
 
 // Estadísticas
 router.get('/estadisticas', adminController.estadisticas);
+
+// Seguridad
+router.get('/seguridad', adminController.seguridad);
 
 module.exports = router;
