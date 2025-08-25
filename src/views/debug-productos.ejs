@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Productos por Categoría</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-box { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .product-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug: Productos Filtrados por Categoría</h1>
+    
+    <div class="debug-box">
+        <h3>📊 Información General</h3>
+        <p><strong>Categoría:</strong> <%= categoria || 'No definida' %></p>
+        <p><strong>Total Productos:</strong> <%= totalProductos || 0 %></p>
+        <p><strong>Productos Array Length:</strong> <%= productos ? productos.length : 'undefined' %></p>
+        <p><strong>Marcas Disponibles:</strong> <%= marcas ? marcas.length : 0 %></p>
+    </div>
+
+    <% if (productos && productos.length > 0) { %>
+        <div class="debug-box success">
+            <h3>✅ Productos Encontrados</h3>
+            <% productos.forEach((producto, index) => { %>
+                <div class="product-card">
+                    <h4>Producto #<%= index + 1 %></h4>
+                    <p><strong>ID:</strong> <%= producto.id || 'Sin ID' %></p>
+                    <p><strong>Nombre:</strong> <%= producto.nombre || 'Sin nombre' %></p>
+                    <p><strong>Descripción:</strong> <%= producto.descripcion || 'Sin descripción' %></p>
+                    <p><strong>Precio:</strong> $<%= producto.precio || 'Sin precio' %></p>
+                    <p><strong>Imagen:</strong> <%= producto.img || 'Sin imagen' %></p>
+                    <p><strong>Categoría:</strong> <%= producto.categoria || 'Sin categoría' %></p>
+                    <p><strong>Marca:</strong> <%= producto.brand || 'Sin marca' %></p>
+                    <p><strong>Stock:</strong> <%= producto.stock || 'Sin stock' %></p>
+                    <p><strong>Color:</strong> <%= producto.color || 'Sin color' %></p>
+                    
+                    <% if (producto.img) { %>
+                        <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" style="max-width: 150px; height: auto;" onerror="this.src='/images/logo_petshop.jpeg'">
+                    <% } %>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="debug-box error">
+            <h3>❌ No se encontraron productos</h3>
+            <p>El array de productos está vacío o no está definido.</p>
+            
+            <h4>Debugging adicional:</h4>
+            <pre>
+productos: <%= JSON.stringify(productos, null, 2) %>
+            </pre>
+        </div>
+    <% } %>
+
+    <div class="debug-box">
+        <h3>🔧 Enlaces de Prueba</h3>
+        <ul>
+            <li><a href="/productos">Todos los productos</a></li>
+            <li><a href="/productos/categoria/perros">Productos para Perros</a></li>
+            <li><a href="/productos/categoria/gatos">Productos para Gatos</a></li>
+            <li><a href="/">Volver al inicio</a></li>
+        </ul>
+    </div>
+</body>
+</html>

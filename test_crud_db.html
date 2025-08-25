@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test CRUD con Base de Datos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button { margin: 10px 5px; padding: 10px 15px; }
+        #results { margin-top: 20px; padding: 10px; background-color: #f5f5f5; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test CRUD con Base de Datos - Petshop</h1>
+    
+    <div class="test-section">
+        <h2>📋 Lista de Productos (READ)</h2>
+        <button onclick="testListProducts()">Obtener Lista de Productos</button>
+        <p class="info">Verifica que los productos se cargan desde la base de datos</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Detalle de Producto (READ)</h2>
+        <input type="number" id="productId" placeholder="ID del producto" value="1">
+        <button onclick="testProductDetail()">Ver Detalle del Producto</button>
+        <p class="info">Verifica que el detalle se carga desde la base de datos</p>
+    </div>
+
+    <div class="test-section">
+        <h2>➕ Crear Producto (CREATE)</h2>
+        <button onclick="goToCreateProduct()">Ir a Crear Producto (Admin)</button>
+        <p class="info">Redirige al formulario de crear producto (requiere autenticación admin)</p>
+    </div>
+
+    <div class="test-section">
+        <h2>✏️ Editar Producto (UPDATE)</h2>
+        <input type="number" id="editProductId" placeholder="ID del producto a editar" value="1">
+        <button onclick="goToEditProduct()">Ir a Editar Producto (Admin)</button>
+        <p class="info">Redirige al formulario de editar producto (requiere autenticación admin)</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🗑️ Eliminar Producto (DELETE)</h2>
+        <input type="number" id="deleteProductId" placeholder="ID del producto a eliminar">
+        <button onclick="goToDeleteProduct()">Ir a Eliminar Producto (Admin)</button>
+        <p class="info">Redirige a la función de eliminar producto (requiere autenticación admin)</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🏠 Navegación Rápida</h2>
+        <button onclick="goToHome()">Ir a Home</button>
+        <button onclick="goToProducts()">Ir a Productos</button>
+        <button onclick="goToLogin()">Ir a Login</button>
+        <button onclick="goToAdminDashboard()">Ir a Admin Dashboard</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const baseUrl = 'http://localhost:3000';
+        
+        function showResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            results.innerHTML += `<div class="${type}">[${timestamp}] ${message}</div>`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        async function testListProducts() {
+            try {
+                showResult('🔄 Probando lista de productos...', 'info');
+                const response = await fetch(`${baseUrl}/productos`);
+                
+                if (response.ok) {
+                    showResult('✅ Lista de productos cargada correctamente desde la BD', 'success');
+                    window.open(`${baseUrl}/productos`, '_blank');
+                } else {
+                    showResult(`❌ Error al cargar productos: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProductDetail() {
+            const productId = document.getElementById('productId').value;
+            if (!productId) {
+                showResult('❌ Por favor ingresa un ID de producto', 'error');
+                return;
+            }
+
+            try {
+                showResult(`🔄 Probando detalle del producto ID: ${productId}...`, 'info');
+                const response = await fetch(`${baseUrl}/productos/detail/${productId}`);
+                
+                if (response.ok) {
+                    showResult(`✅ Detalle del producto ${productId} cargado correctamente desde la BD`, 'success');
+                    window.open(`${baseUrl}/productos/detail/${productId}`, '_blank');
+                } else {
+                    showResult(`❌ Error al cargar detalle del producto: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        function goToCreateProduct() {
+            showResult('🔄 Redirigiendo a crear producto (requiere admin)...', 'info');
+            window.open(`${baseUrl}/admin/productos/crear`, '_blank');
+        }
+
+        function goToEditProduct() {
+            const productId = document.getElementById('editProductId').value;
+            if (!productId) {
+                showResult('❌ Por favor ingresa un ID de producto', 'error');
+                return;
+            }
+            showResult(`🔄 Redirigiendo a editar producto ID: ${productId} (requiere admin)...`, 'info');
+            window.open(`${baseUrl}/admin/productos/editar/${productId}`, '_blank');
+        }
+
+        function goToDeleteProduct() {
+            const productId = document.getElementById('deleteProductId').value;
+            if (!productId) {
+                showResult('❌ Por favor ingresa un ID de producto', 'error');
+                return;
+            }
+            showResult(`🔄 Redirigiendo a eliminar producto ID: ${productId} (requiere admin)...`, 'info');
+            window.open(`${baseUrl}/admin/productos/eliminar/${productId}`, '_blank');
+        }
+
+        function goToHome() {
+            window.open(`${baseUrl}/`, '_blank');
+        }
+
+        function goToProducts() {
+            window.open(`${baseUrl}/productos`, '_blank');
+        }
+
+        function goToLogin() {
+            window.open(`${baseUrl}/users/login`, '_blank');
+        }
+
+        function goToAdminDashboard() {
+            window.open(`${baseUrl}/admin/dashboard`, '_blank');
+        }
+
+        // Test inicial
+        window.onload = function() {
+            showResult('🚀 Test CRUD iniciado. Servidor en: ' + baseUrl, 'info');
+            showResult('ℹ️ Para probar CREATE, UPDATE y DELETE necesitas estar logueado como admin', 'info');
+        };
+    </script>
+</body>
+</html>

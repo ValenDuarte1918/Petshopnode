@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const db = require('../database/models');
 
 // Rutas de archivos
 const usuariosPath = path.join(__dirname, '../data/usuarios.json');
@@ -50,14 +51,32 @@ const adminController = {
   },
 
   // Dashboard principal del administrador
-  dashboard: (req, res) => {
-    const usuarios = getUsuarios();
-    const productos = getProductos();
-    const productosActivos = productos.filter(p => !p.borrado); // Solo productos no borrados
-    
-    // Estadísticas de usuarios
-    const usuariosRecientes = usuarios.filter(u => {
-      // Considerar usuarios de los últimos 30 días como recientes
+  dashboard: async (req, res) => {
+    try {
+      const usuarios = getUsuarios(); // Mantenemos JSON para usuarios por ahora
+      
+      // Obtener productos desde la base de datos
+      const productosDB = await db.Producto.findAll({
+        where: { borrado: false },
+        order: [['created_at', 'DESC']]
+      });
+      
+      const productos = productosDB.map(producto => ({
+        id: producto.id,
+        name: producto.name,
+        description: producto.description,
+        image: producto.image,
+        category: producto.category,
+        brand: producto.brand,
+        color: producto.color,
+        price: producto.price,
+        stock: producto.stock,
+        created_at: producto.created_at
+      }));
+      
+      // Estadísticas de usuarios
+      const usuariosRecientes = usuarios.filter(u => {
+        // Considerar usuarios de los últimos 30 días como recientes
       if (!u.fechaRegistro) return false;
       const fechaRegistro = new Date(u.fechaRegistro);
       const hace30Dias = new Date();
@@ -66,26 +85,26 @@ const adminController = {
     });
 
     // Estadísticas de productos por categoría
-    const productosPorCategoria = productosActivos.reduce((acc, producto) => {
+    const productosPorCategoria = productos.reduce((acc, producto) => {
       const categoria = producto.category || 'Sin categoría';
       acc[categoria] = (acc[categoria] || 0) + 1;
       return acc;
     }, {});
 
     // Productos más populares (simulado basado en ID más bajo = más antiguo = más popular)
-    const productosPopulares = productosActivos
+    const productosPopulares = productos
       .sort((a, b) => a.id - b.id)
       .slice(0, 5);
 
     // Valor total del inventario
-    const valorInventario = productosActivos.reduce((total, producto) => {
-      const precio = parseFloat(producto.precio) || 0;
+    const valorInventario = productos.reduce((total, producto) => {
+      const precio = parseFloat(producto.price) || 0;
       const stock = parseInt(producto.stock) || 0;
       return total + (precio * stock);
     }, 0);
 
     // Productos con stock crítico (menos de 5 unidades)
-    const stockCritico = productosActivos.filter(p => {
+    const stockCritico = productos.filter(p => {
       const stock = parseInt(p.stock) || 0;
       return stock > 0 && stock < 5;
     });
@@ -98,9 +117,9 @@ const adminController = {
       usuariosRecientes: usuariosRecientes.length,
       
       // Productos
-      totalProductos: productosActivos.length,
-      productosActivos: productosActivos.filter(p => (p.stock || 0) > 0).length,
-      productosSinStock: productosActivos.filter(p => (p.stock || 0) === 0).length,
+      totalProductos: productos.length,
+      productosActivos: productos.filter(p => (p.stock || 0) > 0).length,
+      productosSinStock: productos.filter(p => (p.stock || 0) === 0).length,
       stockCritico: stockCritico.length,
       
       // Financiero
@@ -114,17 +133,43 @@ const adminController = {
       
       // Crecimiento (simulado)
       crecimientoUsuarios: usuariosRecientes.length > 0 ? '+' + Math.round((usuariosRecientes.length / usuarios.length) * 100) + '%' : '0%',
-      eficienciaStock: productosActivos.length > 0 ? Math.round((productosActivos.filter(p => (p.stock || 0) > 0).length / productosActivos.length) * 100) + '%' : '0%'
+      eficienciaStock: productos.length > 0 ? Math.round((productos.filter(p => (p.stock || 0) > 0).length / productos.length) * 100) + '%' : '0%'
     };
 
     res.render('admin/dashboard', { 
       user: req.session.userLogged,
       stats,
       usuarios: usuarios.slice(-5).reverse(), // Últimos 5 usuarios registrados
-      productos: productosActivos.slice(-5).reverse(), // Últimos 5 productos agregados
+      productos: productos.slice(-5).reverse(), // Últimos 5 productos agregados
       productosPopulares,
       stockCritico: stockCritico.slice(0, 5) // Top 5 productos con stock crítico
     });
+    
+    } catch (error) {
+      console.error('❌ Error en dashboard admin:', error);
+      res.render('admin/dashboard', { 
+        user: req.session.userLogged,
+        stats: {
+          totalUsuarios: 0,
+          clientesRegulares: 0,
+          administradores: 0,
+          usuariosRecientes: 0,
+          totalProductos: 0,
+          productosActivos: 0,
+          productosSinStock: 0,
+          stockCritico: 0,
+          valorInventario: '0.00',
+          productosPorCategoria: {},
+          categoriaPopular: 'N/A',
+          crecimientoUsuarios: '0%',
+          eficienciaStock: '0%'
+        },
+        usuarios: [],
+        productos: [],
+        productosPopulares: [],
+        stockCritico: []
+      });
+    }
   },
 
   // Gestión de usuarios
@@ -175,13 +220,38 @@ const adminController = {
   },
 
   // Gestión de productos
-  productos: (req, res) => {
-    const productos = getProductos();
-    const productosActivos = productos.filter(p => !p.borrado); // Solo productos activos
-    res.render('admin/productos', { 
-      user: req.session.userLogged,
-      productos: productosActivos
-    });
+  productos: async (req, res) => {
+    try {
+      // Obtener productos desde la base de datos
+      const productosDB = await db.Producto.findAll({
+        where: { borrado: false },
+        order: [['created_at', 'DESC']]
+      });
+      
+      const productos = productosDB.map(producto => ({
+        id: producto.id,
+        name: producto.name,
+        description: producto.description,
+        image: producto.image,
+        category: producto.category,
+        brand: producto.brand,
+        color: producto.color,
+        price: producto.price,
+        stock: producto.stock,
+        created_at: producto.created_at
+      }));
+      
+      res.render('admin/productos', { 
+        user: req.session.userLogged,
+        productos: productos
+      });
+    } catch (error) {
+      console.error('❌ Error al obtener productos para admin:', error);
+      res.render('admin/productos', { 
+        user: req.session.userLogged,
+        productos: []
+      });
+    }
   },
 
   // Crear nuevo producto
@@ -192,13 +262,10 @@ const adminController = {
   },
 
   // Procesar creación de producto
-  createProductPost: (req, res) => {
+  createProductPost: async (req, res) => {
     try {
-      const productos = getProductos();
-      const newId = productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1;
-      
-      const newProduct = {
-        id: newId,
+      // Crear producto en la base de datos
+      const newProduct = await db.Producto.create({
         name: req.body.nombre || req.body.name,
         description: req.body.descripcion || req.body.description,
         category: req.body.categoria || req.body.category,
@@ -212,123 +279,188 @@ const adminController = {
         image: req.file ? req.file.filename : 'logo_petshop.jpeg',
         destacado: req.body.destacado === 'on' || req.body.destacado === 'true',
         borrado: false
-      };
+      });
       
-      productos.push(newProduct);
-      saveProductos(productos);
-      
+      console.log('✅ Producto creado en BD por admin:', newProduct.name);
       res.redirect('/admin/productos?created=true');
     } catch (error) {
       console.error('❌ Error en admin crear producto:', error);
       res.render('admin/crear-producto', { 
         user: req.session.userLogged,
-        error: 'Error al crear el producto'
+        error: 'Error al crear el producto: ' + error.message
       });
     }
   },
 
   // Editar producto
-  editProduct: (req, res) => {
-    const productId = parseInt(req.params.id);
-    const productos = getProductos();
-    const producto = productos.find(p => p.id === productId);
-    
-    if (!producto) {
+  editProduct: async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      
+      // Buscar producto en la base de datos
+      const productoDB = await db.Producto.findByPk(productId, {
+        where: { borrado: false }
+      });
+      
+      if (!productoDB) {
+        return res.status(404).render('error', { 
+          message: 'Producto no encontrado',
+          backUrl: '/admin/productos'
+        });
+      }
+      
+      // Mapear los campos de la BD a los nombres esperados en la vista
+      const productoMapeado = {
+        id: productoDB.id,
+        nombre: productoDB.name,
+        precio: productoDB.price,
+        descripcion: productoDB.description,
+        categoria: productoDB.category,
+        subcategoria: productoDB.subcategory,
+        marca: productoDB.brand,
+        color: productoDB.color,
+        peso: productoDB.peso,
+        edad: productoDB.edad,
+        stock: productoDB.stock || 0,
+        img: productoDB.image,
+        destacado: productoDB.destacado || false
+      };
+      
+      res.render('admin/editar-producto', { 
+        user: req.session.userLogged,
+        producto: productoMapeado
+      });
+    } catch (error) {
+      console.error('❌ Error al obtener producto para editar:', error);
       return res.status(404).render('error', { 
-        message: 'Producto no encontrado',
+        message: 'Error al cargar el producto',
         backUrl: '/admin/productos'
       });
     }
-
-    // Mapear los campos del JSON a los nombres esperados en la vista
-    const productoMapeado = {
-      id: producto.id,
-      nombre: producto.name,
-      precio: producto.price,
-      descripcion: producto.description,
-      categoria: producto.category,
-      stock: producto.stock || 0,
-      img: producto.image,
-      destacado: producto.destacado || false
-    };
-    
-    res.render('admin/editar-producto', { 
-      user: req.session.userLogged,
-      producto: productoMapeado
-    });
   },
 
   // Procesar edición de producto
-  editProductPost: (req, res) => {
-    const productId = parseInt(req.params.id);
-    let productos = getProductos();
-    const productIndex = productos.findIndex(p => p.id === productId);
-    
-    if (productIndex !== -1) {
-      // Mapear los campos del formulario al formato del JSON
-      productos[productIndex] = {
-        ...productos[productIndex],
+  editProductPost: async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      
+      // Buscar producto en la base de datos
+      const productoDB = await db.Producto.findByPk(productId, {
+        where: { borrado: false }
+      });
+      
+      if (!productoDB) {
+        return res.status(404).render('error', { 
+          message: 'Producto no encontrado',
+          backUrl: '/admin/productos'
+        });
+      }
+      
+      // Actualizar producto en la base de datos
+      await productoDB.update({
         name: req.body.nombre,
         price: parseFloat(req.body.precio),
         description: req.body.descripcion,
         category: req.body.categoria,
+        subcategory: req.body.subcategoria || productoDB.subcategory,
+        brand: req.body.marca || productoDB.brand,
+        color: req.body.color || productoDB.color,
+        peso: req.body.peso || productoDB.peso,
+        edad: req.body.edad || productoDB.edad,
         stock: parseInt(req.body.stock) || 0,
-        image: req.file ? req.file.filename : productos[productIndex].image,
+        image: req.file ? req.file.filename : productoDB.image,
         destacado: req.body.destacado === 'on'
-      };
+      });
       
-      saveProductos(productos);
+      console.log('✅ Producto actualizado en BD por admin:', productoDB.name);
+      res.redirect('/admin/productos');
+    } catch (error) {
+      console.error('❌ Error en admin editar producto:', error);
+      res.redirect('/admin/productos?error=edit');
     }
-    
-    res.redirect('/admin/productos');
   },
 
   // Eliminar producto
-  deleteProduct: (req, res) => {
-    const productId = parseInt(req.params.id);
-    let productos = getProductos();
-    
-    productos = productos.filter(p => p.id !== productId);
-    saveProductos(productos);
-    
-    res.redirect('/admin/productos');
+  deleteProduct: async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      
+      // Buscar y eliminar producto en la base de datos (marcado como borrado)
+      const productoDB = await db.Producto.findByPk(productId);
+      
+      if (!productoDB) {
+        return res.status(404).json({ error: 'Producto no encontrado' });
+      }
+      
+      // Marcar como borrado en lugar de eliminar físicamente
+      await productoDB.update({ borrado: true });
+      
+      console.log('✅ Producto eliminado (marcado como borrado) en BD por admin:', productoDB.name);
+      res.redirect('/admin/productos');
+    } catch (error) {
+      console.error('❌ Error en admin eliminar producto:', error);
+      res.redirect('/admin/productos?error=delete');
+    }
   },
 
   // Estadísticas avanzadas
-  estadisticas: (req, res) => {
-    const usuarios = getUsuarios();
-    const productos = getProductos();
-    
-    const estadisticas = {
-      usuarios: {
-        total: usuarios.length,
-        porCategoria: {
-          clientes: usuarios.filter(u => u.category === 'Cliente').length,
-          administradores: usuarios.filter(u => u.category === 'Administrador').length
+  estadisticas: async (req, res) => {
+    try {
+      const usuarios = getUsuarios(); // Mantenemos JSON para usuarios
+      
+      // Obtener productos desde la base de datos
+      const productosDB = await db.Producto.findAll({
+        where: { borrado: false }
+      });
+      
+      const productos = productosDB.map(producto => ({
+        id: producto.id,
+        name: producto.name,
+        category: producto.category,
+        price: producto.price,
+        stock: producto.stock
+      }));
+      
+      const estadisticas = {
+        usuarios: {
+          total: usuarios.length,
+          porCategoria: {
+            clientes: usuarios.filter(u => u.category === 'Cliente').length,
+            administradores: usuarios.filter(u => u.category === 'Administrador').length
+          },
+          registrosPorMes: {} // Aquí podrías agregar lógica para agrupar por fecha
         },
-        registrosPorMes: {} // Aquí podrías agregar lógica para agrupar por fecha
-      },
-      productos: {
-        total: productos.length,
-        porCategoria: {},
-        stockTotal: productos.reduce((sum, p) => sum + p.stock, 0),
-        valorInventario: productos.reduce((sum, p) => sum + (p.precio * p.stock), 0)
-      }
-    };
-    
-    // Calcular productos por categoría
-    productos.forEach(p => {
-      if (estadisticas.productos.porCategoria[p.categoria]) {
-        estadisticas.productos.porCategoria[p.categoria]++;
-      } else {
-        estadisticas.productos.porCategoria[p.categoria] = 1;
-      }
-    });
-    
-    res.render('admin/estadisticas', { 
-      user: req.session.userLogged,
-      estadisticas 
-    });
+        productos: {
+          total: productos.length,
+          porCategoria: {},
+          stockTotal: productos.reduce((sum, p) => sum + p.stock, 0),
+          valorInventario: productos.reduce((sum, p) => sum + (p.price * p.stock), 0)
+        }
+      };
+      
+      // Calcular productos por categoría
+      productos.forEach(p => {
+        if (estadisticas.productos.porCategoria[p.category]) {
+          estadisticas.productos.porCategoria[p.category]++;
+        } else {
+          estadisticas.productos.porCategoria[p.category] = 1;
+        }
+      });
+      
+      res.render('admin/estadisticas', { 
+        user: req.session.userLogged,
+        estadisticas 
+      });
+    } catch (error) {
+      console.error('❌ Error al obtener estadísticas:', error);
+      res.render('admin/estadisticas', { 
+        user: req.session.userLogged,
+        estadisticas: {
+          usuarios: { total: 0, porCategoria: {}, registrosPorMes: {} },
+          productos: { total: 0, porCategoria: {}, stockTotal: 0, valorInventario: 0 }
+        }
+      });
+    }
   },
 
   // Panel de seguridad
