@@ -9,7 +9,7 @@
     <title>PetShop Innovador - Home</title>
 </head>
 <body>
-  <%- include('partials/header') %>
+  <%- include('partials/header', { page: 'editar' }) %>
     <div class="mobile-container">
       <main>
         <form class="form-editar" action="/admin/productos/editar/<%=producto.id %>?_method=PUT" method="POST"

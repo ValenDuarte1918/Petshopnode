@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/carrito.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <title>🛒 PetShop Innovador - Carrito de Compras</title>
+</head>
+<body>
+    <%- include('partials/header', { page: 'carrito' }) %>
+
+    <main class="carrito-container">
+        <div class="carrito-header animate-fadeInUp">
+            <div class="back-button">
+                <a href="/" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Seguir Comprando
+                </a>
+            </div>
+            <h1><i class="fas fa-shopping-cart"></i> Mi Carrito de Compras</h1>
+        </div>
+
+        <!-- El contenido del carrito se carga dinámicamente con JavaScript -->
+        <div id="carrito-content">
+            <div class="carrito-loading animate-pulse">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Cargando carrito...</p>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="carrito-actions animate-fadeInUp" id="carrito-actions" style="display: none;">
+            <button type="button" class="btn-clear" onclick="vaciarCarrito()">
+                <i class="fas fa-trash"></i>
+                Vaciar Carrito
+            </button>
+            <button type="button" class="btn-checkout" onclick="procederAlPago()">
+                <i class="fas fa-credit-card"></i>
+                Proceder al Pago
+                <span class="total-checkout">$0</span>
+            </button>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+    
+    <!-- Solo cargar el JavaScript de localStorage, no el del servidor -->
+    <script src="/js/carrito-localStorage.js"></script>
+    <script src="/js/petshop-animations.js"></script>
+</body>
+</html>

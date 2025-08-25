@@ -1,28 +1,44 @@
 const rateLimit = require('express-rate-limit');
 
-// Rate limiting para login
+// Rate limiting para login (más permisivo en desarrollo)
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 5, // 5 intentos por IP
+    max: process.env.NODE_ENV === 'production' ? 5 : 50, // 50 intentos en dev, 5 en prod
     message: {
         error: 'Demasiados intentos de login. Intenta nuevamente en 15 minutos.',
         type: 'rate_limit_exceeded'
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: true // No contar requests exitosos
+    skipSuccessfulRequests: true, // No contar requests exitosos
+    skip: (req) => {
+        // En desarrollo, ser más permisivo con localhost
+        if (process.env.NODE_ENV !== 'production') {
+            const ip = req.ip || req.connection.remoteAddress;
+            return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+        }
+        return false;
+    }
 });
 
-// Rate limiting general
+// Rate limiting general (más permisivo en desarrollo)
 const generalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 100, // 100 requests por IP
+    max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 1000 requests en dev, 100 en prod
     message: {
         error: 'Demasiadas peticiones desde esta IP. Intenta nuevamente más tarde.',
         type: 'rate_limit_exceeded'
     },
     standardHeaders: true,
-    legacyHeaders: false
+    legacyHeaders: false,
+    skip: (req) => {
+        // En desarrollo, permitir localhost sin límites
+        if (process.env.NODE_ENV !== 'production') {
+            const ip = req.ip || req.connection.remoteAddress;
+            return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+        }
+        return false;
+    }
 });
 
 // Rate limiting para registro

@@ -1,44 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="/css/create.css">
-    <title>PetShop Innovador - Home</title>
+    <title>PetShop Innovador - Crear Producto</title>
 </head>
 <body>
-  <%- include('partials/header') %>
+  <%- include('partials/header', { page: 'create' }) %>
   
-      <main>
-        <ul class="errores"></ul> 
-        <form action="/producto/create" method="post" enctype="multipart/form-data">
-            <label for="name">Nombre del producto</label>
-            <input type="text" name="name" id="name" value="">
-            <label for="description">Descripcion:</label>
-            <input type="text" name="description" id="description">
-            <label for="price">Precio: </label>
-            <input type="number" name="price" id="price">
-            <label for="image">Imagen: <i class="fas fa-upload"></i></label>
-            <input type="file" name="img" id="img">
-            <label for="category">Categoria</label>
-            <select name="category">
-            <option value="perros">Perros</option>
-            <option value="gatos">Gatos</option>
-            <option value="aves">Aves</option>
-            </select>
-            <label for="color">Color</label>
-            <select name="color">
-                <option value="blanco">Blanco</option>
-                <option value="negro">Negro</option>
-                <option value="gris">Gris</option>
-                </select>
-                <button type="submit">Crear Producto</button>
-        </form>
-    </main>
+  <main>
+    <div class="create-container">
+      <h1><i class="fas fa-plus-circle"></i> Agregar Nuevo Producto</h1>
+      
+      <ul class="errores"></ul> 
+      
+      <form action="/producto/create" method="post" enctype="multipart/form-data" class="create-form">
+        
+        <!-- Información básica -->
+        <div class="form-section">
+          <h3><i class="fas fa-info-circle"></i> Información Básica</h3>
+          
+          <div class="form-group">
+            <label for="name">Nombre del producto *</label>
+            <input type="text" name="name" id="name" required placeholder="Ej: Royal Canin Adult 15kg">
+          </div>
+          
+          <div class="form-group">
+            <label for="description">Descripción *</label>
+            <textarea name="description" id="description" required placeholder="Descripción detallada del producto" rows="3"></textarea>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="brand">Marca *</label>
+              <input type="text" name="brand" id="brand" required placeholder="Ej: Royal Canin, Pro Plan">
+            </div>
+            
+            <div class="form-group">
+              <label for="price">Precio *</label>
+              <input type="number" name="price" id="price" required min="0" step="0.01" placeholder="0.00">
+            </div>
+          </div>
+        </div>
+
+        <!-- Categorización -->
+        <div class="form-section">
+          <h3><i class="fas fa-tags"></i> Categorización</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="category">Categoría *</label>
+              <select name="category" id="category" required>
+                <option value="">Seleccionar categoría</option>
+                <option value="Alimentos">Alimentos</option>
+                <option value="Juguetes">Juguetes</option>
+                <option value="Accesorios">Accesorios</option>
+                <option value="Higiene">Higiene y Cuidado</option>
+                <option value="Salud">Salud y Medicamentos</option>
+                <option value="Casas">Casas y Camas</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="subcategory">Mascota *</label>
+              <select name="subcategory" id="subcategory" required>
+                <option value="">Seleccionar mascota</option>
+                <option value="Perros">Perros</option>
+                <option value="Gatos">Gatos</option>
+                <option value="Aves">Aves</option>
+                <option value="Peces">Peces</option>
+                <option value="Roedores">Roedores</option>
+                <option value="General">General</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Características del producto -->
+        <div class="form-section">
+          <h3><i class="fas fa-cogs"></i> Características</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="color">Color</label>
+              <input type="text" name="color" id="color" placeholder="Ej: Natural, Azul, Rojo">
+            </div>
+            
+            <div class="form-group">
+              <label for="peso">Peso/Tamaño</label>
+              <input type="text" name="peso" id="peso" placeholder="Ej: 15kg, 500ml, Mediano">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edad">Edad objetivo</label>
+              <select name="edad" id="edad">
+                <option value="">No aplica</option>
+                <option value="Cachorro">Cachorro/Cría</option>
+                <option value="Adulto">Adulto</option>
+                <option value="Senior">Senior</option>
+                <option value="Todas">Todas las edades</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="stock">Stock inicial *</label>
+              <input type="number" name="stock" id="stock" required min="0" value="0" placeholder="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Imagen y opciones -->
+        <div class="form-section">
+          <h3><i class="fas fa-image"></i> Imagen y Opciones</h3>
+          
+          <div class="form-group">
+            <label for="img">Imagen del producto</label>
+            <input type="file" name="img" id="img" accept="image/*">
+            <small>Formatos permitidos: JPG, PNG, GIF</small>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" name="destacado" value="true">
+                <span class="checkmark"></span>
+                Producto destacado
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i> Cancelar
+          </button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Crear Producto
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
   
-    <script src="/js/createValidations.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  </body>
+  <script src="/js/createValidations.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <%- include('partials/footer') %>
+</body>
 </html>

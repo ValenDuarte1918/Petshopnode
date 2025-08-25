@@ -10,7 +10,6 @@ const storage = multer.diskStorage({
         cb(null, path.join(__dirname, "../../public/images"))
     },
     filename: (req, file, cb) => {
-        console.log(file)   
         const newFileName = "producto-" + Date.now() + path.extname(file.originalname)
         cb(null, newFileName)
     }   
@@ -20,6 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage})
 
 router.get('/', mainController.home)
+router.get('/productos', mainController.productos) // Nueva ruta para ver todos los productos
 router.get('/carrito', mainController.carrito)
 router.post('/carrito/add/:id', mainController.addToCart)
 router.put('/carrito/update/:id', mainController.updateCartItem)

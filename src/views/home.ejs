@@ -1,75 +1,121 @@
 <%- include('partials/header', { page: 'home' }) %>
 
-  <!-- Shop by Pet Section - Inspirado en PetSmart -->
-  <section class="shop-by-pet">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">🐾 Todo para tu Mascota en un Solo Lugar</h1>
+          <p class="hero-subtitle">Encuentra productos premium para perros, gatos, aves y peces. Calidad garantizada y envío gratis en compras superiores a $45.000</p>
+          <div class="hero-actions">
+            <a href="#categorias" class="btn btn-primary btn-lg">
+              <i class="fas fa-paw"></i> Explorar Productos
+            </a>
+            <a href="#ofertas" class="btn btn-outline-light btn-lg">
+              <i class="fas fa-tag"></i> Ver Ofertas
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat">
+              <strong>10,000+</strong>
+              <span>Clientes felices</span>
+            </div>
+            <div class="stat">
+              <strong>500+</strong>
+              <span>Productos premium</span>
+            </div>
+            <div class="stat">
+              <strong>24/48h</strong>
+              <span>Entrega rápida</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img src="/images/home/hero-pet.jpg" alt="Mascotas felices" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop by Pet Section -->
+  <section class="shop-by-pet" id="categorias">
     <div class="container">
       <div class="section-header text-center">
-        <h2 class="section-title">Compra por Mascota</h2>
-        <p class="section-subtitle">Todo lo que necesitas para tu compañero favorito</p>
+        <h2 class="section-title">🎯 Compra por Mascota</h2>
+        <p class="section-subtitle">Productos especializados para cada tipo de compañero</p>
       </div>
       
       <div class="pets-grid">
-        <a href="/productos/mascotas/perros" class="pet-card" data-aos="fade-up">
+        <a href="/productos/categoria/perros" class="pet-card large" data-aos="fade-up">
           <div class="pet-image">
             <img src="/images/home/dog-category.jpg" alt="Productos para Perros" />
+            <div class="pet-overlay">
+              <span class="pet-badge">+200 productos</span>
+              <span class="pet-discount">Hasta 30% OFF</span>
+            </div>
           </div>
           <div class="pet-content">
             <i class="fas fa-dog pet-icon"></i>
-            <h3>Perros</h3>
-            <p>Alimento, juguetes y accesorios</p>
+            <h3>🐕 Perros</h3>
+            <p>Alimentos, juguetes, accesorios y más</p>
+            <div class="pet-categories">
+              <span>Alimentos</span>
+              <span>Juguetes</span>
+              <span>Accesorios</span>
+            </div>
           </div>
         </a>
         
-        <a href="/productos/mascotas/gatos" class="pet-card" data-aos="fade-up" data-aos-delay="100">
+        <a href="/productos/categoria/gatos" class="pet-card" data-aos="fade-up" data-aos-delay="100">
           <div class="pet-image">
             <img src="/images/home/cat-category.jpg" alt="Productos para Gatos" />
+            <div class="pet-overlay">
+              <span class="pet-badge">+150 productos</span>
+            </div>
           </div>
           <div class="pet-content">
             <i class="fas fa-cat pet-icon"></i>
-            <h3>Gatos</h3>
-            <p>Arena, rascadores y más</p>
+            <h3>🐱 Gatos</h3>
+            <p>Arena, rascadores, comida especial</p>
+            <div class="pet-categories">
+              <span>Arena</span>
+              <span>Rascadores</span>
+              <span>Higiene</span>
+            </div>
           </div>
         </a>
         
-        <a href="/productos/mascotas/aves" class="pet-card" data-aos="fade-up" data-aos-delay="200">
+        <a href="/productos/categoria/aves" class="pet-card" data-aos="fade-up" data-aos-delay="200">
           <div class="pet-image">
             <img src="/images/home/toys-category.jpg" alt="Productos para Aves" />
           </div>
           <div class="pet-content">
             <i class="fas fa-dove pet-icon"></i>
-            <h3>Aves</h3>
-            <p>Jaulas, comida especializada</p>
+            <h3>🐦 Aves</h3>
+            <p>Jaulas, semillas, complementos</p>
+            <div class="pet-categories">
+              <span>Jaulas</span>
+              <span>Semillas</span>
+              <span>Accesorios</span>
+            </div>
           </div>
         </a>
         
-        <a href="/productos/mascotas/peces" class="pet-card" data-aos="fade-up" data-aos-delay="300">
+        <a href="/productos/categoria/peces" class="pet-card" data-aos="fade-up" data-aos-delay="300">
           <div class="pet-image">
             <img src="/images/home/food-category.jpg" alt="Productos para Peces" />
           </div>
           <div class="pet-content">
             <i class="fas fa-fish pet-icon"></i>
-            <h3>Peces</h3>
-            <p>Acuarios y alimentación</p>
+            <h3>🐠 Peces</h3>
+            <p>Acuarios, filtros, alimentación</p>
+            <div class="pet-categories">
+              <span>Acuarios</span>
+              <span>Filtros</span>
+              <span>Alimentos</span>
+            </div>
           </div>
         </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Special Offers Section - Inspirado en ofertas reales -->
-  <section class="special-offers">
-    <div class="container">
-      <div class="offers-banner">
-        <div class="offer-content">
-          <span class="offer-badge">OFERTA ESPECIAL</span>
-          <h2>15% OFF en marcas premium</h2>
-          <p>Cuando gastas $60.000+ en comida seleccionada*</p>
-          <a href="/productos/categoria/alimentos" class="btn btn-primary">Comprar Ahora</a>
-        </div>
-        <div class="offer-brands">
-          <img src="/images/home/brand-royal-canin.jpg" alt="Royal Canin" class="brand-logo">
-          <span class="offer-text">15% OFF próxima compra Royal Canin</span>
-        </div>
       </div>
     </div>
   </section>
@@ -110,66 +156,137 @@
     </div>
   </section>
 
-  <!-- Categories Section -->
-  <section class="categories-section" id="categorias">
+  <!-- Products by Pet Category -->
+  <section class="products-by-pet">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Categorías Destacadas</h2>
-        <p class="section-subtitle">Encuentra exactamente lo que buscas para tu mascota</p>
-      </div>
-      
-      <div class="categories-grid">
-        <a href="/productos/categoria/alimentos" class="category-card large" data-aos="fade-up">
-          <div class="category-image">
-            <img src="/images/home/food-category.jpg" alt="Alimentos Premium" />
-            <div class="category-overlay">
-              <span class="category-badge">+50 productos</span>
-              <span class="category-discount">Hasta 25% OFF</span>
+      <!-- Productos para Perros -->
+      <div class="pet-section" data-aos="fade-up">
+        <div class="pet-section-header">
+          <div class="pet-icon-large">
+            <i class="fas fa-dog"></i>
+          </div>
+          <div class="pet-section-content">
+            <h3>🐕 Lo Mejor para Perros</h3>
+            <p>Desde cachorros hasta adultos mayores, encuentra todo lo necesario</p>
+            <div class="pet-section-links">
+              <a href="/productos/categoria/perros/alimentos">Alimentos</a>
+              <a href="/productos/categoria/perros/juguetes">Juguetes</a>
+              <a href="/productos/categoria/perros/accesorios">Accesorios</a>
+              <a href="/productos/categoria/perros">Ver todos</a>
             </div>
           </div>
-          <div class="category-content">
-            <i class="fas fa-utensils category-icon"></i>
-            <h3>Alimentos Premium</h3>
-            <p>Nutrición completa para todas las edades</p>
-            <span class="category-link">Ver productos <i class="fas fa-arrow-right"></i></span>
-          </div>
-        </a>
+        </div>
         
-        <a href="/productos/categoria/accesorios" class="category-card" data-aos="fade-up" data-aos-delay="100">
-          <div class="category-image">
-            <img src="/images/home/dog-category.jpg" alt="Accesorios para Perros" />
+        <% if (listaProductos && listaProductos.length > 0) { %>
+          <div class="products-row">
+            <% 
+            const productosPerros = listaProductos.filter(p => p.categoria && p.categoria.toLowerCase().includes('perro')).slice(0, 4);
+            if (productosPerros.length === 0) {
+              productosPerros = listaProductos.slice(0, 4); // Fallback a primeros productos
+            }
+            %>
+            <% productosPerros.forEach((producto, index) => { %>
+              <div class="product-card-mini" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
+                <div class="product-image">
+                  <a href="/productos/detalle/<%= producto.id %>">
+                    <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
+                  </a>
+                  <% if (index === 0) { %>
+                    <span class="product-badge hot">🔥 Top</span>
+                  <% } %>
+                </div>
+                <div class="product-info-mini">
+                  <h4><a href="/productos/detalle/<%= producto.id %>"><%= producto.nombre %></a></h4>
+                  <div class="price">$<%= Number(producto.precio).toLocaleString('es-AR') %></div>
+                  <button class="btn-add-cart" 
+                          data-id="<%= producto.id %>"
+                          data-nombre="<%= producto.nombre %>"
+                          data-precio="<%= producto.precio %>"
+                          data-imagen="<%= producto.img %>">
+                    <i class="fas fa-cart-plus"></i>
+                  </button>
+                </div>
+              </div>
+            <% }); %>
           </div>
-          <div class="category-content">
-            <i class="fas fa-bone category-icon"></i>
-            <h3>Accesorios</h3>
-            <p>Collares, correas y más</p>
-            <span class="category-link">Explorar <i class="fas fa-arrow-right"></i></span>
+        <% } %>
+      </div>
+
+      <!-- Productos para Gatos -->
+      <div class="pet-section" data-aos="fade-up">
+        <div class="pet-section-header">
+          <div class="pet-icon-large">
+            <i class="fas fa-cat"></i>
           </div>
-        </a>
+          <div class="pet-section-content">
+            <h3>🐱 Especial para Gatos</h3>
+            <p>Arena, rascadores, comida premium y accesorios felinos</p>
+            <div class="pet-section-links">
+              <a href="/productos/categoria/gatos/alimentos">Alimentos</a>
+              <a href="/productos/categoria/gatos/higiene-y-salud">Arena</a>
+              <a href="/productos/categoria/gatos/juguetes">Rascadores</a>
+              <a href="/productos/categoria/gatos">Ver todos</a>
+            </div>
+          </div>
+        </div>
         
-        <a href="/productos/categoria/higiene" class="category-card" data-aos="fade-up" data-aos-delay="200">
-          <div class="category-image">
-            <img src="/images/home/cat-category.jpg" alt="Higiene y Cuidado" />
+        <% if (listaProductos && listaProductos.length > 4) { %>
+          <div class="products-row">
+            <% 
+            const productosGatos = listaProductos.filter(p => p.categoria && p.categoria.toLowerCase().includes('gato')).slice(0, 4);
+            if (productosGatos.length === 0) {
+              productosGatos = listaProductos.slice(4, 8); // Fallback a siguientes productos
+            }
+            %>
+            <% productosGatos.forEach((producto, index) => { %>
+              <div class="product-card-mini" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
+                <div class="product-image">
+                  <a href="/productos/detalle/<%= producto.id %>">
+                    <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
+                  </a>
+                  <% if (index === 0) { %>
+                    <span class="product-badge new">✨ Nuevo</span>
+                  <% } %>
+                </div>
+                <div class="product-info-mini">
+                  <h4><a href="/productos/detalle/<%= producto.id %>"><%= producto.nombre %></a></h4>
+                  <div class="price">$<%= Number(producto.precio).toLocaleString('es-AR') %></div>
+                  <button class="btn-add-cart" 
+                          data-id="<%= producto.id %>"
+                          data-nombre="<%= producto.nombre %>"
+                          data-precio="<%= producto.precio %>"
+                          data-imagen="<%= producto.img %>">
+                    <i class="fas fa-cart-plus"></i>
+                  </button>
+                </div>
+              </div>
+            <% }); %>
           </div>
-          <div class="category-content">
-            <i class="fas fa-spa category-icon"></i>
-            <h3>Higiene & Salud</h3>
-            <p>Cuidado integral</p>
-            <span class="category-link">Ver todo <i class="fas fa-arrow-right"></i></span>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Special Offers Section -->
+  <section class="special-offers" id="ofertas">
+    <div class="container">
+      <div class="offers-banner">
+        <div class="offer-content">
+          <span class="offer-badge">🎉 OFERTA ESPECIAL</span>
+          <h2>15% OFF en marcas premium</h2>
+          <p>Cuando gastas $60.000+ en comida seleccionada*</p>
+          <div class="offer-actions">
+            <a href="/productos/categoria/perros/alimentos" class="btn btn-primary">Comprar Perros</a>
+            <a href="/productos/categoria/gatos/alimentos" class="btn btn-outline-light">Comprar Gatos</a>
           </div>
-        </a>
-        
-        <a href="/productos/categoria/juguetes" class="category-card" data-aos="fade-up" data-aos-delay="300">
-          <div class="category-image">
-            <img src="/images/home/toys-category.jpg" alt="Juguetes y Entretenimiento" />
+        </div>
+        <div class="offer-brands">
+          <img src="/images/home/brand-royal-canin.jpg" alt="Royal Canin" class="brand-logo">
+          <div class="offer-details">
+            <span class="offer-text">15% OFF próxima compra</span>
+            <span class="offer-brands-list">Royal Canin, Pro Plan, Hills</span>
           </div>
-          <div class="category-content">
-            <i class="fas fa-gamepad category-icon"></i>
-            <h3>Juguetes</h3>
-            <p>Diversión garantizada</p>
-            <span class="category-link">Descubrir <i class="fas fa-arrow-right"></i></span>
-          </div>
-        </a>
+        </div>
       </div>
     </div>
   </section>
@@ -178,33 +295,32 @@
   <section class="featured-products">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Productos Destacados</h2>
-        <p class="section-subtitle">Los favoritos de nuestros clientes</p>
-        <a href="/productos/categoria/alimentos" class="view-all-link">
-          Ver todos <i class="fas fa-arrow-right"></i>
+        <h2 class="section-title">⭐ Productos Más Vendidos</h2>
+        <p class="section-subtitle">Los favoritos de nuestros clientes con las mejores valoraciones</p>
+        <a href="/productos" class="view-all-link">
+          Ver todos los productos <i class="fas fa-arrow-right"></i>
         </a>
       </div>
 
       <% if (listaProductos && listaProductos.length > 0) { %>
         <div class="products-carousel">
           <div class="products-track">
-            <% listaProductos.slice(0, 8).forEach((producto, index) => { %>
+            <% listaProductos.slice(0, 6).forEach((producto, index) => { %>
               <div class="product-card-featured" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
                 <div class="product-image">
                   <a href="/productos/detalle/<%= producto.id %>">
                     <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
                   </a>
-                  <% if (index < 2) { %>
-                    <span class="product-badge hot">🔥 Más vendido</span>
-                  <% } else if (index < 4) { %>
-                    <span class="product-badge new">✨ Nuevo</span>
+                  <% if (index === 0) { %>
+                    <span class="product-badge bestseller">🏆 #1 Más vendido</span>
+                  <% } else if (index < 3) { %>
+                    <span class="product-badge popular">⭐ Popular</span>
+                  <% } else { %>
+                    <span class="product-badge new">✨ Recomendado</span>
                   <% } %>
                   <div class="product-actions">
                     <button class="action-btn favorite" title="Favorito">
                       <i class="far fa-heart"></i>
-                    </button>
-                    <button class="action-btn compare" title="Comparar">
-                      <i class="fas fa-balance-scale"></i>
                     </button>
                   </div>
                 </div>
@@ -222,13 +338,15 @@
                       <i class="fas fa-star"></i>
                       <i class="fas fa-star-half-alt"></i>
                     </div>
-                    <span class="rating-count">(125)</span>
+                    <span class="rating-count">(125+ reviews)</span>
                   </div>
                   <div class="product-price">
-                    <span class="current-price">$<%= Number(producto.precio).toLocaleString('es-AR') %></span>
                     <% if (index < 3) { %>
-                      <span class="old-price">$<%= Number(producto.precio * 1.3).toLocaleString('es-AR') %></span>
-                      <span class="discount">-23%</span>
+                      <span class="sale-price">$<%= Number(producto.precio * 0.85).toLocaleString('es-AR') %></span>
+                      <span class="old-price">$<%= Number(producto.precio).toLocaleString('es-AR') %></span>
+                      <span class="discount">-15%</span>
+                    <% } else { %>
+                      <span class="current-price">$<%= Number(producto.precio).toLocaleString('es-AR') %></span>
                     <% } %>
                   </div>
                   <button class="btn-add-cart" 
@@ -248,94 +366,18 @@
     </div>
   </section>
 
-  <!-- Customer Favorites - Inspirado en PetPlanet -->
-  <section class="customer-favorites">
+  <!-- Trust & Brands Section -->
+  <section class="trust-brands-section">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Los Favoritos de Nuestros Clientes</h2>
-        <p class="section-subtitle">Los productos mejor valorados y más comprados</p>
-      </div>
-      
-      <div class="favorites-grid">
-        <% if (listaProductos && listaProductos.length > 4) { %>
-          <% listaProductos.slice(0, 6).forEach((producto, index) => { %>
-            <div class="favorite-item" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
-              <div class="favorite-badge">
-                <% if (index === 0) { %>
-                  <span class="badge-bestseller">#1 Best Seller</span>
-                <% } else if (index < 3) { %>
-                  <span class="badge-popular">⭐ Popular</span>
-                <% } else { %>
-                  <span class="badge-recommended">✨ Recomendado</span>
-                <% } %>
-              </div>
-              
-              <div class="favorite-image">
-                <a href="/productos/detalle/<%= producto.id %>">
-                  <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
-                </a>
-              </div>
-              
-              <div class="favorite-content">
-                <div class="favorite-brand">PetShop Premium</div>
-                <h4 class="favorite-name">
-                  <a href="/productos/detalle/<%= producto.id %>"><%= producto.nombre %></a>
-                </h4>
-                
-                <div class="favorite-rating">
-                  <div class="stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star-half-alt"></i>
-                  </div>
-                  <span class="rating-text">4.8 (234 reviews)</span>
-                </div>
-                
-                <div class="favorite-price">
-                  <% if (index < 3) { %>
-                    <span class="sale-price">$<%= Number(producto.precio * 0.85).toLocaleString('es-AR') %></span>
-                    <span class="regular-price">$<%= Number(producto.precio).toLocaleString('es-AR') %></span>
-                    <span class="discount-percent">15% OFF</span>
-                  <% } else { %>
-                    <span class="current-price">$<%= Number(producto.precio).toLocaleString('es-AR') %></span>
-                  <% } %>
-                </div>
-                
-                <button class="btn-quick-add" 
-                        data-id="<%= producto.id %>"
-                        data-nombre="<%= producto.nombre %>"
-                        data-precio="<%= producto.precio %>"
-                        data-imagen="<%= producto.img %>">
-                  <i class="fas fa-shopping-basket"></i>
-                  Agregar al Carrito
-                </button>
-              </div>
-            </div>
-          <% }); %>
-        <% } %>
-      </div>
-      
-      <div class="favorites-cta">
-        <a href="/productos" class="btn btn-outline-primary">
-          Ver Todos los Productos <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Trust Signals Section -->
-  <section class="trust-signals">
-    <div class="container">
+      <!-- Trust Signals -->
       <div class="trust-grid">
         <div class="trust-item" data-aos="fade-up">
           <div class="trust-icon">
             <i class="fas fa-medal"></i>
           </div>
           <div class="trust-content">
-            <h4>Más de 10,000 clientes satisfechos</h4>
-            <p>Desde 2020 cuidando a las mascotas argentinas</p>
+            <h4>10,000+ Clientes Satisfechos</h4>
+            <p>Desde 2020 cuidando mascotas argentinas</p>
           </div>
         </div>
         
@@ -344,8 +386,8 @@
             <i class="fas fa-user-md"></i>
           </div>
           <div class="trust-content">
-            <h4>Asesoramiento veterinario</h4>
-            <p>Nuestro equipo incluye profesionales veterinarios</p>
+            <h4>Asesoramiento Veterinario</h4>
+            <p>Equipo con profesionales veterinarios</p>
           </div>
         </div>
         
@@ -354,8 +396,8 @@
             <i class="fas fa-award"></i>
           </div>
           <div class="trust-content">
-            <h4>Productos certificados</h4>
-            <p>Solo vendemos productos aprobados y de calidad premium</p>
+            <h4>Productos Certificados</h4>
+            <p>Solo vendemos calidad premium aprobada</p>
           </div>
         </div>
         
@@ -364,68 +406,65 @@
             <i class="fas fa-undo"></i>
           </div>
           <div class="trust-content">
-            <h4>Garantía de satisfacción</h4>
-            <p>30 días para devolver si no estás 100% satisfecho</p>
+            <h4>Garantía de Satisfacción</h4>
+            <p>30 días para devolver si no estás satisfecho</p>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Brands Section -->
-  <section class="brands-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Marcas de Confianza</h2>
-        <p class="section-subtitle">Trabajamos con las mejores marcas del mercado</p>
-      </div>
-      
-      <div class="brands-grid">
-        <div class="brand-item" data-aos="zoom-in">
-          <img src="/images/home/brand-royal-canin.jpg" alt="Royal Canin" />
-          <span>Royal Canin</span>
-        </div>
-        <div class="brand-item" data-aos="zoom-in" data-aos-delay="100">
-          <img src="/images/logo_petshop.jpeg" alt="Pro Plan" />
-          <span>Pro Plan</span>
-        </div>
-        <div class="brand-item" data-aos="zoom-in" data-aos-delay="200">
-          <img src="/images/logo_petshop.jpeg" alt="Hills" />
-          <span>Hills</span>
-        </div>
-        <div class="brand-item" data-aos="zoom-in" data-aos-delay="300">
-          <img src="/images/logo_petshop.jpeg" alt="Whiskas" />
-          <span>Whiskas</span>
-        </div>
-        <div class="brand-item" data-aos="zoom-in" data-aos-delay="400">
-          <img src="/images/logo_petshop.jpeg" alt="Kong" />
-          <span>Kong</span>
-        </div>
-        <div class="brand-item" data-aos="zoom-in" data-aos-delay="500">
-          <img src="/images/logo_petshop.jpeg" alt="Flexi" />
-          <span>Flexi</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Newsletter & App Download -->
-  <section class="newsletter-section">
-    <div class="container">
-      <div class="newsletter-content">
-        <div class="newsletter-left">
-          <div class="newsletter-text">
-            <h3>🎁 Descuentos Exclusivos</h3>
-            <p>Suscríbete y recibe ofertas especiales, nuevos productos y consejos para el cuidado de tu mascota</p>
-            <div class="newsletter-benefits">
-              <div class="benefit">✅ 10% de descuento en tu primera compra</div>
-              <div class="benefit">✅ Ofertas exclusivas para suscriptores</div>
-              <div class="benefit">✅ Consejos de veterinarios profesionales</div>
-            </div>
-          </div>
+      <!-- Brands -->
+      <div class="brands-section">
+        <div class="section-header">
+          <h3 class="section-title">🏆 Marcas de Confianza</h3>
+          <p class="section-subtitle">Trabajamos con las mejores marcas del mercado</p>
         </div>
         
-        <div class="newsletter-right">
+        <div class="brands-grid">
+          <div class="brand-item" data-aos="zoom-in">
+            <img src="/images/home/brand-royal-canin.jpg" alt="Royal Canin" />
+            <span>Royal Canin</span>
+          </div>
+          <div class="brand-item" data-aos="zoom-in" data-aos-delay="100">
+            <img src="/images/logo_petshop.jpeg" alt="Pro Plan" />
+            <span>Pro Plan</span>
+          </div>
+          <div class="brand-item" data-aos="zoom-in" data-aos-delay="200">
+            <img src="/images/logo_petshop.jpeg" alt="Hills" />
+            <span>Hills</span>
+          </div>
+          <div class="brand-item" data-aos="zoom-in" data-aos-delay="300">
+            <img src="/images/logo_petshop.jpeg" alt="Whiskas" />
+            <span>Whiskas</span>
+          </div>
+          <div class="brand-item" data-aos="zoom-in" data-aos-delay="400">
+            <img src="/images/logo_petshop.jpeg" alt="Kong" />
+            <span>Kong</span>
+          </div>
+          <div class="brand-item" data-aos="zoom-in" data-aos-delay="500">
+            <img src="/images/logo_petshop.jpeg" alt="Flexi" />
+            <span>Flexi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter & Testimonials -->
+  <section class="newsletter-testimonials">
+    <div class="container">
+      <!-- Newsletter -->
+      <div class="newsletter-section">
+        <div class="newsletter-content">
+          <div class="newsletter-text">
+            <h3>🎁 Ofertas Exclusivas</h3>
+            <p>Suscríbete y recibe descuentos especiales, nuevos productos y consejos veterinarios</p>
+            <div class="newsletter-benefits">
+              <span class="benefit">✅ 10% OFF primera compra</span>
+              <span class="benefit">✅ Ofertas exclusivas</span>
+              <span class="benefit">✅ Consejos profesionales</span>
+            </div>
+          </div>
+          
           <form class="newsletter-form">
             <div class="form-group">
               <input type="email" placeholder="tu@email.com" required />
@@ -434,80 +473,48 @@
                 Suscribirse
               </button>
             </div>
-            <div class="form-privacy">
-              <small>🔒 Respetamos tu privacidad. Cancela cuando quieras.</small>
-            </div>
+            <small class="form-privacy">🔒 Respetamos tu privacidad. Cancela cuando quieras.</small>
           </form>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Testimonials Section -->
-  <section class="testimonials-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Lo que dicen nuestros clientes</h2>
-        <p class="section-subtitle">Más de 10,000 familias confían en nosotros</p>
-      </div>
-      
-      <div class="testimonials-grid">
-        <div class="testimonial-card" data-aos="fade-up">
-          <div class="testimonial-content">
-            <div class="stars">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-            </div>
-            <p>"Excelente calidad y precios. Mi perro ama los productos que compramos aquí."</p>
-          </div>
-          <div class="testimonial-author">
-            <img src="/images/home/avatar1.jpg" alt="María" />
-            <div class="author-info">
-              <strong>María González</strong>
-              <span>Cliente desde 2023</span>
+      <!-- Quick Testimonials -->
+      <div class="testimonials-quick">
+        <h3 class="testimonials-title">❤️ Lo que dicen nuestros clientes</h3>
+        <div class="testimonials-grid">
+          <div class="testimonial-card" data-aos="fade-up">
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <p>"Excelente calidad y precios. Mi perro ama los productos."</p>
+            <div class="author">
+              <img src="/images/home/avatar1.jpg" alt="María" />
+              <div>
+                <strong>María González</strong>
+                <span>Cliente desde 2023</span>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
-          <div class="testimonial-content">
-            <div class="stars">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-            </div>
-            <p>"Envío rápido y productos originales. Muy recomendable para cuidar a nuestras mascotas."</p>
-          </div>
-          <div class="testimonial-author">
-            <img src="/images/home/avatar2.jpg" alt="Carlos" />
-            <div class="author-info">
-              <strong>Carlos Mendoza</strong>
-              <span>Cliente desde 2022</span>
+          
+          <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <p>"Envío rápido y productos originales. Muy recomendable."</p>
+            <div class="author">
+              <img src="/images/home/avatar2.jpg" alt="Carlos" />
+              <div>
+                <strong>Carlos Mendoza</strong>
+                <span>Cliente desde 2022</span>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
-          <div class="testimonial-content">
-            <div class="stars">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-            </div>
-            <p>"Atención al cliente excepcional. Siempre dispuestos a ayudar y aconsejar."</p>
-          </div>
-          <div class="testimonial-author">
-            <img src="/images/home/avatar3.jpg" alt="Ana" />
-            <div class="author-info">
-              <strong>Ana Rodriguez</strong>
-              <span>Cliente desde 2024</span>
+          
+          <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <p>"Atención excepcional. Siempre dispuestos a ayudar."</p>
+            <div class="author">
+              <img src="/images/home/avatar3.jpg" alt="Ana" />
+              <div>
+                <strong>Ana Rodriguez</strong>
+                <span>Cliente desde 2024</span>
+              </div>
             </div>
           </div>
         </div>
@@ -570,5 +577,24 @@
   
   <!-- Carrito JavaScript -->
   <script src="/js/agregarCarrito.js"></script>
+  
+  <!-- Script de debug temporal -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🔍 DEBUG: Verificando botones de carrito en home');
+      const botones = document.querySelectorAll('.btn-add-cart');
+      console.log('🔍 DEBUG: Encontrados', botones.length, 'botones');
+      
+      botones.forEach((boton, index) => {
+        console.log(`🔍 DEBUG: Botón ${index + 1}:`, {
+          id: boton.dataset.id,
+          nombre: boton.dataset.nombre,
+          precio: boton.dataset.precio,
+          imagen: boton.dataset.imagen,
+          classes: boton.className
+        });
+      });
+    });
+  </script>
 </body>
 </html>

@@ -193,25 +193,38 @@ const adminController = {
 
   // Procesar creación de producto
   createProductPost: (req, res) => {
-    const productos = getProductos();
-    const newId = productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1;
-    
-    const newProduct = {
-      id: newId,
-      name: req.body.nombre,
-      price: parseFloat(req.body.precio),
-      description: req.body.descripcion,
-      category: req.body.categoria,
-      stock: parseInt(req.body.stock) || 0,
-      image: req.file ? req.file.filename : 'default.jpg',
-      destacado: req.body.destacado === 'on',
-      borrado: false
-    };
-    
-    productos.push(newProduct);
-    saveProductos(productos);
-    
-    res.redirect('/admin/productos');
+    try {
+      const productos = getProductos();
+      const newId = productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1;
+      
+      const newProduct = {
+        id: newId,
+        name: req.body.nombre || req.body.name,
+        description: req.body.descripcion || req.body.description,
+        category: req.body.categoria || req.body.category,
+        subcategory: req.body.subcategoria || req.body.subcategory,
+        brand: req.body.marca || req.body.brand,
+        price: parseFloat(req.body.precio || req.body.price),
+        color: req.body.color || "",
+        peso: req.body.peso || "",
+        edad: req.body.edad || "",
+        stock: parseInt(req.body.stock) || 0,
+        image: req.file ? req.file.filename : 'logo_petshop.jpeg',
+        destacado: req.body.destacado === 'on' || req.body.destacado === 'true',
+        borrado: false
+      };
+      
+      productos.push(newProduct);
+      saveProductos(productos);
+      
+      res.redirect('/admin/productos?created=true');
+    } catch (error) {
+      console.error('❌ Error en admin crear producto:', error);
+      res.render('admin/crear-producto', { 
+        user: req.session.userLogged,
+        error: 'Error al crear el producto'
+      });
+    }
   },
 
   // Editar producto
@@ -275,10 +288,8 @@ const adminController = {
     const productId = parseInt(req.params.id);
     let productos = getProductos();
     
-    console.log(`🗑️ Eliminando producto ID: ${productId}`);
     productos = productos.filter(p => p.id !== productId);
     saveProductos(productos);
-    console.log('✅ Producto eliminado exitosamente');
     
     res.redirect('/admin/productos');
   },

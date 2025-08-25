@@ -60,6 +60,18 @@
             margin-bottom: 1.5rem;
         }
 
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .form-label {
             display: block;
             margin-bottom: 0.5rem;
@@ -250,19 +262,72 @@
                     </div>
                 </div>
 
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="categoria" class="form-label">
+                            <i class="fas fa-paw"></i> Categoría (Mascota)
+                        </label>
+                        <select id="categoria" name="categoria" class="form-select" required>
+                            <option value="">Seleccionar mascota...</option>
+                            <option value="Perros">Perros</option>
+                            <option value="Gatos">Gatos</option>
+                            <option value="Aves">Aves</option>
+                            <option value="Peces">Peces</option>
+                            <option value="General">General/Todas</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subcategoria" class="form-label">
+                            <i class="fas fa-list"></i> Subcategoría (Tipo de producto)
+                        </label>
+                        <select id="subcategoria" name="subcategoria" class="form-select" required>
+                            <option value="">Seleccionar tipo...</option>
+                            <option value="Alimentos">Alimentos</option>
+                            <option value="Accesorios">Accesorios</option>
+                            <option value="Higiene y salud">Higiene y salud</option>
+                            <option value="Juguetes">Juguetes</option>
+                            <option value="Comodidad">Comodidad</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label for="categoria" class="form-label">
-                        <i class="fas fa-list"></i> Categoría
+                    <label for="marca" class="form-label">
+                        <i class="fas fa-tag"></i> Marca
                     </label>
-                    <select id="categoria" name="categoria" class="form-select" required>
-                        <option value="">Seleccionar categoría...</option>
-                        <option value="Perros">Perros</option>
-                        <option value="Gatos">Gatos</option>
-                        <option value="Accesorios">Accesorios</option>
-                        <option value="Alimentos">Alimentos</option>
-                        <option value="Juguetes">Juguetes</option>
-                        <option value="Higiene">Higiene</option>
-                        <option value="Salud">Salud</option>
+                    <input type="text" id="marca" name="marca" class="form-input" required 
+                           placeholder="Ej: Royal Canin, Pro Plan, Kong">
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="color" class="form-label">
+                            <i class="fas fa-palette"></i> Color
+                        </label>
+                        <input type="text" id="color" name="color" class="form-input" 
+                               placeholder="Ej: Natural, Azul, Rojo, Multicolor">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="peso" class="form-label">
+                            <i class="fas fa-weight-hanging"></i> Peso/Tamaño
+                        </label>
+                        <input type="text" id="peso" name="peso" class="form-input" 
+                               placeholder="Ej: 15kg, 500ml, Mediano, 30cm">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="edad" class="form-label">
+                        <i class="fas fa-birthday-cake"></i> Edad Objetivo
+                    </label>
+                    <select id="edad" name="edad" class="form-select">
+                        <option value="">Seleccionar edad...</option>
+                        <option value="Cachorro">Cachorro/Cría</option>
+                        <option value="Adulto">Adulto</option>
+                        <option value="Senior">Senior</option>
+                        <option value="Todas">Todas las edades</option>
                     </select>
                 </div>
 

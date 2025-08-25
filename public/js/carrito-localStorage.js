@@ -47,32 +47,29 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // Función para mostrar carrito vacío
     function mostrarCarritoVacio() {
-        const container = document.querySelector('.carrito-container');
-        if (container) {
-            container.innerHTML = `
-                <%- include('partials/header') %>
-                <main class="carrito-container">
-                    <div class="carrito-header animate-fadeInUp">
-                        <div class="back-button">
-                            <a href="/" class="btn-back">
-                                <i class="fas fa-arrow-left"></i>
-                                Seguir Comprando
-                            </a>
-                        </div>
-                        <h1><i class="fas fa-shopping-cart"></i> Mi Carrito de Compras</h1>
+        const main = document.querySelector('main.carrito-container');
+        if (main) {
+            main.innerHTML = `
+                <div class="carrito-header animate-fadeInUp">
+                    <div class="back-button">
+                        <a href="/" class="btn-back">
+                            <i class="fas fa-arrow-left"></i>
+                            Seguir Comprando
+                        </a>
                     </div>
-                    <div class="carrito-empty animate-bounceIn">
-                        <div class="empty-state">
-                            <i class="fas fa-shopping-cart empty-icon"></i>
-                            <h2>Tu carrito está vacío</h2>
-                            <p>¡Descubre nuestros increíbles productos para tu mascota!</p>
-                            <a href="/" class="btn-shop">
-                                <i class="fas fa-paw"></i>
-                                Comenzar a Comprar
-                            </a>
-                        </div>
+                    <h1><i class="fas fa-shopping-cart"></i> Mi Carrito de Compras</h1>
+                </div>
+                <div class="carrito-empty animate-bounceIn">
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-cart empty-icon"></i>
+                        <h2>Tu carrito está vacío</h2>
+                        <p>¡Descubre nuestros increíbles productos para tu mascota!</p>
+                        <a href="/" class="btn-shop">
+                            <i class="fas fa-paw"></i>
+                            Comenzar a Comprar
+                        </a>
                     </div>
-                </main>
+                </div>
             `;
         }
     }

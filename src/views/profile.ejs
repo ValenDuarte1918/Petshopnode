@@ -247,7 +247,7 @@
     </style>
 </head>
 <body>
-    <%- include('partials/header') %>
+    <%- include('partials/header', { page: 'profile' }) %>
 
     <main class="profile-container">
         <div class="profile-content animate-fadeInUp">
@@ -324,7 +324,7 @@
                             <i class="fas fa-home"></i>
                             Ir al Inicio
                         </a>
-                        <a href="/user/logout" class="btn btn-secondary animate-fadeInUp delay-3">
+                        <a href="/users/logout" class="btn btn-secondary animate-fadeInUp delay-3">
                             <i class="fas fa-sign-out-alt"></i>
                             Cerrar Sesión
                         </a>

@@ -34,10 +34,8 @@ const controller = {
   },
   loginProcess: async(req, res) => {
     try {
-      console.log(req.body);
       const usuarios = getUsuarios();
       let userToLogin = usuarios.find(user => user.email === req.body.email);
-      console.log(userToLogin);
       
       if(userToLogin){
         // Para desarrollo, comparar contraseñas directamente o usar bcrypt si están hasheadas

@@ -82,13 +82,6 @@ app.use(session({
 
 // Middleware para hacer la sesión disponible en todas las vistas
 app.use((req, res, next) => {
-    // Debug solo para rutas de edición y admin
-    if (req.url.includes('/admin') || req.url.includes('/edit')) {
-        console.log(`📊 [${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
-        console.log(`📊 Session ID: ${req.sessionID}`);
-        console.log(`📊 Usuario logueado: ${req.session.userLogged ? req.session.userLogged.email : 'NO'}`);
-    }
-    
     res.locals.userLogged = req.session.userLogged;
     res.locals.isLoggedIn = !!req.session.userLogged;
     

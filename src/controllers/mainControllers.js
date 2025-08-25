@@ -35,6 +35,53 @@ const controller = {
             res.render('home', {listaProductos: []});
         }
     },
+
+    productos: async (req, res) => {
+        try {
+            // Usar datos JSON temporalmente
+            const listaProductos = getProductos();
+            let productosListados = listaProductos.filter(producto => !producto.borrado);
+            
+            productosListados = productosListados.map(producto => ({
+                ...producto,
+                nombre: producto.name,
+                descripcion: producto.description,
+                categoria: producto.category,
+                precio: producto.price,
+                img: producto.image,
+                brand: producto.brand || 'PetShop Premium',
+                stock: producto.stock || Math.floor(Math.random() * 20) + 1
+            }));
+
+            // Obtener marcas únicas para el filtro
+            const marcas = [...new Set(productosListados.map(p => p.brand).filter(Boolean))];
+
+            res.render('productos', {
+                productos: productosListados, // Cambiar a 'productos' para que coincida con la vista
+                categoria: 'Todos los Productos',
+                totalProductos: productosListados.length,
+                marcas: marcas,
+                currentFilters: {
+                    categoria: null,
+                    mascota: null,
+                    marca: null
+                }
+            });
+        } catch (error) {
+            console.error('Error al cargar productos:', error);
+            res.render('productos', {
+                productos: [], // Cambiar a 'productos'
+                categoria: 'Todos los Productos',
+                totalProductos: 0,
+                marcas: [],
+                currentFilters: {
+                    categoria: null,
+                    mascota: null,
+                    marca: null
+                }
+            });
+        }
+    },
     
     detail:async (req, res) => {
         try {
@@ -70,8 +117,6 @@ const controller = {
                         color: producto.color,
                         precio: producto.price
                     }));
-
-                console.log(`🔗 Productos relacionados encontrados: ${productosRelacionados.length}`);
                 
                 return res.render('detail', { 
                     producto: productFound, 
@@ -86,20 +131,8 @@ const controller = {
     },
    
     carrito:(req,res)=> {
-        // Obtener carrito de la sesión
-        const carrito = req.session.carrito || [];
-        let total = 0;
-        
-        // Calcular total del carrito
-        carrito.forEach(item => {
-            total += parseFloat(item.precio) * item.cantidad;
-        });
-        
-        res.render('carrito', { 
-            carrito: carrito, 
-            total: total.toFixed(2),
-            cartCount: carrito.reduce((sum, item) => sum + item.cantidad, 0)
-        });
+        // Solo renderizar la vista simple, el contenido se carga con JavaScript
+        res.render('carrito-simple');
     },
 
     // Agregar producto al carrito
@@ -217,7 +250,6 @@ const controller = {
                 "img": req.file.filename,
                 "borrado": false
             }
-            console.log('Entro por post', nuevoProducto)
             //agrego el nuevo producto a la lista de productos
             listaProductos.push(nuevoProducto)
             //escribo la lista de productos en el archivo productos.json

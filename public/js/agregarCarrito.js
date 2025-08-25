@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const contador = carrito.reduce((total, item) => total + item.cantidad, 0);
         
         // Buscar elementos del contador en el header
-        const contadores = document.querySelectorAll('.cart-count, .carrito-count, [data-cart-count]');
+        const contadores = document.querySelectorAll('.cart-count, .cart-badge, .carrito-count, [data-cart-count]');
         contadores.forEach(element => {
             element.textContent = contador;
             element.style.display = contador > 0 ? 'flex' : 'none';
@@ -318,13 +318,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Función para agregar producto al carrito
     function agregarProductoAlCarrito(productoData) {
-        // Verificar si el usuario está logueado ANTES de procesar
-        if (!verificarUsuarioLogueado()) {
-            console.log('🔒 Usuario no logueado, mostrando modal de login');
-            mostrarModalLogin();
-            return false;
-        }
-
+        // Nota: Permitimos agregar al carrito sin login para mejor UX
+        // El login será requerido solo al momento de hacer checkout
         console.log('📦 Agregando producto:', productoData);
         
         const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
@@ -375,8 +370,13 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('🖱️ Click detectado en botón agregar al carrito');
             console.log('🔍 Clases del botón:', boton.className);
             console.log('🏠 Página actual:', window.location.pathname);
+            console.log('🔍 Elemento clickeado:', event.target);
+            console.log('🔍 Botón encontrado:', boton);
             
-            let card = boton.closest('.product-card-featured, .favorite-item');
+            // Debug: Mostrar TODOS los data attributes del botón
+            console.log('📊 TODOS los data attributes:', boton.dataset);
+            
+            let card = boton.closest('.product-card-featured, .favorite-item, .producto-card, .product-card-mini');
             console.log('📦 Card encontrada:', card ? 'SÍ' : 'NO');
             if (card) {
                 console.log('📦 Clases de la card:', card.className);
@@ -439,7 +439,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log('🔍 Intentando buscar card con otros selectores...');
                 
                 // Buscar contenedor padre alternativo
-                card = boton.closest('.product-item, .card, .producto, .product');
+                card = boton.closest('.product-item, .card, .producto, .product, .product-card-mini');
                 console.log('🔍 Card alternativa encontrada:', card ? 'SÍ' : 'NO');
                 
                 if (!card) {
@@ -450,43 +450,81 @@ document.addEventListener("DOMContentLoaded", function () {
             
             // Método 1: Usar data attributes del botón (más confiable)
             let productoData = {
-                id: boton.dataset.id,
-                nombre: boton.dataset.nombre,
-                imagen: boton.dataset.imagen,
-                precio: parseInt(boton.dataset.precio)
+                id: boton.dataset.id || '',
+                nombre: boton.dataset.nombre || '',
+                imagen: boton.dataset.imagen || 'default.jpg',
+                precio: parseInt(boton.dataset.precio) || 0,
+                descripcion: boton.dataset.descripcion || '',
+                categoria: boton.dataset.categoria || '',
+                color: boton.dataset.color || ''
             };
             
             console.log('📊 Data attributes del botón:', {
                 id: boton.dataset.id,
                 nombre: boton.dataset.nombre,
                 imagen: boton.dataset.imagen,
-                precio: boton.dataset.precio
+                precio: boton.dataset.precio,
+                precioParseado: parseInt(boton.dataset.precio),
+                categoria: boton.dataset.categoria,
+                color: boton.dataset.color
             });
             
+            console.log('📊 Producto procesado:', productoData);
+            
             // Método 2: Si no hay data attributes, intentar extraer del DOM
-            if (!productoData.id || !productoData.nombre) {
-                console.log('⚠️ Data attributes faltantes, extrayendo del DOM...');
+            if (!productoData.id || !productoData.nombre || productoData.precio <= 0) {
+                console.log('⚠️ Data attributes incompletos, extrayendo del DOM...');
                 
-                // Buscar por diferentes selectores posibles
-                const nombreElement = card.querySelector('.product-name a, .product-title, h3 a, h4 a');
-                const precioElement = card.querySelector('.current-price, .precio, .price');
-                const imagenElement = card.querySelector('img');
+                // Buscar la card padre
+                const cardElement = boton.closest('.producto-card, .product-card, .product-card-mini, article');
+                console.log('🔍 Card element encontrado:', cardElement);
                 
-                productoData = {
-                    id: card.dataset.id || nombreElement?.href?.split('/').pop() || Date.now(),
-                    nombre: nombreElement?.textContent?.trim() || 'Producto sin nombre',
-                    precio: precioElement ? parseInt(precioElement.textContent.replace(/[^\d]/g, '')) : 0,
-                    imagen: imagenElement ? imagenElement.src.split('/').pop() : 'default.jpg'
-                };
-                
-                console.log('📊 Datos extraídos del DOM:', productoData);
+                if (cardElement) {
+                    // Buscar por diferentes selectores posibles
+                    const nombreElement = cardElement.querySelector('.producto-nombre a, .product-name a, .product-title, .product-info-mini h4 a, h3 a, h4 a');
+                    const precioElement = cardElement.querySelector('.precio-actual, .current-price, .precio, .price, .product-info-mini .price');
+                    const imagenElement = cardElement.querySelector('img');
+                    
+                    console.log('🔍 Elementos encontrados:', {
+                        nombre: nombreElement ? nombreElement.textContent : 'NO ENCONTRADO',
+                        precio: precioElement ? precioElement.textContent : 'NO ENCONTRADO',
+                        imagen: imagenElement ? imagenElement.src : 'NO ENCONTRADO'
+                    });
+                    
+                    // Solo sobrescribir si no tenemos datos
+                    if (!productoData.id) {
+                        productoData.id = cardElement.dataset.id || nombreElement?.href?.split('/').pop() || Date.now();
+                    }
+                    if (!productoData.nombre) {
+                        productoData.nombre = nombreElement?.textContent?.trim() || 'Producto sin nombre';
+                    }
+                    if (productoData.precio <= 0) {
+                        productoData.precio = precioElement ? parseInt(precioElement.textContent.replace(/[^\d]/g, '')) : 0;
+                    }
+                    if (!productoData.imagen || productoData.imagen === 'default.jpg') {
+                        productoData.imagen = imagenElement ? imagenElement.src.split('/').pop() : 'default.jpg';
+                    }
+                    
+                    console.log('📊 Datos actualizados desde DOM:', productoData);
+                }
             }
             
-            // Validar datos antes de agregar
-            if (!productoData.id || !productoData.nombre || !productoData.precio) {
+            // Validar datos antes de agregar (solo campos críticos)
+            if (!productoData.id || !productoData.nombre || productoData.precio <= 0) {
                 console.error('❌ Datos del producto incompletos:', productoData);
+                console.error('❌ Validación falló:', {
+                    id: !productoData.id ? 'FALTA ID' : 'OK',
+                    nombre: !productoData.nombre ? 'FALTA NOMBRE' : 'OK',
+                    precio: productoData.precio <= 0 ? 'PRECIO INVÁLIDO' : 'OK'
+                });
                 mostrarNotificacion('Error: No se pudo agregar el producto', 'error');
                 return;
+            }
+            
+            // Si no hay imagen, usar una por defecto
+            if (!productoData.imagen) {
+                productoData.imagen = 'default.jpg';
+                console.log('⚠️ Imagen no encontrada, usando default.jpg');
             }
             
             console.log('✅ Producto válido, agregando al carrito:', productoData);

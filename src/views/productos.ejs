@@ -40,8 +40,7 @@
           <label for="marcas">Marca:</label>
           <select id="marcas" class="filter-select">
             <option value="">Todas las marcas</option>
-            <% if (productos.length > 0) { %>
-              <% const marcas = [...new Set(productos.map(p => p.brand).filter(Boolean))]; %>
+            <% if (marcas && marcas.length > 0) { %>
               <% marcas.forEach(marca => { %>
                 <option value="<%= marca %>"><%= marca %></option>
               <% }); %>
@@ -78,7 +77,13 @@
                 <a href="/productos/detalle/<%= producto.id %>" class="btn-ver-detalle">
                   <i class="fas fa-eye"></i> Ver detalle
                 </a>
-                <button class="btn-add-cart" data-id="<%= producto.id %>">
+                <button class="btn-add-cart" 
+                        data-id="<%= producto.id %>"
+                        data-nombre="<%= producto.nombre %>"
+                        data-precio="<%= producto.precio %>"
+                        data-imagen="<%= producto.img %>"
+                        data-categoria="<%= producto.categoria %>"
+                        data-color="<%= producto.color || '' %>">
                   <i class="fas fa-shopping-cart"></i>
                 </button>
               </div>
@@ -99,7 +104,13 @@
                 </div>
                 
                 <% if (producto.stock && producto.stock > 0) { %>
-                  <button class="btn-comprar" data-id="<%= producto.id %>">
+                  <button class="btn-add-cart btn-comprar" 
+                          data-id="<%= producto.id %>"
+                          data-nombre="<%= producto.nombre %>"
+                          data-precio="<%= producto.precio %>"
+                          data-imagen="<%= producto.img %>"
+                          data-categoria="<%= producto.categoria %>"
+                          data-color="<%= producto.color || '' %>">
                     <i class="fas fa-cart-plus"></i> Agregar
                   </button>
                 <% } else { %>
@@ -219,29 +230,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Funcionalidad del carrito
-    const addCartBtns = document.querySelectorAll('.btn-add-cart, .btn-comprar:not(.disabled)');
-    addCartBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.dataset.id;
-            
-            // Simulación de agregar al carrito
-            this.innerHTML = '<i class="fas fa-check"></i> Agregado';
-            this.classList.add('success');
-            
-            setTimeout(() => {
-                if (this.classList.contains('btn-add-cart')) {
-                    this.innerHTML = '<i class="fas fa-shopping-cart"></i>';
-                } else {
-                    this.innerHTML = '<i class="fas fa-cart-plus"></i> Agregar';
-                }
-                this.classList.remove('success');
-            }, 2000);
-        });
-    });
 });
 </script>
+
+<!-- Incluir el JavaScript del carrito -->
+<script src="/js/agregarCarrito.js"></script>
 
 <%- include('partials/footer') %>

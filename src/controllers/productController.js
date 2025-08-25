@@ -48,19 +48,25 @@ const controller ={
             const productos = getProductos();
             let productosFiltrados = productos.filter(producto => !producto.borrado);
             
-            // Filtrar por categoría principal
+            // Función helper para normalizar nombres con guiones
+            const normalizeUrlParam = (param) => {
+                if (!param) return param;
+                return param.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            };
+            
+            // Filtrar por categoría principal (mascota)
             if (categoria) {
-                const categoriaCapitalized = categoria.charAt(0).toUpperCase() + categoria.slice(1);
+                const categoriaNormalizada = normalizeUrlParam(categoria);
                 productosFiltrados = productosFiltrados.filter(producto => 
-                    producto.category.toLowerCase() === categoria.toLowerCase()
+                    producto.category.toLowerCase() === categoriaNormalizada.toLowerCase()
                 );
             }
             
-            // Filtrar por subcategoría si existe
+            // Filtrar por subcategoría (tipo de producto) si existe
             if (subcategoria) {
-                const subcategoriaCapitalized = subcategoria.charAt(0).toUpperCase() + subcategoria.slice(1);
+                const subcategoriaNormalizada = normalizeUrlParam(subcategoria);
                 productosFiltrados = productosFiltrados.filter(producto => 
-                    producto.subcategory && producto.subcategory.toLowerCase() === subcategoria.toLowerCase()
+                    producto.subcategory && producto.subcategory.toLowerCase() === subcategoriaNormalizada.toLowerCase()
                 );
             }
             
@@ -78,20 +84,35 @@ const controller ={
                 stock: producto.stock
             }));
             
-            const categoriaTitle = categoria ? categoria.charAt(0).toUpperCase() + categoria.slice(1) : 'Productos';
-            const subcategoriaTitle = subcategoria ? ` - ${subcategoria.charAt(0).toUpperCase() + subcategoria.slice(1)}` : '';
+            const categoriaTitle = categoria ? normalizeUrlParam(categoria) : 'Productos';
+            const subcategoriaTitle = subcategoria ? ` - ${normalizeUrlParam(subcategoria)}` : '';
+            
+            // Obtener marcas únicas para el filtro
+            const marcas = [...new Set(productosFiltrados.map(p => p.brand).filter(Boolean))];
             
             res.render('productos', {
                 productos: productosFiltrados,
                 categoria: categoriaTitle + subcategoriaTitle,
-                totalProductos: productosFiltrados.length
+                totalProductos: productosFiltrados.length,
+                marcas: marcas,
+                currentFilters: {
+                    categoria: categoria,
+                    subcategoria: subcategoria,
+                    marca: null
+                }
             });
         } catch (error) {
             console.error('Error al filtrar productos:', error);
             res.render('productos', {
                 productos: [],
                 categoria: 'Productos',
-                totalProductos: 0
+                totalProductos: 0,
+                marcas: [],
+                currentFilters: {
+                    categoria: null,
+                    subcategoria: null,
+                    marca: null
+                }
             });
         }
     },
@@ -124,19 +145,32 @@ const controller ={
                 stock: producto.stock
             }));
             
-            console.log(`🐕 Productos encontrados para ${mascotaCapitalized}: ${productosMappeados.length}`);
+            // Obtener marcas únicas para el filtro
+            const marcas = [...new Set(productosMappeados.map(p => p.brand).filter(Boolean))];
             
             res.render('productos', {
                 productos: productosMappeados,
                 categoria: `Productos para ${mascotaCapitalized}`,
-                totalProductos: productosMappeados.length
+                totalProductos: productosMappeados.length,
+                marcas: marcas,
+                currentFilters: {
+                    categoria: null,
+                    mascota: mascota,
+                    marca: null
+                }
             });
         } catch (error) {
             console.error('Error al filtrar productos por mascota:', error);
             res.render('productos', {
                 productos: [],
                 categoria: 'Productos',
-                totalProductos: 0
+                totalProductos: 0,
+                marcas: [],
+                currentFilters: {
+                    categoria: null,
+                    mascota: null,
+                    marca: null
+                }
             });
         }
     },
@@ -174,8 +208,6 @@ const controller ={
                         color: producto.color,
                         precio: producto.price
                     }));
-
-                console.log(`🔗 Productos relacionados encontrados: ${productosRelacionados.length}`);
                 
                 return res.render('detail', { 
                     producto: productFound, 
@@ -188,43 +220,41 @@ const controller ={
             return res.render('detail', { producto: {}, productosRelacionados: [] });
         }
     },
-    crear: async (req, res) => {
-        try {
-            // Para la vista de crear, podemos renderizar sin datos específicos
-            return res.render('crearProducto'); // o 'create' dependiendo del nombre de la vista
-        } catch (error) {
-            console.error('Error al cargar página de crear:', error);
-            return res.render('crearProducto');
-        }
-    },
     crearProcess:async (req,res) =>{  
         try {
             let errors = validationResult(req)
             if(errors.errors.length > 0){
-                return res.render('crearProducto', {errors: errors.mapped(), old: req.body});
+                return res.render('create', {errors: errors.mapped(), old: req.body});
             } 
             
-            console.log(req.body);
             const productos = getProductos();
             
             let newProduct = {
                 "id": productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1,
                 "name": req.body.name,
                 "description": req.body.description,
-                "category": req.body.category || "general",
-                "price": req.body.price,
-                "color": req.body.color || "sin especificar",
-                "image": req.file ? req.file.filename : 'logo.png',
+                "category": req.body.category,
+                "subcategory": req.body.subcategory,
+                "brand": req.body.brand,
+                "price": parseFloat(req.body.price),
+                "color": req.body.color || "No especificado",
+                "peso": req.body.peso || "No especificado",
+                "edad": req.body.edad || "No aplica",
+                "stock": parseInt(req.body.stock) || 0,
+                "image": req.file ? req.file.filename : 'logo_petshop.jpeg',
+                "destacado": req.body.destacado === 'true',
                 "borrado": false
-            }
+            };
             
             productos.push(newProduct);
             saveProductos(productos);
-            return res.redirect('/');
+            
+            // Redirigir al admin o a la página de productos
+            return res.redirect('/admin/productos?created=true');
         } catch (error) {
-            console.error('Error al crear producto:', error);
-            return res.render('crearProducto', {
-                errors: {general: {msg: 'Error del servidor'}},
+            console.error('❌ Error al crear producto:', error);
+            return res.render('create', {
+                errors: {general: {msg: 'Error del servidor al crear el producto'}},
                 old: req.body
             });
         }
@@ -249,11 +279,6 @@ const controller ={
             } */
         },
         editProcess: async(req,res)=>{
-            console.log('🔄 editProcess - Iniciando edición...');
-            console.log('🔄 Session ID:', req.sessionID);
-            console.log('🔄 Usuario logueado:', req.session.userLogged ? 'SÍ' : 'NO');
-            console.log('🔄 Usuario email:', req.session.userLogged?.email);
-            
             let producto = await db.Producto.findAll();
             let categoria = await db.Categoria.findAll();
             let errors = validationResult(req)  
@@ -261,7 +286,6 @@ const controller ={
             let productFound = await db.Producto.findByPk(req.params.id);
 
             if (errors.isEmpty()) {
-                console.log('✅ Sin errores de validación - Actualizando producto...');
                 
                 await db.Producto.update({
                     nombre: req.body.nombre,
@@ -271,14 +295,10 @@ const controller ={
                     categoria_id: req.body.categoria,
                 }, { where: { id: req.params.id } });
                 
-                console.log('✅ Producto actualizado exitosamente');
-                console.log('🔄 Session después de update - ID:', req.sessionID);
-                console.log('🔄 Usuario después de update:', req.session.userLogged ? 'SÍ' : 'NO');
                 
                 // Redireccionar a la lista de productos del admin
                 return res.redirect('/admin/productos');
             } else {
-                console.log('❌ Errores de validación encontrados:', errors.array());
                 let productFound = await db.Producto.findByPk(req.params.id);
                 return res.render("editar", { errores:errors.array(),categoria:categoria, producto: productFound })
             } 
@@ -290,7 +310,6 @@ const controller ={
            const productoCreado = await db.Producto.create({
                 ...req.body
            })
-           console.log(productoCreado);
            res.redirect('/')
         },
         update: async function (req,res) {
@@ -298,23 +317,30 @@ const controller ={
                 ...req.body
            }, {where:{
             id: req.params.id} })
-            console.log(productoEditado);
             res.redirect('/')
         },
         delete: async function (req, res) {
-            const producto = await db.Petshop.findByPk(req.params.id)
-            res.render('productoBorrado',{Petshop:producto})
+            try {
+                const producto = await db.Petshop.findByPk(req.params.id);
+                if (producto) {
+                    // Redirigir a confirmación de eliminación en el admin
+                    res.redirect(`/admin/productos?delete=${req.params.id}`);
+                } else {
+                    res.redirect('/admin/productos?error=not_found');
+                }
+            } catch (error) {
+                console.error('Error al buscar producto:', error);
+                res.redirect('/admin/productos?error=server_error');
+            }
         },
         destroy: async function (req, res) {
             const productoBorrado =  await db.Producto.destroy({where:{
             id: req.params.id} })
-            console.log(productoBorrado);
             res.redirect('/')
         },
         restaurar: async function (req, res){
             const productoRestaurado =  await db.Producto.restore({where:{
             id: req.params.id} })
-            console.log(productoRestaurado);
             res.redirect('/')
         }
     
