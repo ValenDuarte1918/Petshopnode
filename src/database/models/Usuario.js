@@ -15,36 +15,41 @@ module.exports = function(sequelize, DataTypes) {
         email:{
             type: DataTypes.STRING
         },
-        contrasenia:{
+        password:{
             type: DataTypes.STRING
         },
-        imagen:{
+        telefono:{
             type: DataTypes.STRING
         },
-        created_at:{
+        fecha_nacimiento:{
             type: DataTypes.DATE
         },
-        deleted_at:{
+        avatar:{
+            type: DataTypes.STRING
+        },
+        rol:{
+            type: DataTypes.ENUM('cliente', 'admin'),
+            defaultValue: 'cliente'
+        },
+        activo:{
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
+        },
+        created_at:{
             type: DataTypes.DATE
         },
         updated_at:{
             type: DataTypes.DATE
         } 
-
-
-
     }
     let config = {
         tableName: 'usuarios',
         timestamps: false,
         paranoid: false,
-        deletedAt: "deleted_at",
         updatedAt: "updated_at",
         createdAt: "created_at"
     }
     let Usuario = sequelize.define(alias,cols,config)
 
-
-    
     return Usuario
 }

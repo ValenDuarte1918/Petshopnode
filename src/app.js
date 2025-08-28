@@ -85,8 +85,8 @@ app.use((req, res, next) => {
     res.locals.userLogged = req.session.userLogged;
     res.locals.isLoggedIn = !!req.session.userLogged;
     
-    // Calcular cantidad de items en carrito
-    const carrito = req.session.carrito || [];
+    // Calcular cantidad de items en carrito - usar 'cart' que es el que usa el controlador
+    const carrito = req.session.cart || [];
     res.locals.cartCount = carrito.reduce((sum, item) => sum + item.cantidad, 0);
     
     next();
@@ -112,6 +112,7 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(methodOverride('_method'));
+app.use(methodOverride('X-HTTP-Method-Override'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 

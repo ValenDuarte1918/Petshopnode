@@ -161,7 +161,7 @@
       <!-- Carrito -->
       <a href="/carrito" title="Carrito de Compras" class="header-icon cart-icon">
         <i class="fas fa-shopping-cart"></i>
-        <span class="cart-badge" style="display: none;">0</span>
+        <span class="cart-badge" style="<%= (typeof cartCount !== 'undefined' && cartCount > 0) ? 'display: flex;' : 'display: none;' %>"><%= (typeof cartCount !== 'undefined') ? cartCount : 0 %></span>
       </a>
     </div>
 
@@ -237,10 +237,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Script para actualizar contador de carrito en todas las páginas -->
 <script>
-// Función para actualizar contador del carrito (versión simplificada para header)
+// Variables globales para el estado del usuario y carrito
+window.userState = {
+    isLoggedIn: <%= locals.isLoggedIn ? 'true' : 'false' %>,
+    cartCount: <%= (typeof cartCount !== 'undefined') ? cartCount : 0 %>,
+    <% if (locals.isLoggedIn && locals.userLogged) { %>
+    user: {
+        firstName: '<%= userLogged.firstName %>',
+        email: '<%= userLogged.email %>',
+        category: '<%= userLogged.category %>'
+    }
+    <% } else { %>
+    user: null
+    <% } %>
+};
+
+// Función para actualizar contador del carrito
 function actualizarContadorCarrito() {
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    const contador = carrito.reduce((total, item) => total + item.cantidad, 0);
+    let contador = 0;
+    
+    if (window.userState.isLoggedIn) {
+        // Usuario logueado: usar contador del servidor
+        contador = window.userState.cartCount;
+    } else {
+        // Usuario no logueado: usar localStorage
+        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        contador = carrito.reduce((total, item) => total + item.cantidad, 0);
+    }
     
     // Buscar elementos del contador en el header
     const contadores = document.querySelectorAll('.cart-count, .cart-badge, .carrito-count, [data-cart-count]');
@@ -250,17 +273,42 @@ function actualizarContadorCarrito() {
     });
 }
 
-// Actualizar contador cuando se carga la página
-document.addEventListener('DOMContentLoaded', function() {
-    actualizarContadorCarrito();
-});
-
-// Escuchar cambios en localStorage para actualizar contador en tiempo real
-window.addEventListener('storage', function(e) {
-    if (e.key === 'carrito') {
+// Función para actualizar el contador desde respuestas AJAX
+function actualizarContadorDesdeServidor(nuevoContador) {
+    if (window.userState.isLoggedIn) {
+        window.userState.cartCount = nuevoContador;
         actualizarContadorCarrito();
     }
+}
+
+// NO actualizar contador automáticamente en DOMContentLoaded para respetar valor del servidor
+// Solo actualizar si es necesario (cuando hay cambios via AJAX)
+document.addEventListener('DOMContentLoaded', function() {
+    // Solo limpiar localStorage para usuarios no logueados si está usando el carrito del servidor
+    if (!window.userState.isLoggedIn) {
+        // Verificar si localStorage tiene datos obsoletos y el servidor dice que no hay nada
+        const localCarrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        if (localCarrito.length > 0 && window.userState.cartCount === 0) {
+            // Limpiar localStorage obsoleto
+            localStorage.removeItem('carrito');
+            // Actualizar display
+            const contadores = document.querySelectorAll('.cart-count, .cart-badge, .carrito-count, [data-cart-count]');
+            contadores.forEach(element => {
+                element.textContent = '0';
+                element.style.display = 'none';
+            });
+        }
+    }
 });
+
+// Para usuarios no logueados: escuchar cambios en localStorage
+if (!window.userState.isLoggedIn) {
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'carrito') {
+            actualizarContadorCarrito();
+        }
+    });
+}
 </script>
 
 </header>

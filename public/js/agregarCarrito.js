@@ -1,11 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     console.log('🛒 Carrito JavaScript cargado correctamente!');
     
-    // Inicializar carrito si no existe
-    if (!localStorage.getItem('carrito')) {
-        localStorage.setItem('carrito', JSON.stringify([]));
-        console.log('🛒 Carrito inicializado en localStorage');
-    }
+    // Ya no necesitamos inicializar localStorage - todo va a la base de datos
 
     // Función para mostrar notificaciones modernas
     function mostrarNotificacion(mensaje, tipo = 'success') {
@@ -97,30 +93,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 300);
     }
 
-    // Función para actualizar contador del carrito
-    function actualizarContadorCarrito() {
-        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-        const contador = carrito.reduce((total, item) => total + item.cantidad, 0);
-        
-        // Buscar elementos del contador en el header
-        const contadores = document.querySelectorAll('.cart-count, .cart-badge, .carrito-count, [data-cart-count]');
-        contadores.forEach(element => {
-            element.textContent = contador;
-            element.style.display = contador > 0 ? 'flex' : 'none';
-        });
-        
-        console.log('🔢 Contador actualizado:', contador);
-    }
-
     // Función para verificar si el usuario está logueado
     function verificarUsuarioLogueado() {
-        // Verificar si existe la configuración global
-        if (typeof window.petshopConfig === 'undefined') {
-            console.warn('⚠️ Configuración de usuario no disponible');
+        // Verificar usando el estado global del header
+        if (typeof window.userState === 'undefined') {
+            console.warn('⚠️ Estado de usuario no disponible');
             return false;
         }
         
-        return window.petshopConfig.isLoggedIn === true;
+        return window.userState.isLoggedIn === true;
     }
 
     // Función para mostrar modal de login
@@ -318,47 +299,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Función para agregar producto al carrito
     function agregarProductoAlCarrito(productoData) {
-        // Nota: Permitimos agregar al carrito sin login para mejor UX
-        // El login será requerido solo al momento de hacer checkout
         console.log('📦 Agregando producto:', productoData);
+        console.log('🔢 Cantidad a enviar:', productoData.cantidad);
         
-        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-        
-        // Buscar si el producto ya existe en el carrito
-        const productoExistente = carrito.find(item => item.id == productoData.id);
-        
-        if (productoExistente) {
-            // Si existe, aumentar cantidad
-            productoExistente.cantidad += 1;
-            productoExistente.subtotal = productoExistente.cantidad * productoExistente.precio;
-            console.log('📈 Cantidad actualizada:', productoExistente);
-            mostrarNotificacion(`Cantidad actualizada: ${productoExistente.cantidad}x ${productoData.nombre}`, 'info');
+        // Verificar si el usuario está logueado usando window.userState del header
+        if (window.userState && window.userState.isLoggedIn) {
+            // Usuario logueado: usar endpoint del servidor
+            fetch('/carrito/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    productId: productoData.id,
+                    cantidad: productoData.cantidad || 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarNotificacion(data.message || `¡${productoData.nombre} agregado al carrito!`, 'success');
+                    
+                    // Actualizar contador del header
+                    if (typeof actualizarContadorDesdeServidor === 'function' && data.cartCount !== undefined) {
+                        actualizarContadorDesdeServidor(data.cartCount);
+                    }
+                } else {
+                    if (data.message && data.message.includes('login')) {
+                        mostrarModalLogin();
+                    } else {
+                        mostrarNotificacion(data.message || 'Error al agregar producto', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarNotificacion('Error de conexión', 'error');
+            });
         } else {
-            // Si no existe, agregarlo
-            const nuevoProducto = {
-                id: productoData.id,
-                nombre: productoData.nombre,
-                imagen: productoData.imagen,
-                precio: productoData.precio,
-                descripcion: productoData.descripcion || '',
-                categoria: productoData.categoria || '',
-                color: productoData.color || '',
-                cantidad: 1,
-                subtotal: productoData.precio
-            };
-            carrito.push(nuevoProducto);
-            console.log('🆕 Nuevo producto agregado:', nuevoProducto);
-            mostrarNotificacion(`¡${productoData.nombre} agregado al carrito!`, 'success');
+            // Usuario no logueado: mostrar modal de login
+            mostrarModalLogin();
         }
         
-        // Guardar carrito actualizado
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-        console.log('💾 Carrito guardado:', carrito);
-        
-        // Actualizar contador visual
-        actualizarContadorCarrito();
-        
-        return carrito;
+        return true;
     }
 
     // Event listeners para botones del home y detail
@@ -389,6 +372,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Obtener cantidad seleccionada
                 const cantidadInput = document.querySelector('.quantity-input');
                 const cantidad = cantidadInput ? parseInt(cantidadInput.value) || 1 : 1;
+                console.log('🔢 Cantidad seleccionada:', cantidad);
                 
                 // Método 1: Usar data attributes del botón (más confiable)
                 let productoData = {
@@ -420,10 +404,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log('📊 Datos del producto de detalle:', productoData);
                 
                 if (productoData.id && productoData.nombre && productoData.precio) {
-                    // Agregar múltiples unidades si se especificó cantidad
-                    for (let i = 0; i < cantidad; i++) {
-                        agregarProductoAlCarrito({...productoData, cantidad: 1});
-                    }
+                    // Agregar con la cantidad especificada
+                    agregarProductoAlCarrito({...productoData, cantidad: cantidad});
                 } else {
                     console.error('❌ Faltan datos del producto:', productoData);
                     mostrarNotificacion('Error: No se pudieron obtener los datos del producto', 'error');
@@ -624,13 +606,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Actualizar contador al cargar la página
-    actualizarContadorCarrito();
-    
     // Debug: Mostrar estado del usuario
     console.log('👤 Estado del usuario:', {
         isLoggedIn: verificarUsuarioLogueado(),
-        userInfo: window.petshopConfig?.userInfo || 'No disponible'
+        userInfo: window.userState?.user || 'No disponible'
     });
     
     console.log('🚀 Sistema de carrito completamente inicializado');

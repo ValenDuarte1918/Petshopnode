@@ -44,8 +44,8 @@ router.get('/producto/edit', requireAdmin, productController.edit);
 router.put('/producto/edit/:id', requireAdmin, productController.editProcess);
 router.post('/producto/update/:id', requireAdmin, productController.update);
 router.get('/producto/delete/:id', requireAdmin, productController.delete);
-router.post('/producto/delete/:id', requireAdmin, productController.destroy);
-router.get('/producto/restore/:id', requireAdmin, productController.restaurar)
+router.post('/producto/delete/:id', requireAdmin, productController.delete);
+router.get('/producto/restore/:id', requireAdmin, productController.restore)
 
 // Ruta alternativa para detalle de producto
 router.get('/detalle/:id', productController.detail);

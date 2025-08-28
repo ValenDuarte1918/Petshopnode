@@ -27,7 +27,21 @@ const requireAdmin = (req, res, next) => {
 
 // Middleware para autenticación de usuario
 const requireAuth = (req, res, next) => {
+    const isAjax = req.xhr || 
+                   req.headers.accept?.indexOf('json') > -1 || 
+                   req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+                   req.headers['content-type']?.indexOf('json') > -1;
+    
     if (!req.session.userLogged) {
+        // Si es petición AJAX, devolver JSON
+        if (isAjax) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Debes iniciar sesión para agregar productos al carrito',
+                redirectUrl: '/users/login'
+            });
+        }
+        // Si no es AJAX, redirigir al login
         return res.redirect('/users/login?redirect=' + encodeURIComponent(req.originalUrl));
     }
     next();

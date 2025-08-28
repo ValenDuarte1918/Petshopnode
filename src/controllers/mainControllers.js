@@ -3,94 +3,36 @@ const path = require('path');
 // Importar modelos de base de datos
 const db = require('../database/models');
 
-// Función para leer productos dinámicamente (FALLBACK)
-const getProductos = () => {
-    try {
-        return JSON.parse(fs.readFileSync(path.join(__dirname, '../data/productos.json'), 'utf-8'));
-    } catch (error) {
-        console.error('Error al leer productos:', error);
-        return [];
-    }
-};
-
 const controller = {
     home: async (req, res) => {
         try {
             console.log('🏠 Cargando productos para home...');
             
-            // Intentar usar base de datos primero
-            let productosListados = [];
-            let usingDatabase = false;
-            
-            try {
-                // Buscar productos activos en la base de datos
-                const productosDB = await db.Producto.findAll({
-                    where: {
-                        borrado: false
-                    },
-                    order: [
-                        ['destacado', 'DESC'],
-                        ['created_at', 'DESC']
-                    ]
-                });
-                
-                if (productosDB && productosDB.length > 0) {
-                    productosListados = productosDB.map(producto => ({
-                        id: producto.id,
-                        nombre: producto.name,
-                        descripcion: producto.description,
-                        img: producto.image,
-                        categoria: producto.category,
-                        subcategoria: producto.subcategory,
-                        marca: producto.brand,
-                        color: producto.color,
-                        precio: producto.price,
-                        stock: producto.stock,
-                        destacado: producto.destacado,
-                        peso: producto.peso,
-                        edad: producto.edad
-                    }));
-                    usingDatabase = true;
-                    console.log('✅ Usando base de datos:', productosListados.length, 'productos');
-                } else {
-                    throw new Error('No se encontraron productos en la base de datos');
-                }
-                
-            } catch (dbError) {
-                console.warn('⚠️  Error con base de datos, usando JSON de respaldo:', dbError.message);
-                
-                // Fallback a JSON
-                const listaProductos = getProductos();
-                productosListados = listaProductos.filter(producto => !producto.borrado);
-                productosListados = productosListados.map(producto => ({
-                    id: producto.id,
-                    nombre: producto.name,
-                    descripcion: producto.description,
-                    img: producto.image,
-                    categoria: producto.category,
-                    subcategoria: producto.subcategory,
-                    marca: producto.brand,
-                    color: producto.color,
-                    precio: producto.price,
-                    stock: producto.stock,
-                    destacado: producto.destacado,
-                    peso: producto.peso,
-                    edad: producto.edad
-                }));
-                console.log('📄 Usando JSON de respaldo:', productosListados.length, 'productos');
-            }
-            
-            res.render('home', { 
-                listaProductos: productosListados,
-                usingDatabase: usingDatabase
+            // Usar base de datos
+            const productosDB = await db.Producto.findAll({
+                where: { borrado: false },
+                limit: 12,
+                order: [['created_at', 'DESC']]
             });
             
+            const productosListados = productosDB.map(producto => ({
+                id: producto.id,
+                nombre: producto.name,
+                descripcion: producto.description,
+                img: producto.image,
+                categoria: producto.category,
+                color: producto.color,
+                precio: producto.price
+            }));
+            
+            console.log('✅ Usando base de datos:', productosListados.length, 'productos');
+            res.render('home', { listaProductos: productosListados });
+            
         } catch (error) {
-            console.error('💥 Error al cargar productos para home:', error);
-            res.render('home', { 
-                listaProductos: [],
-                usingDatabase: false,
-                error: 'Error al cargar productos'
+            console.error('❌ Error al cargar productos:', error);
+            res.status(500).render('error', {
+                message: 'Error al cargar productos',
+                error: process.env.NODE_ENV === 'development' ? error : {}
             });
         }
     },
@@ -99,524 +41,467 @@ const controller = {
         try {
             console.log('📋 Cargando página de productos...');
             
-            let productosListados = [];
-            let usingDatabase = false;
+            // Usar base de datos
+            const productosDB = await db.Producto.findAll({
+                where: { borrado: false },
+                order: [['name', 'ASC']]
+            });
             
-            try {
-                // Usar base de datos primero
-                const productosDB = await db.Producto.findAll({
-                    where: { borrado: false },
-                    order: [['name', 'ASC']]
-                });
-                
-                if (productosDB && productosDB.length > 0) {
-                    productosListados = productosDB.map(producto => ({
-                        ...producto.toJSON(),
-                        nombre: producto.name,
-                        descripcion: producto.description,
-                        categoria: producto.category,
-                        precio: producto.price,
-                        img: producto.image,
-                        brand: producto.brand || 'PetShop Premium',
-                        stock: producto.stock || 0
-                    }));
-                    usingDatabase = true;
-                    console.log('✅ Usando base de datos para productos:', productosListados.length);
-                } else {
-                    throw new Error('No hay productos en BD');
-                }
-                
-            } catch (dbError) {
-                console.warn('⚠️ Error con BD, usando JSON:', dbError.message);
-                // Fallback a JSON
-                const listaProductos = getProductos();
-                productosListados = listaProductos.filter(producto => !producto.borrado);
-                
-                productosListados = productosListados.map(producto => ({
-                    ...producto,
-                    nombre: producto.name,
-                    descripcion: producto.description,
-                    categoria: producto.category,
-                    precio: producto.price,
-                    img: producto.image,
-                    brand: producto.brand || 'PetShop Premium',
-                    stock: producto.stock || Math.floor(Math.random() * 20) + 1
-                }));
-            }
-
+            const productos = productosDB.map(producto => ({
+                id: producto.id,
+                nombre: producto.name,
+                descripcion: producto.description,
+                img: producto.image,
+                categoria: producto.category,
+                subcategoria: producto.subcategory,
+                brand: producto.brand,
+                color: producto.color,
+                precio: producto.price,
+                stock: producto.stock
+            }));
+            
             // Obtener marcas únicas para el filtro
-            const marcas = [...new Set(productosListados.map(p => p.brand).filter(Boolean))];
-
+            const marcas = [...new Set(productos.map(p => p.brand).filter(Boolean))];
+            
+            console.log('✅ Usando base de datos para productos:', productos.length);
+            
             res.render('productos', {
-                productos: productosListados,
-                categoria: 'Todos los Productos',
-                totalProductos: productosListados.length,
+                productos: productos,
+                categoria: 'Todos los productos',
+                totalProductos: productos.length,
                 marcas: marcas,
-                usingDatabase: usingDatabase,
                 currentFilters: {
                     categoria: null,
                     mascota: null,
                     marca: null
                 }
             });
+            
         } catch (error) {
             console.error('❌ Error al cargar productos:', error);
-            res.render('productos', {
-                productos: [], // Cambiar a 'productos'
-                categoria: 'Todos los Productos',
-                totalProductos: 0,
-                marcas: [],
-                currentFilters: {
-                    categoria: null,
-                    mascota: null,
-                    marca: null
-                }
+            res.status(500).render('error', {
+                message: 'Error al cargar productos',
+                error: process.env.NODE_ENV === 'development' ? error : {}
             });
         }
     },
-    
-    detail: async (req, res) => {
-        try {
-            console.log(`🔍 Cargando detalle del producto ID: ${req.params.id}`);
-            let productFound = null;
-            let productosRelacionados = [];
-            let usingDatabase = false;
-            
-            try {
-                // Buscar producto en la base de datos
-                const productoDB = await db.Producto.findByPk(req.params.id, {
-                    where: { borrado: false }
-                });
-                
-                if (productoDB) {
-                    productFound = {
-                        id: productoDB.id,
-                        nombre: productoDB.name,
-                        descripcion: productoDB.description,
-                        img: productoDB.image,
-                        categoria: productoDB.category,
-                        subcategoria: productoDB.subcategory,
-                        marca: productoDB.brand,
-                        color: productoDB.color,
-                        precio: productoDB.price,
-                        stock: productoDB.stock,
-                        peso: productoDB.peso,
-                        edad: productoDB.edad,
-                        destacado: productoDB.destacado
-                    };
-                    
-                    // Obtener productos relacionados de la misma categoría
-                    const relacionadosDB = await db.Producto.findAll({
-                        where: {
-                            category: productoDB.category,
-                            id: { [db.Sequelize.Op.ne]: productoDB.id },
-                            borrado: false
-                        },
-                        limit: 4,
-                        order: [['destacado', 'DESC'], ['created_at', 'DESC']]
-                    });
-                    
-                    productosRelacionados = relacionadosDB.map(producto => ({
-                        id: producto.id,
-                        nombre: producto.name,
-                        descripcion: producto.description,
-                        img: producto.image,
-                        categoria: producto.category,
-                        color: producto.color,
-                        precio: producto.price
-                    }));
-                    
-                    usingDatabase = true;
-                    console.log('✅ Producto encontrado en BD:', productFound.nombre);
-                } else {
-                    throw new Error('Producto no encontrado en BD');
-                }
-                
-            } catch (dbError) {
-                console.warn('⚠️ Error con BD, usando JSON:', dbError.message);
-                // Fallback a JSON
-                const listaProductos = getProductos();
-                productFound = listaProductos.find(producto => producto.id == req.params.id);
-                
-                if (productFound) {
-                    productFound = {
-                        id: productFound.id,
-                        nombre: productFound.name,
-                        descripcion: productFound.description,
-                        img: productFound.image,
-                        categoria: productFound.category,
-                        color: productFound.color,
-                        precio: productFound.price
-                    };
 
-                    // Obtener productos relacionados
-                    productosRelacionados = listaProductos
-                        .filter(producto => 
-                            producto.category === productFound.categoria && 
-                            producto.id != productFound.id &&
-                            !producto.borrado
-                        )
-                        .slice(0, 4)
-                        .map(producto => ({
-                            id: producto.id,
-                            nombre: producto.name,
-                            descripcion: producto.description,
-                            img: producto.image,
-                            categoria: producto.category,
-                            color: producto.color,
-                            precio: producto.price
-                        }));
-                }
-            }
-            
-            if (productFound) {
-                return res.render('detail', { 
-                    producto: productFound, 
-                    productosRelacionados: productosRelacionados,
-                    usingDatabase: usingDatabase
-                });
-            }
-            
-            return res.render('detail', { 
-                producto: {}, 
-                productosRelacionados: [],
-                usingDatabase: false
-            });
-        } catch (error) {
-            console.error('❌ Error al cargar producto:', error);
-            return res.render('detail', { producto: {}, productosRelacionados: [] });
-        }
-    },
-   
-    carrito:(req,res)=> {
-        // Solo renderizar la vista simple, el contenido se carga con JavaScript
-        res.render('carrito-simple');
-    },
-
-    // Agregar producto al carrito
     addToCart: async (req, res) => {
         try {
-            const productId = parseInt(req.params.id);
-            let producto = null;
-            
-            try {
-                // Buscar producto en la base de datos primero
-                const productoDB = await db.Producto.findByPk(productId, {
-                    where: { borrado: false }
-                });
-                
-                if (productoDB) {
-                    producto = {
-                        id: productoDB.id,
-                        name: productoDB.name,
-                        price: productoDB.price,
-                        image: productoDB.image,
-                        stock: productoDB.stock
-                    };
-                    console.log('✅ Producto para carrito desde BD:', producto.name);
-                } else {
-                    throw new Error('Producto no encontrado en BD');
+            // Verificar si el usuario está logueado (doble verificación)
+            if (!req.session.userLogged) {
+                // Si es una petición AJAX, devolver JSON
+                if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+                    return res.status(401).json({ 
+                        success: false, 
+                        message: 'Debes iniciar sesión para agregar productos al carrito',
+                        redirectUrl: '/users/login'
+                    });
                 }
-                
-            } catch (dbError) {
-                console.warn('⚠️ Error con BD para carrito, usando JSON:', dbError.message);
-                // Fallback a JSON
-                const listaProductos = getProductos();
-                const productoJSON = listaProductos.find(p => p.id === productId);
-                if (productoJSON) {
-                    producto = {
-                        id: productoJSON.id,
-                        name: productoJSON.name,
-                        price: productoJSON.price,
-                        image: productoJSON.image,
-                        stock: productoJSON.stock
-                    };
-                }
+                // Si no es AJAX, redirigir al login
+                return res.redirect('/users/login?redirect=' + encodeURIComponent(req.originalUrl));
             }
+
+            const { productId, id, cantidad = 1 } = req.body;
+            const productoId = productId || id; // Aceptar ambos nombres
+            
+            // Verificar que el producto existe en la BD
+            const producto = await db.Producto.findByPk(productoId, {
+                where: { borrado: false }
+            });
             
             if (!producto) {
-                return res.status(404).json({ error: 'Producto no encontrado' });
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Producto no encontrado' 
+                });
+            }
+
+            // Verificar stock disponible
+            if (producto.stock < cantidad) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Stock insuficiente' 
+                });
             }
 
             // Inicializar carrito si no existe
-            if (!req.session.carrito) {
-                req.session.carrito = [];
+            if (!req.session.cart) {
+                req.session.cart = [];
             }
 
             // Buscar si el producto ya está en el carrito
-            const existingItem = req.session.carrito.find(item => item.id === productId);
-            
-            if (existingItem) {
-                existingItem.cantidad += 1;
+            const existingItemIndex = req.session.cart.findIndex(item => item.id == productoId);
+
+            if (existingItemIndex >= 0) {
+                // Actualizar cantidad
+                req.session.cart[existingItemIndex].cantidad += parseInt(cantidad);
             } else {
-                req.session.carrito.push({
+                // Agregar nuevo producto
+                req.session.cart.push({
                     id: producto.id,
                     nombre: producto.name,
                     precio: producto.price,
-                    img: producto.image,
-                    cantidad: 1
+                    imagen: producto.image,
+                    categoria: producto.category,
+                    color: producto.color,
+                    cantidad: parseInt(cantidad)
                 });
             }
 
-            // Calcular total de items en carrito
-            const cartCount = req.session.carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            const totalItems = req.session.cart.reduce((total, item) => total + item.cantidad, 0);
             
-            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-                // Si es una petición AJAX, enviar respuesta JSON
-                return res.json({ 
-                    success: true, 
-                    message: 'Producto agregado al carrito',
-                    cartCount: cartCount 
-                });
-            } else {
-                // Si es navegación normal, redirigir al carrito
-                return res.redirect('/carrito');
-            }
-        } catch (error) {
-            console.error('❌ Error al agregar producto al carrito:', error);
-            return res.status(500).json({ error: 'Error interno del servidor' });
-        }
-    },
-
-    // Actualizar cantidad en carrito
-    updateCartItem: (req, res) => {
-        const productId = parseInt(req.params.id);
-        const nuevaCantidad = parseInt(req.body.cantidad);
-        
-        if (req.session.carrito) {
-            const item = req.session.carrito.find(item => item.id === productId);
-            if (item) {
-                if (nuevaCantidad > 0) {
-                    item.cantidad = nuevaCantidad;
-                } else {
-                    // Si cantidad es 0, eliminar del carrito
-                    req.session.carrito = req.session.carrito.filter(item => item.id !== productId);
-                }
-            }
-        }
-        
-        res.redirect('/carrito');
-    },
-
-    // Eliminar producto del carrito
-    removeFromCart: (req, res) => {
-        const productId = parseInt(req.params.id);
-        
-        if (req.session.carrito) {
-            req.session.carrito = req.session.carrito.filter(item => item.id !== productId);
-        }
-        
-        res.redirect('/carrito');
-    },
-
-    // Limpiar carrito
-    clearCart: (req, res) => {
-        req.session.carrito = [];
-        res.redirect('/carrito');
-    },
-    create: async (req, res) => {
-        try {
-            console.log('🛍️ Creando nuevo producto...');
-            
-            const nuevoProducto = await db.Producto.create({
-                name: req.body.name,
-                description: req.body.description,
-                category: req.body.category,
-                price: parseFloat(req.body.price),
-                color: req.body.color || "No especificado",
-                image: req.file ? req.file.filename : 'logo_petshop.jpeg',
-                borrado: false,
-                stock: parseInt(req.body.stock) || 0,
-                destacado: false
+            console.log(`✅ Producto agregado al carrito por usuario: ${req.session.userLogged.email}`);
+            res.json({ 
+                success: true, 
+                message: 'Producto agregado al carrito',
+                cartCount: totalItems
             });
             
-            console.log(`✅ Producto creado en BD: ${nuevoProducto.name}`);
-            res.redirect('/');
-            
         } catch (error) {
-            console.error('❌ Error al crear producto:', error);
-            // Fallback a JSON si falla
-            try {
-                let listaProductos = getProductos();
-                let nuevoProducto = {
-                    "id": listaProductos.length > 0 ? Math.max(...listaProductos.map(p => p.id)) + 1 : 1,
-                    "name": req.body.name,
-                    "description": req.body.description,
-                    "category": req.body.category,
-                    "price": req.body.price,
-                    "color": req.body.color,
-                    "image": req.file ? req.file.filename : 'logo_petshop.jpeg',
-                    "borrado": false
-                }
-                
-                listaProductos.push(nuevoProducto);
-                fs.writeFileSync(path.join(__dirname, "../data/productos.json"), JSON.stringify(listaProductos, null, 2), "utf-8")
-                console.log('⚠️ Producto creado en JSON fallback');
-                res.redirect('/');
-            } catch (fallbackError) {
-                console.error('❌ Error también en JSON fallback:', fallbackError);
-                res.status(500).send('Error al crear producto');
-            }
+            console.error('❌ Error al agregar al carrito:', error);
+            res.status(500).json({ 
+                success: false, 
+                message: 'Error interno del servidor' 
+            });
         }
     },
-    store: async (req, res) => {
-        try {
-            if (!req.file) {
-                console.error("❌ No se subió ninguna imagen");
-                return res.render('create', { error: 'Imagen requerida' });
-            }
-            
-            console.log('🛍️ Guardando nuevo producto con imagen...');
-            
-            const nuevoProducto = await db.Producto.create({
-                name: req.body.name,
-                description: req.body.description,
-                category: req.body.category,
-                price: parseFloat(req.body.price),
-                color: req.body.color || "No especificado",
-                image: req.file.filename,
-                borrado: false,
-                stock: parseInt(req.body.stock) || 0,
-                destacado: false
-            });
-            
-            console.log(`✅ Producto guardado en BD: ${nuevoProducto.name}`);
-            res.redirect("/productos");
-            
-        } catch (error) {
-            console.error('❌ Error al guardar producto:', error);
-            // Fallback a JSON
-            try {
-                if (req.file) {
-                    let listaProductos = getProductos();
-                    let nuevoProducto = {
-                        "id": listaProductos.length > 0 ? Math.max(...listaProductos.map(p => p.id)) + 1 : 1,
-                        "name": req.body.name,
-                        "description": req.body.description,
-                        "category": req.body.category,
-                        "price": req.body.price,
-                        "color": req.body.color,
-                        "image": req.file.filename,
-                        "borrado": false
-                    }
-                    
-                    listaProductos.push(nuevoProducto)
-                    fs.writeFileSync(path.join(__dirname, "../data/productos.json"), JSON.stringify(listaProductos, null, 2), "utf-8")
-                    console.log('⚠️ Producto guardado en JSON fallback');
-                    res.redirect("/productos");
-                } else {
-                    res.render('create', { error: 'Imagen requerida' });
-                }
-            } catch (fallbackError) {
-                console.error('❌ Error también en JSON fallback:', fallbackError);
-                res.status(500).send('Error al guardar producto');
-            }
-        }
-    }, 
+
     edit: async (req, res) => {
         try {
-            const productId = req.params.id;
-            console.log(`✏️ Editando producto ID: ${productId}`);
+            const producto = await db.Producto.findByPk(req.params.id);
             
-            const producto = await db.Producto.findByPk(productId);
-            if (producto) {
-                res.render("editar", { producto: producto });
-            } else {
-                res.status(404).send('Producto no encontrado');
+            if (!producto) {
+                return res.status(404).render('error', {
+                    message: 'Producto no encontrado',
+                    error: {}
+                });
             }
+            
+            res.render('editar', { 
+                productToEdit: {
+                    id: producto.id,
+                    name: producto.name,
+                    description: producto.description,
+                    image: producto.image,
+                    category: producto.category,
+                    subcategory: producto.subcategory,
+                    brand: producto.brand,
+                    color: producto.color,
+                    price: producto.price,
+                    stock: producto.stock,
+                    peso: producto.peso,
+                    edad: producto.edad
+                }
+            });
+            
         } catch (error) {
-            console.error('❌ Error al buscar producto para editar:', error);
-            res.status(500).send('Error al cargar producto');
+            console.error('❌ Error al cargar producto para editar:', error);
+            res.status(500).render('error', {
+                message: 'Error al cargar producto',
+                error: process.env.NODE_ENV === 'development' ? error : {}
+            });
         }
     },
-    
+
     update: async (req, res) => {
         try {
-            const productId = req.params.id;
-            console.log(`🔄 Actualizando producto ID: ${productId}`);
-            
-            const [updatedRowsCount] = await db.Producto.update({
+            const updateData = {
                 name: req.body.name,
                 description: req.body.description,
                 category: req.body.category,
+                subcategory: req.body.subcategory,
+                brand: req.body.brand,
                 color: req.body.color,
                 price: parseFloat(req.body.price),
                 stock: parseInt(req.body.stock) || 0,
-                image: req.file ? req.file.filename : undefined
-            }, {
-                where: { id: productId }
-            });
-            
-            if (updatedRowsCount > 0) {
-                console.log(`✅ Producto ${productId} actualizado en BD`);
-                res.redirect("/");
-            } else {
-                res.status(404).send('Producto no encontrado');
+                peso: req.body.peso || '',
+                edad: req.body.edad || ''
+            };
+
+            if (req.file) {
+                updateData.image = req.file.filename;
             }
+
+            await db.Producto.update(updateData, {
+                where: { id: req.params.id }
+            });
+
+            console.log('✅ Producto actualizado en BD');
+            res.redirect('/productos');
             
         } catch (error) {
             console.error('❌ Error al actualizar producto:', error);
-            // Fallback a JSON si falla
-            try {
-                let listaProductos = getProductos();
-                let productoEncontrado = listaProductos.find(p => p.id == req.params.id);
-                if (productoEncontrado) {
-                    productoEncontrado.name = req.body.name;
-                    productoEncontrado.description = req.body.description;
-                    productoEncontrado.category = req.body.category;
-                    productoEncontrado.color = req.body.color;
-                    productoEncontrado.price = req.body.price;
-                    if (req.file) {
-                        productoEncontrado.image = req.file.filename;
-                    }
-                    
-                    fs.writeFileSync(path.join(__dirname, "../data/productos.json"), JSON.stringify(listaProductos, null, 2), "utf-8");
-                    console.log('⚠️ Producto actualizado en JSON fallback');
-                }
-                res.redirect("/");
-            } catch (fallbackError) {
-                console.error('❌ Error también en JSON fallback:', fallbackError);
-                res.status(500).send('Error al actualizar producto');
-            }
+            res.status(500).render('error', {
+                message: 'Error al actualizar producto',
+                error: process.env.NODE_ENV === 'development' ? error : {}
+            });
         }
     },
-    
+
     delete: async (req, res) => {
         try {
-            const productId = req.params.id;
-            console.log(`🗑️ Eliminando producto ID: ${productId}`);
+            await db.Producto.update(
+                { borrado: true },
+                { where: { id: req.params.id } }
+            );
             
-            const [updatedRowsCount] = await db.Producto.update({
-                borrado: true
-            }, {
-                where: { id: productId }
-            });
-            
-            if (updatedRowsCount > 0) {
-                console.log(`✅ Producto ${productId} marcado como borrado en BD`);
-                res.redirect("/");
-            } else {
-                res.status(404).send('Producto no encontrado');
-            }
+            console.log('✅ Producto marcado como borrado en BD');
+            res.redirect('/productos');
             
         } catch (error) {
-            console.error('❌ Error al eliminar producto:', error);
-            // Fallback a JSON si falla
-            try {
-                let listaProductos = getProductos();
-                let productoEncontrado = listaProductos.find(producto => producto.id == req.params.id);
-                if (productoEncontrado) {
-                    productoEncontrado.borrado = true;
-                    fs.writeFileSync(path.join(__dirname, "../data/productos.json"), JSON.stringify(listaProductos, null, 2), "utf-8");
-                    console.log('⚠️ Producto eliminado en JSON fallback');
-                }
-                res.redirect("/");
-            } catch (fallbackError) {
-                console.error('❌ Error también en JSON fallback:', fallbackError);
-                res.status(500).send('Error al eliminar producto');
-            }
+            console.error('❌ Error al borrar producto:', error);
+            res.status(500).render('error', {
+                message: 'Error al borrar producto',
+                error: process.env.NODE_ENV === 'development' ? error : {}
+            });
         }
+    },
+
+    carrito: (req, res) => {
+        const cart = req.session.cart || [];
+        const total = cart.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+        
+        res.render('carrito', { 
+            carrito: cart,
+            cart: cart,
+            total: total,
+            user: req.session.userLogged || null,
+            isLoggedIn: !!req.session.userLogged,
+            userLogged: req.session.userLogged || null
+        });
+    },
+
+    updateCartItem: (req, res) => {
+        try {
+            const isAjax = req.xhr || 
+                           req.headers.accept?.indexOf('json') > -1 || 
+                           req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+                           req.headers['content-type']?.indexOf('json') > -1;
+            const { id } = req.params;
+            const { cantidad } = req.body;
+            
+            if (!req.session.cart) {
+                if (isAjax) {
+                    return res.status(400).json({ success: false, message: 'Carrito vacío' });
+                }
+                return res.redirect('/carrito');
+            }
+            
+            const itemIndex = req.session.cart.findIndex(item => item.id == id);
+            if (itemIndex >= 0) {
+                req.session.cart[itemIndex].cantidad = parseInt(cantidad);
+                const total = req.session.cart.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+                const totalItems = req.session.cart.reduce((sum, item) => sum + item.cantidad, 0);
+                
+                // Si es petición AJAX, devolver JSON
+                if (isAjax) {
+                    return res.json({ success: true, total: total, cartCount: totalItems });
+                }
+                
+                // Si es petición normal, redirigir al carrito
+                res.redirect('/carrito');
+            } else {
+                if (isAjax) {
+                    return res.status(404).json({ success: false, message: 'Producto no encontrado en carrito' });
+                }
+                res.redirect('/carrito');
+            }
+        } catch (error) {
+            console.error('❌ Error al actualizar carrito:', error);
+            
+            if (isAjax) {
+                return res.status(500).json({ success: false, message: 'Error interno del servidor' });
+            }
+            
+            res.redirect('/carrito?error=1');
+        }
+    },
+
+    removeFromCart: (req, res) => {
+        try {
+            const { id } = req.params;
+            
+            if (!req.session.cart) {
+                if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+                    return res.status(400).json({ success: false, message: 'Carrito vacío' });
+                }
+                return res.redirect('/carrito');
+            }
+            
+            req.session.cart = req.session.cart.filter(item => item.id != id);
+            const total = req.session.cart.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            const totalItems = req.session.cart.reduce((sum, item) => sum + item.cantidad, 0);
+            
+            // Si es petición AJAX, devolver JSON
+            if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+                return res.json({ success: true, total: total, cartCount: totalItems });
+            }
+            
+            // Si es petición normal, redirigir al carrito
+            res.redirect('/carrito');
+        } catch (error) {
+            console.error('❌ Error al eliminar del carrito:', error);
+            
+            if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+                return res.status(500).json({ success: false, message: 'Error interno del servidor' });
+            }
+            
+            res.redirect('/carrito?error=1');
+        }
+    },
+
+    clearCart: (req, res) => {
+        try {
+            req.session.cart = [];
+            
+            // Si es una petición AJAX, devolver JSON
+            if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+                return res.json({ success: true, message: 'Carrito vaciado' });
+            }
+            
+            // Si es una petición normal del navegador, redirigir al carrito
+            res.redirect('/carrito');
+        } catch (error) {
+            console.error('❌ Error al vaciar carrito:', error);
+            
+            // Si es AJAX, devolver error JSON
+            if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+                return res.status(500).json({ success: false, message: 'Error interno del servidor' });
+            }
+            
+            // Si es navegador, redirigir con error
+            res.redirect('/carrito?error=1');
+        }
+    },
+
+    create: (req, res) => {
+        res.render('create');
+    },
+
+    store: async (req, res) => {
+        try {
+            await db.Producto.create({
+                name: req.body.name,
+                description: req.body.description,
+                image: req.file ? req.file.filename : 'imagen1.jpg',
+                category: req.body.category,
+                subcategory: req.body.subcategory,
+                brand: req.body.brand,
+                color: req.body.color,
+                price: parseFloat(req.body.price),
+                stock: parseInt(req.body.stock) || 0,
+                peso: req.body.peso || '',
+                edad: req.body.edad || '',
+                borrado: false
+            });
+            
+            console.log('✅ Producto creado en BD');
+            res.redirect('/productos');
+            
+        } catch (error) {
+            console.error('❌ Error al crear producto:', error);
+            res.status(500).render('error', {
+                message: 'Error al crear producto',
+                error: process.env.NODE_ENV === 'development' ? error : {}
+            });
+        }
+    },
+
+    detail: async (req, res) => {
+        try {
+            console.log(`🔍 Detalle producto ID: ${req.params.id}`);
+            
+            // Usar base de datos
+            const productoDB = await db.Producto.findByPk(req.params.id, {
+                where: { borrado: false }
+            });
+            
+            if (!productoDB) {
+                return res.status(404).render('error', { 
+                    message: 'Producto no encontrado',
+                    error: {}
+                });
+            }
+            
+            const productFound = {
+                id: productoDB.id,
+                nombre: productoDB.name,
+                descripcion: productoDB.description,
+                img: productoDB.image,
+                categoria: productoDB.category,
+                color: productoDB.color,
+                precio: productoDB.price,
+                stock: productoDB.stock,
+                peso: productoDB.peso,
+                edad: productoDB.edad
+            };
+            
+            // Obtener productos relacionados
+            const relacionadosDB = await db.Producto.findAll({
+                where: {
+                    category: productoDB.category,
+                    id: { [db.Sequelize.Op.ne]: productoDB.id },
+                    borrado: false
+                },
+                limit: 4,
+                order: [['created_at', 'DESC']]
+            });
+            
+            const productosRelacionados = relacionadosDB.map(producto => ({
+                id: producto.id,
+                nombre: producto.name,
+                descripcion: producto.description,
+                img: producto.image,
+                categoria: producto.category,
+                color: producto.color,
+                precio: producto.price
+            }));
+            
+            console.log('✅ Detalle desde BD:', productFound.nombre);
+            
+            return res.render('detail', { 
+                producto: productFound, 
+                productosRelacionados: productosRelacionados 
+            });
+            
+        } catch (error) {
+            console.error('❌ Error al cargar producto:', error);
+            return res.status(500).render('error', { 
+                message: 'Error al cargar producto',
+                error: process.env.NODE_ENV === 'development' ? error : {}
+            });
+        }
+    },
+
+    registro: (req, res) => {
+        res.render('registro');
+    },
+
+    login: (req, res) => {
+        res.render('login');
+    },
+
+    profile: (req, res) => {
+        if (!req.session.user) {
+            return res.redirect('/login');
+        }
+        res.render('profile', { user: req.session.user });
+    },
+
+    // Método debug para verificar estado del carrito
+    debugCart: (req, res) => {
+        const cartInfo = {
+            isLoggedIn: !!req.session.userLogged,
+            userEmail: req.session.userLogged?.email || null,
+            cart: req.session.cart || [],
+            cartCount: (req.session.cart || []).reduce((sum, item) => sum + item.cantidad, 0),
+            sessionId: req.sessionID
+        };
+        
+        console.log('🐛 Debug carrito:', cartInfo);
+        res.json(cartInfo);
     }
 }
 
-module.exports = controller
+module.exports = controller;

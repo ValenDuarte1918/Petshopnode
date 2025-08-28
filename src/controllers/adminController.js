@@ -2,34 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('../database/models');
 
-// Rutas de archivos
-const usuariosPath = path.join(__dirname, '../data/usuarios.json');
-const productosPath = path.join(__dirname, '../data/productos.json');
-
-// Funciones auxiliares para cargar datos
-const getUsuarios = () => {
-  try {
-    return JSON.parse(fs.readFileSync(usuariosPath, 'utf-8'));
-  } catch (error) {
-    return [];
-  }
-};
-
-const getProductos = () => {
-  try {
-    return JSON.parse(fs.readFileSync(productosPath, 'utf-8'));
-  } catch (error) {
-    return [];
-  }
-};
-
-const saveUsuarios = (usuarios) => {
-  fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2), 'utf-8');
-};
-
-const saveProductos = (productos) => {
-  fs.writeFileSync(productosPath, JSON.stringify(productos, null, 2), 'utf-8');
-};
+// Ya no necesitamos funciones para manejar JSON, todo va a la DB
 
 const adminController = {
   // Verificar si el usuario es administrador
@@ -53,7 +26,22 @@ const adminController = {
   // Dashboard principal del administrador
   dashboard: async (req, res) => {
     try {
-      const usuarios = getUsuarios(); // Mantenemos JSON para usuarios por ahora
+      // Obtener usuarios desde la base de datos
+      const usuariosDB = await db.Usuario.findAll({
+        where: { activo: true },
+        order: [['created_at', 'DESC']]
+      });
+      
+      const usuarios = usuariosDB.map(usuario => ({
+        id: usuario.id,
+        firstName: usuario.nombre,
+        lastName: usuario.apellido,
+        email: usuario.email,
+        category: usuario.rol === 'admin' ? 'Administrador' : 'Cliente',
+        rol: usuario.rol,
+        image: usuario.avatar,
+        fechaRegistro: usuario.created_at
+      }));
       
       // Obtener productos desde la base de datos
       const productosDB = await db.Producto.findAll({
@@ -77,12 +65,12 @@ const adminController = {
       // Estadísticas de usuarios
       const usuariosRecientes = usuarios.filter(u => {
         // Considerar usuarios de los últimos 30 días como recientes
-      if (!u.fechaRegistro) return false;
-      const fechaRegistro = new Date(u.fechaRegistro);
-      const hace30Dias = new Date();
-      hace30Dias.setDate(hace30Dias.getDate() - 30);
-      return fechaRegistro >= hace30Dias;
-    });
+        if (!u.fechaRegistro) return false;
+        const fechaRegistro = new Date(u.fechaRegistro);
+        const hace30Dias = new Date();
+        hace30Dias.setDate(hace30Dias.getDate() - 30);
+        return fechaRegistro >= hace30Dias;
+      });
 
     // Estadísticas de productos por categoría
     const productosPorCategoria = productos.reduce((acc, producto) => {
@@ -173,50 +161,80 @@ const adminController = {
   },
 
   // Gestión de usuarios
-  usuarios: (req, res) => {
-    const usuarios = getUsuarios();
-    
-    // Asegurar que todos los usuarios tengan una categoría
-    const usuariosConCategoria = usuarios.map(usuario => ({
-      ...usuario,
-      category: usuario.category || 'Cliente'
-    }));
-    
-    res.render('admin/usuarios', { 
-      user: req.session.userLogged,
-      usuarios: usuariosConCategoria 
-    });
+  usuarios: async (req, res) => {
+    try {
+      // Obtener usuarios desde la base de datos
+      const usuariosDB = await db.Usuario.findAll({
+        where: { activo: true },
+        order: [['created_at', 'DESC']]
+      });
+      
+      const usuarios = usuariosDB.map(usuario => ({
+        id: usuario.id,
+        firstName: usuario.nombre,
+        lastName: usuario.apellido,
+        email: usuario.email,
+        category: usuario.rol === 'admin' ? 'Administrador' : 'Cliente',
+        rol: usuario.rol,
+        image: usuario.avatar,
+        fechaRegistro: usuario.created_at
+      }));
+      
+      res.render('admin/usuarios', { 
+        user: req.session.userLogged,
+        usuarios: usuarios 
+      });
+    } catch (error) {
+      console.error('❌ Error al cargar usuarios:', error);
+      res.render('admin/usuarios', { 
+        user: req.session.userLogged,
+        usuarios: [] 
+      });
+    }
   },
 
   // Eliminar usuario
-  deleteUser: (req, res) => {
-    const userId = parseInt(req.params.id);
-    let usuarios = getUsuarios();
-    
-    // No permitir que el admin se elimine a sí mismo
-    if (userId === req.session.userLogged.id) {
-      return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
+  deleteUser: async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // No permitir que el admin se elimine a sí mismo
+      if (userId === req.session.userLogged.id) {
+        return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
+      }
+      
+      // Marcar usuario como inactivo en lugar de eliminarlo
+      await db.Usuario.update(
+        { activo: false },
+        { where: { id: userId } }
+      );
+      
+      res.redirect('/admin/usuarios');
+    } catch (error) {
+      console.error('❌ Error al eliminar usuario:', error);
+      res.status(500).json({ error: 'Error del servidor' });
     }
-    
-    usuarios = usuarios.filter(u => u.id !== userId);
-    saveUsuarios(usuarios);
-    
-    res.redirect('/admin/usuarios');
   },
 
   // Cambiar rol de usuario
-  changeUserRole: (req, res) => {
-    const userId = parseInt(req.params.id);
-    const { newRole } = req.body;
-    let usuarios = getUsuarios();
-    
-    const userIndex = usuarios.findIndex(u => u.id === userId);
-    if (userIndex !== -1) {
-      usuarios[userIndex].category = newRole;
-      saveUsuarios(usuarios);
+  changeUserRole: async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { newRole } = req.body;
+      
+      // Mapear el rol para la base de datos
+      const rol = newRole === 'Administrador' ? 'admin' : 'cliente';
+      
+      await db.Usuario.update(
+        { rol: rol },
+        { where: { id: userId } }
+      );
+      
+      res.redirect('/admin/usuarios');
+    } catch (error) {
+      console.error('❌ Error al cambiar rol:', error);
+      res.status(500).json({ error: 'Error del servidor' });
     }
-    
-    res.redirect('/admin/usuarios');
   },
 
   // Gestión de productos
@@ -406,7 +424,20 @@ const adminController = {
   // Estadísticas avanzadas
   estadisticas: async (req, res) => {
     try {
-      const usuarios = getUsuarios(); // Mantenemos JSON para usuarios
+      // Obtener usuarios desde la base de datos
+      const usuariosDB = await db.Usuario.findAll({
+        where: { activo: true }
+      });
+      
+      const usuarios = usuariosDB.map(usuario => ({
+        id: usuario.id,
+        firstName: usuario.nombre,
+        lastName: usuario.apellido,
+        email: usuario.email,
+        category: usuario.rol === 'admin' ? 'Administrador' : 'Cliente',
+        rol: usuario.rol,
+        fechaRegistro: usuario.created_at
+      }));
       
       // Obtener productos desde la base de datos
       const productosDB = await db.Producto.findAll({

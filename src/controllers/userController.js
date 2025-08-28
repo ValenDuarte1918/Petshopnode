@@ -3,23 +3,8 @@ const bcrypt = require('bcryptjs')
 const fs = require('fs');
 const path = require('path');
 const { logSecurityEvent, recordFailedAttempt, clearFailedAttempts } = require('../middlewares/security');
-// Comentamos temporalmente la conexión a la base de datos
-// const db = require("../database/models");
-// const Usuario = require('../database/models/Usuario');
-
-// Cargar usuarios desde JSON
-const usuariosPath = path.join(__dirname, '../data/usuarios.json');
-const getUsuarios = () => {
-  try {
-    return JSON.parse(fs.readFileSync(usuariosPath, 'utf-8'));
-  } catch (error) {
-    return [];
-  }
-};
-
-const saveUsuarios = (usuarios) => {
-  fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2), 'utf-8');
-};
+const db = require("../database/models");
+const Usuario = db.Usuario;
 
 const controller = { 
   login:(req,res)=> {
@@ -34,13 +19,15 @@ const controller = {
   },
   loginProcess: async(req, res) => {
     try {
-      const usuarios = getUsuarios();
-      let userToLogin = usuarios.find(user => user.email === req.body.email);
+      let userToLogin = await Usuario.findOne({
+        where: {
+          email: req.body.email
+        }
+      });
       
       if(userToLogin){
-        // Para desarrollo, comparar contraseñas directamente o usar bcrypt si están hasheadas
-        let isOkThePassword = req.body.contraseña === userToLogin.password || 
-                             bcrypt.compareSync(req.body.contraseña, userToLogin.password);
+        // Comparar contraseña usando bcrypt
+        let isOkThePassword = bcrypt.compareSync(req.body.contraseña, userToLogin.password);
         
         if(isOkThePassword){
           // Limpiar intentos fallidos
@@ -49,11 +36,12 @@ const controller = {
           // Guardar usuario en sesión
           req.session.userLogged = {
             id: userToLogin.id,
-            firstName: userToLogin.firstName,
-            lastName: userToLogin.lastName,
+            firstName: userToLogin.nombre,
+            lastName: userToLogin.apellido,
             email: userToLogin.email,
-            category: userToLogin.category,
-            image: userToLogin.image
+            category: userToLogin.rol === 'admin' ? 'Administrador' : 'Cliente',
+            rol: userToLogin.rol,
+            image: userToLogin.avatar
           };
           
           // Log de seguridad para login exitoso
@@ -64,7 +52,7 @@ const controller = {
             userAgent: req.get('User-Agent')
           });
           
-          console.log(`✅ Login exitoso: ${userToLogin.email} (${userToLogin.category})`);
+          console.log(`✅ Login exitoso: ${userToLogin.email} (${userToLogin.rol})`);
           
           // Redirigir a la URL original o al home
           const redirectUrl = req.body.redirectUrl || '/';
@@ -135,8 +123,11 @@ const controller = {
           return res.render("registro", {errors: errors.mapped(), old: req.body})
         } else {
           try {
-            const usuarios = getUsuarios();
-            let userInDb = usuarios.find(user => user.email === req.body.correo);
+            let userInDb = await Usuario.findOne({
+              where: {
+                email: req.body.correo
+              }
+            });
             
             if(userInDb){
               return res.render('registro', {
@@ -150,18 +141,16 @@ const controller = {
             }
             
             let userToCreate = {
-              id: usuarios.length > 0 ? Math.max(...usuarios.map(u => u.id)) + 1 : 1,
-              firstName: req.body.firstName || req.body.nombre,
-              lastName: req.body.lastName || req.body.apellido,
+              nombre: req.body.firstName || req.body.nombre,
+              apellido: req.body.lastName || req.body.apellido,
               email: req.body.correo,
               password: bcrypt.hashSync(req.body.contrasena, 10),
-              category: 'Cliente',
-              image: req.file ? req.file.filename : 'default.jpg'
+              avatar: req.file ? req.file.filename : 'default.jpg',
+              rol: 'cliente'
             }
             
-            usuarios.push(userToCreate);
-            saveUsuarios(usuarios);
-            return res.redirect('/user/login');
+            await Usuario.create(userToCreate);
+            return res.redirect('/users/login');
           } catch (error) {
             console.error('Error en registro:', error);
             return res.render('registro', {
@@ -187,7 +176,7 @@ const controller = {
 
     profile: (req, res) => {
       if (!req.session.userLogged) {
-        return res.redirect('/user/login');
+        return res.redirect('/users/login');
       }
       res.render('profile', { user: req.session.userLogged });
     }

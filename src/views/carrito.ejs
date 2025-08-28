@@ -26,9 +26,9 @@
             <div class="carrito-content animate-fadeInUp delay-1">
                 <div class="carrito-items">
                     <% carrito.forEach((item, index) => { %>
-                        <div class="carrito-item animate-fadeInLeft delay-<%= (index % 3) + 1 %>">
+                        <div class="carrito-item animate-fadeInLeft delay-<%= (index % 3) + 1 %>" data-product-id="<%= item.id %>">
                             <div class="item-image">
-                                <img src="/images/products/<%= item.img %>" alt="<%= item.nombre %>" />
+                                <img src="/images/products/<%= item.imagen || item.img || 'default.jpg' %>" alt="<%= item.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
                             </div>
                             <div class="item-details">
                                 <h3><%= item.nombre %></h3>
@@ -47,6 +47,7 @@
                                                value="<%= item.cantidad %>" 
                                                min="1" 
                                                max="10"
+                                               data-precio="<%= item.precio %>"
                                                onchange="updateQuantity(<%= item.id %>)">
                                         <button type="button" class="qty-btn" onclick="increaseQuantity(<%= item.id %>)">
                                             <i class="fas fa-plus"></i>
@@ -55,11 +56,11 @@
                                 </form>
                             </div>
                             <div class="item-total">
-                                <p class="subtotal">$<%= (parseFloat(item.precio) * item.cantidad).toFixed(2) %></p>
+                                <p id="subtotal-<%= item.id %>" class="subtotal">$<%= (parseFloat(item.precio) * item.cantidad).toFixed(2) %></p>
                             </div>
                             <div class="item-actions">
                                 <form action="/carrito/remove/<%= item.id %>?_method=DELETE" method="POST" class="remove-form">
-                                    <button type="submit" class="btn-remove" onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+                                    <button type="submit" class="btn-remove">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -91,14 +92,14 @@
                                     Proceder al Pago
                                 </button>
                             <% } else { %>
-                                <a href="/user/login" class="btn-login">
+                                <a href="/users/login" class="btn-login">
                                     <i class="fas fa-user"></i>
                                     Iniciar Sesión para Continuar
                                 </a>
                             <% } %>
                             
                             <form action="/carrito/clear" method="POST" class="clear-cart-form">
-                                <button type="submit" class="btn-clear" onclick="return confirm('¿Estás seguro de vaciar el carrito?')">
+                                <button type="submit" class="btn-clear">
                                     <i class="fas fa-trash-alt"></i>
                                     Vaciar Carrito
                                 </button>
@@ -124,8 +125,7 @@
 
     <%- include('partials/footer') %>
     
-    <script src="/js/carrito.js"></script>
-    <script src="/js/carrito-localStorage.js"></script>
+    <script src="/js/carrito-functions.js"></script>
     <script src="/js/petshop-animations.js"></script>
 </body>
 </html>
