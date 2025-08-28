@@ -9,11 +9,10 @@ require('dotenv').config();
 const path = require("path");
 const methodOverride = require('method-override');
 const mainRouter = require('./routes/mainRouter')
-const userRouter = require('./routes/usersRoutes')
+const userRouter = require('./routes/usersRoutes')  
 const productRouter = require('./routes/productRouter')
 const adminRouter = require('./routes/adminRoutes')
-
-// Middlewares de seguridad
+const apiRouter = require('./routes/apiRoutes')// Middlewares de seguridad
 const { generalLimiter } = require('./middlewares/rateLimiting');
 const { sanitizeInput, validateFileAccess, logSecurityEvent } = require('./middlewares/security');
 
@@ -74,7 +73,7 @@ app.use(session({
     rolling: true, // Renovar sesión en cada request
     cookie: {
         maxAge: parseInt(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24, // 24 horas
-        secure: process.env.NODE_ENV === 'production', // HTTPS en producción
+        secure: false, // Cambiado para desarrollo con HTTP
         httpOnly: true, // Prevenir acceso desde JavaScript del cliente
         sameSite: 'lax'
     }
@@ -116,12 +115,42 @@ app.use(methodOverride('X-HTTP-Method-Override'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Middleware para debug de todas las peticiones
+app.use((req, res, next) => {
+    console.log(`📨 ${req.method} ${req.url} - ${new Date().toISOString()}`);
+    if (req.method === 'POST') {
+        console.log('📨 POST Body:', req.body);
+    }
+    next();
+});
+
 // Rutas - DEBEN ir antes de app.listen()
 app.use('/', mainRouter)
 app.use('/users', userRouter)  // Cambié de '/user' a '/users'
 app.use('/productos', productRouter)  // Ruta específica para productos
-app.use('/', productRouter)
 app.use('/admin', adminRouter)
+app.use('/api', apiRouter)  // Rutas API
+
+// Middleware de manejo de errores (debe ir al final)
+app.use((err, req, res, next) => {
+    console.error('💥 Error capturado:', err);
+    console.error('💥 Stack trace:', err.stack);
+    res.status(500).render('error', {
+        title: 'Error interno del servidor',
+        message: err.message,
+        error: process.env.NODE_ENV === 'development' ? err : {}
+    });
+});
+
+// Middleware para 404 (debe ir después de todas las rutas)
+app.use((req, res) => {
+    console.log('📨 404 - Ruta no encontrada:', req.url);
+    res.status(404).render('error', {
+        title: 'Página no encontrada',
+        message: 'La página que buscas no existe.',
+        error: { status: 404 }
+    });
+});
 
 app.listen(3000, ()=>{
     console.log("Servidor corriendo en el puerto 3000")

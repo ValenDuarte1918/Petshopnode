@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 PetShop - Pedido Confirmado</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        .confirmation-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+            text-align: center;
+        }
+
+        .confirmation-card {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 3px solid #27ae60;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            animation: successPulse 2s infinite;
+        }
+
+        .success-icon i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .confirmation-title {
+            color: #27ae60;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .confirmation-subtitle {
+            color: #34495e;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .order-details {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .order-id {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .order-id strong {
+            color: #e74c3c;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 2px solid #e74c3c;
+        }
+
+        .next-steps {
+            background: #e8f4f8;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .next-steps h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .next-steps ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .next-steps li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: #34495e;
+        }
+
+        .next-steps li i {
+            color: #e74c3c;
+            margin-top: 0.2rem;
+            width: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #34495e;
+            border: 2px solid #bdc3c7;
+        }
+
+        .btn-secondary:hover {
+            background: #ecf0f1;
+            border-color: #95a5a6;
+        }
+
+        .email-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #856404;
+        }
+
+        .email-info i {
+            color: #f39c12;
+            margin-right: 0.5rem;
+        }
+
+        .pet-animation {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            opacity: 0.7;
+            animation: petBounce 3s infinite;
+        }
+
+        @keyframes petBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 768px) {
+            .confirmation-container {
+                margin: 1rem auto;
+            }
+            
+            .confirmation-card {
+                padding: 2rem 1rem;
+            }
+            
+            .confirmation-title {
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header', { page: 'order-confirmation' }) %>
+
+    <main class="confirmation-container">
+        <div class="confirmation-card">
+            <!-- Icono de éxito -->
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+
+            <!-- Título principal -->
+            <h1 class="confirmation-title">¡Pedido Confirmado!</h1>
+            <p class="confirmation-subtitle">
+                Tu pedido ha sido procesado exitosamente.<br>
+                ¡Gracias por confiar en PetShop para el cuidado de tu mascota! 🐾
+            </p>
+
+            <!-- Detalles del pedido -->
+            <div class="order-details">
+                <div class="order-id">
+                    <i class="fas fa-receipt"></i>
+                    <span>Número de Pedido:</span>
+                    <strong>#<%= orderId %></strong>
+                </div>
+                
+                <div class="email-info">
+                    <i class="fas fa-envelope"></i>
+                    Hemos enviado los detalles de tu pedido a <strong><%= user.email %></strong>
+                </div>
+            </div>
+
+            <!-- Próximos pasos -->
+            <div class="next-steps">
+                <h3><i class="fas fa-list-check"></i> ¿Qué sigue ahora?</h3>
+                <ul>
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        <span><strong>Procesamiento:</strong> Tu pedido será preparado en las próximas 24 horas</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-truck"></i>
+                        <span><strong>Envío:</strong> Recibirás un email con el código de seguimiento</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-home"></i>
+                        <span><strong>Entrega:</strong> Tu pedido llegará en 2-5 días hábiles</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-headset"></i>
+                        <span><strong>Soporte:</strong> Contáctanos si tienes alguna pregunta</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Mascota animada -->
+            <div class="pet-animation">
+                <i class="fas fa-dog" style="font-size: 4rem; color: #e74c3c;"></i>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="action-buttons">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Volver al Inicio
+                </a>
+                <a href="/productos" class="btn btn-secondary">
+                    <i class="fas fa-shopping-bag"></i>
+                    Seguir Comprando
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // Confetti effect (opcional)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Scroll suave al cargar la página
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            
+            // Mostrar notificación de éxito
+            setTimeout(() => {
+                console.log('🎉 ¡Pedido confirmado exitosamente!');
+            }, 500);
+        });
+    </script>
+</body>
+</html>

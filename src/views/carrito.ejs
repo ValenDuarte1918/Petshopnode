@@ -87,10 +87,10 @@
                         
                         <div class="checkout-actions">
                             <% if (locals.isLoggedIn) { %>
-                                <button class="btn-checkout" onclick="proceedToCheckout()">
+                                <a href="/checkout" class="btn-checkout">
                                     <i class="fas fa-credit-card"></i>
                                     Proceder al Pago
-                                </button>
+                                </a>
                             <% } else { %>
                                 <a href="/users/login" class="btn-login">
                                     <i class="fas fa-user"></i>

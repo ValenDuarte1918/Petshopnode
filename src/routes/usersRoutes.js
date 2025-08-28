@@ -9,6 +9,10 @@ const {check} = require("express-validator");
 
 // Rutas de usuarios
 router.get('/login', userController.login);
+
+router.post('/login', userController.loginProcess);
+
+/*
 router.post('/login', 
     loginLimiter,           // Rate limiting específico para login
     checkLoginAttempts,     // Verificar intentos de login fallidos
@@ -18,6 +22,7 @@ router.post('/login',
     ], 
     userController.loginProcess
 );
+*/
 
 router.get('/logout', userController.logout);
 router.get('/profile', requireAuth, userController.profile); // Requerir autenticación

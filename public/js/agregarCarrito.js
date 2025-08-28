@@ -328,7 +328,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (data.message && data.message.includes('login')) {
                         mostrarModalLogin();
                     } else {
-                        mostrarNotificacion(data.message || 'Error al agregar producto', 'error');
+                        // Mostrar mensaje de stock disponible si viene en la respuesta
+                        if (data.availableStock !== undefined) {
+                            mostrarNotificacion(`${data.message || 'Stock insuficiente'}. Disponible: ${data.availableStock}`, 'error');
+                        } else {
+                            mostrarNotificacion(data.message || 'Error al agregar producto', 'error');
+                        }
                     }
                 }
             })
@@ -356,7 +361,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('🔍 Elemento clickeado:', event.target);
             console.log('🔍 Botón encontrado:', boton);
             
-            // Debug: Mostrar TODOS los data attributes del botón
             console.log('📊 TODOS los data attributes:', boton.dataset);
             
             let card = boton.closest('.product-card-featured, .favorite-item, .producto-card, .product-card-mini');
@@ -606,7 +610,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Debug: Mostrar estado del usuario
     console.log('👤 Estado del usuario:', {
         isLoggedIn: verificarUsuarioLogueado(),
         userInfo: window.userState?.user || 'No disponible'

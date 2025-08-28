@@ -1,10 +1,12 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 
-const multer = require('multer')
-const path = require('path')
-const mainController = require('../controllers/mainControllers')
-const { requireAuth } = require('../middlewares/security')
+const multer = require('multer');
+const path = require('path');
+const controller = require('../controllers/mainControllers');
+
+// Rutas principales
+const { requireAuth } = require('../middlewares/security');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -14,31 +16,31 @@ const storage = multer.diskStorage({
         const newFileName = "producto-" + Date.now() + path.extname(file.originalname)
         cb(null, newFileName)
     }   
-})
+});
 
+const upload = multer({storage});
 
-const upload = multer({storage})
-
-router.get('/', mainController.home)
-router.get('/productos', mainController.productos) // Nueva ruta para ver todos los productos
+router.get('/', controller.home);
+router.get('/productos', controller.productos);
 
 // Rutas del carrito que requieren autenticación
-router.get('/carrito', requireAuth, mainController.carrito)
-router.post('/carrito/add', requireAuth, mainController.addToCart) // Ruta sin ID para AJAX
-router.post('/carrito/add/:id', requireAuth, mainController.addToCart) // Ruta con ID (legacy)
-router.put('/carrito/update/:id', requireAuth, mainController.updateCartItem)
-router.delete('/carrito/remove/:id', requireAuth, mainController.removeFromCart)
-router.post('/carrito/clear', requireAuth, mainController.clearCart)
+router.get('/carrito', requireAuth, controller.carrito);
+router.post('/carrito/add', requireAuth, controller.addToCart);
+router.post('/carrito/add/:id', requireAuth, controller.addToCart);
+router.put('/carrito/update/:id', requireAuth, controller.updateCartItem);
+router.delete('/carrito/remove/:id', requireAuth, controller.removeFromCart);
+router.post('/carrito/clear', requireAuth, controller.clearCart);
 
-// Ruta debug (solo para desarrollo)
-router.get('/debug/cart', mainController.debugCart)
+// Ruta del checkout que requiere autenticación
+router.get('/checkout', requireAuth, controller.checkout);
 
-router.get('/create', mainController.create)
-router.post('/create', upload.single('image'), mainController.store)
-router.get('/detail/:id', mainController.detail)
-router.get('/edit/:id', mainController.edit)
-router.put('/edit/:id', upload.single('image'), mainController.update)
-router.get('/delete/:id', mainController.delete)
+// Ruta de confirmación de pedido
+router.get('/order-confirmation', requireAuth, controller.orderConfirmation);
 
+router.get('/create', controller.create);
+router.post('/create', upload.single('image'), controller.store);
+router.get('/detail/:id', controller.detail);
+router.get('/edit/:id', controller.edit);
+router.post('/edit/:id', upload.single('image'), controller.update);
 
-module.exports = router
+module.exports = router;

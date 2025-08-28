@@ -562,6 +562,152 @@ const adminController = {
       securityLogs,
       securityStats
     });
+  },
+
+  // Gestión de pedidos
+  pedidos: async (req, res) => {
+    try {
+      console.log('🔍 Iniciando método pedidos...');
+      
+      const page = parseInt(req.query.page) || 1;
+      const limit = 10;
+      const offset = (page - 1) * limit;
+      const status = req.query.status || 'all';
+
+      let whereCondition = {};
+      if (status !== 'all') {
+        whereCondition.status = status;
+      }
+
+      const { count, rows: ordenes } = await db.Orden.findAndCountAll({
+        where: whereCondition,
+        include: [
+          {
+            model: db.Usuario,
+            as: 'usuario',
+            attributes: ['id', 'nombre', 'apellido', 'email']
+          },
+          {
+            model: db.OrdenItem,
+            as: 'items',
+            include: [
+              {
+                model: db.Producto,
+                as: 'producto',
+                attributes: ['id', 'name', 'image']
+              }
+            ]
+          }
+        ],
+        order: [['created_at', 'DESC']],
+        limit,
+        offset
+      });
+
+      const totalPages = Math.ceil(count / limit);
+
+      // Mapear campos del usuario para consistencia con las vistas
+      ordenes.forEach(orden => {
+        if (orden.usuario) {
+          orden.usuario.firstName = orden.usuario.nombre;
+          orden.usuario.lastName = orden.usuario.apellido;
+        }
+      });
+
+      res.render('admin/pedidos', {
+        user: req.session.userLogged,
+        ordenes,
+        currentPage: page,
+        totalPages,
+        totalOrders: count,
+        status,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1
+      });
+    } catch (error) {
+      console.error('❌ Error al obtener pedidos:', error);
+      console.error('❌ Stack trace:', error.stack);
+      res.status(500).render('error', { 
+        title: 'Error en pedidos',
+        message: 'Error al cargar pedidos: ' + error.message,
+        error: error 
+      });
+    }
+  },
+
+  verPedido: async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      
+      const orden = await db.Orden.findByPk(orderId, {
+        include: [
+          {
+            model: db.Usuario,
+            as: 'usuario',
+            attributes: ['id', 'nombre', 'apellido', 'email', 'telefono']
+          },
+          {
+            model: db.OrdenItem,
+            as: 'items',
+            include: [
+              {
+                model: db.Producto,
+                as: 'producto',
+                attributes: ['id', 'name', 'image', 'category', 'brand']
+              }
+            ]
+          }
+        ]
+      });
+
+      if (!orden) {
+        return res.status(404).render('error', { message: 'Pedido no encontrado' });
+      }
+
+      // Mapear campos del usuario para consistencia con las vistas
+      if (orden.usuario) {
+        orden.usuario.firstName = orden.usuario.nombre;
+        orden.usuario.lastName = orden.usuario.apellido;
+      }
+
+      res.render('admin/ver-pedido', {
+        user: req.session.userLogged,
+        orden
+      });
+    } catch (error) {
+      console.error('❌ Error al obtener pedido:', error);
+      res.status(500).render('error', { message: 'Error al cargar pedido' });
+    }
+  },
+
+  cambiarEstadoPedido: async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      const { status, tracking_number, notes } = req.body;
+
+      const orden = await db.Orden.findByPk(orderId);
+      if (!orden) {
+        return res.status(404).json({ success: false, message: 'Pedido no encontrado' });
+      }
+
+      const updateData = { status };
+      if (tracking_number) updateData.tracking_number = tracking_number;
+      if (notes) updateData.notes = notes;
+      if (status === 'entregado') updateData.delivered_at = new Date();
+
+      await orden.update(updateData);
+
+      res.json({ 
+        success: true, 
+        message: 'Estado del pedido actualizado correctamente',
+        newStatus: status
+      });
+    } catch (error) {
+      console.error('❌ Error al cambiar estado del pedido:', error);
+      res.status(500).json({ success: false, message: 'Error al actualizar estado' });
+    }
   }
 };
 

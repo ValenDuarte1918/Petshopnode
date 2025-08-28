@@ -7,6 +7,14 @@ const { requireAdmin } = require('../middlewares/security');
 const { uploadLimiter } = require('../middlewares/rateLimiting');
 
 // Middleware para verificar que sea administrador en todas las rutas
+router.use((req, res, next) => {
+    console.log('🔍 AdminRoutes - Verificando sesión...');
+    console.log('🔍 Session ID:', req.sessionID);
+    console.log('🔍 Cookies:', req.headers.cookie);
+    console.log('🔍 UserLogged:', req.session.userLogged);
+    next();
+});
+
 router.use(requireAdmin); // Reemplazamos adminController.isAdmin con el nuevo middleware
 
 // Dashboard principal
@@ -28,6 +36,11 @@ router.delete('/productos/:id', adminController.deleteProduct);
 
 // Estadísticas
 router.get('/estadisticas', adminController.estadisticas);
+
+// Gestión de pedidos
+router.get('/pedidos', adminController.pedidos);
+router.get('/pedidos/:id', adminController.verPedido);
+router.put('/pedidos/:id/estado', adminController.cambiarEstadoPedido);
 
 // Seguridad
 router.get('/seguridad', adminController.seguridad);

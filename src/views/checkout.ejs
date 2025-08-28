@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛒 PetShop - Checkout</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .checkout-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .payment-methods {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            border-color: #e74c3c;
+            background: #fdf2f2;
+        }
+
+        .payment-method.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .method-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .method-info i {
+            font-size: 1.5rem;
+            color: #e74c3c;
+        }
+
+        .card-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .card-fields .form-group:first-child {
+            grid-column: 1 / -1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .checkout-summary {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .summary-items {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-totals .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-totals .total {
+            border-top: 2px solid #e74c3c;
+            padding-top: 0.5rem;
+            margin-top: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .btn-checkout {
+            width: 100%;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .btn-checkout:hover {
+            background: #c0392b;
+        }
+
+        .btn-checkout:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .validation-success {
+            color: #27ae60;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .validation-error {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #e74c3c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .card-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header', { page: 'checkout' }) %>
+
+    <main class="checkout-container">
+        <div class="checkout-form">
+            <h2><i class="fas fa-credit-card"></i> Finalizar Compra</h2>
+            
+            <form id="checkout-form">
+                <!-- Dirección de Envío -->
+                <div class="form-section">
+                    <h3><i class="fas fa-truck"></i> Dirección de Envío</h3>
+                    <div id="shipping-form">
+                        <div class="form-group">
+                            <label for="address">Dirección *</label>
+                            <input type="text" id="address" name="address" required 
+                                   placeholder="Ej: Av. Corrientes 1234">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label for="city">Ciudad *</label>
+                                <input type="text" id="city" name="city" required 
+                                       placeholder="Buenos Aires">
+                            </div>
+                            <div class="form-group">
+                                <label for="postalCode">Código Postal *</label>
+                                <input type="text" id="postalCode" name="postalCode" required 
+                                       placeholder="1234">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="state">Provincia *</label>
+                            <input type="text" id="state" name="state" required 
+                                   placeholder="CABA">
+                        </div>
+                        <div id="address-validation"></div>
+                    </div>
+                </div>
+
+                <!-- Método de Pago -->
+                <div class="form-section">
+                    <h3><i class="fas fa-credit-card"></i> Método de Pago</h3>
+                    <div id="payment-methods">
+                        <!-- Se llena dinámicamente desde la API -->
+                        <div class="loading">Cargando métodos de pago...</div>
+                    </div>
+                    
+                    <!-- Campos de Tarjeta (se muestran según el método seleccionado) -->
+                    <div id="card-fields" class="card-fields hidden">
+                        <div class="form-group">
+                            <label for="cardNumber">Número de Tarjeta *</label>
+                            <input type="text" id="cardNumber" name="cardNumber" 
+                                   placeholder="1234 5678 9012 3456" maxlength="19">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardName">Nombre en la Tarjeta *</label>
+                            <input type="text" id="cardName" name="cardName" 
+                                   placeholder="Juan Pérez">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardExpiry">Vencimiento *</label>
+                            <input type="text" id="cardExpiry" name="cardExpiry" 
+                                   placeholder="MM/AA" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardCvv">CVV *</label>
+                            <input type="text" id="cardCvv" name="cardCvv" 
+                                   placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-checkout">
+                    <i class="fas fa-lock"></i> Procesar Pago Seguro
+                </button>
+            </form>
+        </div>
+
+        <!-- Resumen del Pedido -->
+        <div class="checkout-summary">
+            <h3><i class="fas fa-receipt"></i> Resumen del Pedido</h3>
+            <div id="cart-summary">
+                <!-- Se llena dinámicamente desde la API -->
+                <div class="loading">Cargando resumen...</div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <!-- Scripts -->
+    <script src="/js/checkout-api.js"></script>
+    <script>
+        // Formatear número de tarjeta
+        document.getElementById('cardNumber')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.replace(/(.{4})/g, '$1 ');
+            if (formattedValue.endsWith(' ')) {
+                formattedValue = formattedValue.slice(0, -1);
+            }
+            e.target.value = formattedValue;
+        });
+
+        // Formatear fecha de vencimiento
+        document.getElementById('cardExpiry')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Solo números en CVV
+        document.getElementById('cardCvv')?.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    </script>
+</body>
+</html>

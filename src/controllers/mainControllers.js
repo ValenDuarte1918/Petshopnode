@@ -134,8 +134,20 @@ const controller = {
             const existingItemIndex = req.session.cart.findIndex(item => item.id == productoId);
 
             if (existingItemIndex >= 0) {
+                // Calcular nueva cantidad solicitada
+                const nuevaCantidad = req.session.cart[existingItemIndex].cantidad + parseInt(cantidad);
+
+                // Verificar stock disponible para la suma de cantidades
+                if (producto.stock < nuevaCantidad) {
+                    return res.status(400).json({ 
+                        success: false, 
+                        message: 'Stock insuficiente', 
+                        availableStock: producto.stock
+                    });
+                }
+
                 // Actualizar cantidad
-                req.session.cart[existingItemIndex].cantidad += parseInt(cantidad);
+                req.session.cart[existingItemIndex].cantidad = nuevaCantidad;
             } else {
                 // Agregar nuevo producto
                 req.session.cart.push({
@@ -489,18 +501,42 @@ const controller = {
         res.render('profile', { user: req.session.user });
     },
 
-    // Método debug para verificar estado del carrito
-    debugCart: (req, res) => {
-        const cartInfo = {
-            isLoggedIn: !!req.session.userLogged,
-            userEmail: req.session.userLogged?.email || null,
-            cart: req.session.cart || [],
-            cartCount: (req.session.cart || []).reduce((sum, item) => sum + item.cantidad, 0),
-            sessionId: req.sessionID
-        };
+    // Vista de checkout
+    checkout: (req, res) => {
+        if (!req.session.userLogged) {
+            return res.redirect('/users/login');
+        }
         
-        console.log('🐛 Debug carrito:', cartInfo);
-        res.json(cartInfo);
+        // Verificar que el carrito no esté vacío
+        const cart = req.session.cart || [];
+        if (cart.length === 0) {
+            return res.redirect('/carrito');
+        }
+        
+        res.render('checkout', { 
+            user: req.session.userLogged,
+            cart: cart
+        });
+    },
+
+    // Vista de confirmación de pedido
+    orderConfirmation: (req, res) => {
+        if (!req.session.userLogged) {
+            return res.redirect('/users/login');
+        }
+        
+        const orderId = req.query.orderId;
+        if (!orderId) {
+            return res.redirect('/');
+        }
+        
+        // Limpiar carrito después de la compra exitosa
+        req.session.cart = [];
+        
+        res.render('order-confirmation', { 
+            user: req.session.userLogged,
+            orderId: orderId
+        });
     }
 }
 

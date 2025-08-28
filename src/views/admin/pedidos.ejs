@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛒 Admin - Gestión de Pedidos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .admin-title {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e74c3c;
+            display: block;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+
+        .filters-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .filter-select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            font-size: 1rem;
+        }
+
+        .orders-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            background: #34495e;
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-procesando {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-enviado {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-entregado {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-view {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #2980b9;
+        }
+
+        .btn-edit {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #e67e22;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .pagination a, .pagination span {
+            padding: 0.75rem 1rem;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .pagination .current {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #3498db;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: #2980b9;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .orders-table {
+                overflow-x: auto;
+            }
+            
+            table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Navegación -->
+        <a href="/admin" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Volver al Dashboard
+        </a>
+
+        <!-- Header -->
+        <div class="admin-header">
+            <h1 class="admin-title">
+                <i class="fas fa-shopping-cart"></i>
+                Gestión de Pedidos
+            </h1>
+            <p class="admin-subtitle">Administra todos los pedidos de la tienda</p>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number"><%= totalOrders %></span>
+                <div class="stat-label">Total Pedidos</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">
+                    <%= ordenes.filter(o => o.status === 'pendiente').length %>
+                </span>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">
+                    <%= ordenes.filter(o => o.status === 'procesando').length %>
+                </span>
+                <div class="stat-label">Procesando</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">
+                    <%= ordenes.filter(o => o.status === 'enviado').length %>
+                </span>
+                <div class="stat-label">Enviados</div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-container">
+            <form method="GET" class="filters-row">
+                <div class="filter-group">
+                    <label for="status">Filtrar por Estado:</label>
+                    <select name="status" id="status" class="filter-select" onchange="this.form.submit()">
+                        <option value="all" <%= status === 'all' ? 'selected' : '' %>>Todos</option>
+                        <option value="pendiente" <%= status === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                        <option value="procesando" <%= status === 'procesando' ? 'selected' : '' %>>Procesando</option>
+                        <option value="enviado" <%= status === 'enviado' ? 'selected' : '' %>>Enviado</option>
+                        <option value="entregado" <%= status === 'entregado' ? 'selected' : '' %>>Entregado</option>
+                        <option value="cancelado" <%= status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla de Pedidos -->
+        <div class="orders-table">
+            <% if (ordenes.length > 0) { %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nº Pedido</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% ordenes.forEach(orden => { %>
+                            <tr>
+                                <td>
+                                    <strong><%= orden.order_number %></strong>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong><%= orden.usuario.firstName %> <%= orden.usuario.lastName %></strong>
+                                        <br>
+                                        <small style="color: #7f8c8d;"><%= orden.usuario.email %></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <%= new Date(orden.created_at).toLocaleDateString('es-AR') %>
+                                    <br>
+                                    <small style="color: #7f8c8d;">
+                                        <%= new Date(orden.created_at).toLocaleTimeString('es-AR') %>
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-<%= orden.status %>">
+                                        <%= orden.status %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <%= orden.items.length %> item<%= orden.items.length !== 1 ? 's' : '' %>
+                                </td>
+                                <td>
+                                    <strong>$<%= parseFloat(orden.total).toLocaleString('es-AR') %></strong>
+                                </td>
+                                <td>
+                                    <div class="actions-cell">
+                                        <a href="/admin/pedidos/<%= orden.id %>" class="btn btn-view">
+                                            <i class="fas fa-eye"></i>
+                                            Ver
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <div class="no-orders">
+                    <i class="fas fa-shopping-cart" style="font-size: 4rem; color: #bdc3c7; margin-bottom: 1rem;"></i>
+                    <h3>No hay pedidos</h3>
+                    <p>No se encontraron pedidos con los filtros seleccionados.</p>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Paginación -->
+        <% if (totalPages > 1) { %>
+            <div class="pagination">
+                <% if (hasPrevPage) { %>
+                    <a href="?page=<%= prevPage %>&status=<%= status %>">
+                        <i class="fas fa-chevron-left"></i>
+                        Anterior
+                    </a>
+                <% } %>
+                
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <% if (i === currentPage) { %>
+                        <span class="current"><%= i %></span>
+                    <% } else { %>
+                        <a href="?page=<%= i %>&status=<%= status %>"><%= i %></a>
+                    <% } %>
+                <% } %>
+                
+                <% if (hasNextPage) { %>
+                    <a href="?page=<%= nextPage %>&status=<%= status %>">
+                        Siguiente
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

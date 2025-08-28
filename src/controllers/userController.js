@@ -19,15 +19,34 @@ const controller = {
   },
   loginProcess: async(req, res) => {
     try {
+      console.log('🔑 Login process iniciado');
+      console.log('🔑 Email recibido:', req.body.email);
+      console.log('🔑 Password recibido:', req.body.contraseña ? 'Sí' : 'No');
+      
+      // Verificar errores de validación
+      const errors = validationResult(req);
+      console.log('🔑 Errores de validación:', errors.array());
+      
+      if (!errors.isEmpty()) {
+        console.log('❌ Errores de validación encontrados:', errors.array());
+        return res.render('login', {
+          errors: errors.array(),
+          oldData: req.body
+        });
+      }
+      
       let userToLogin = await Usuario.findOne({
         where: {
           email: req.body.email
         }
       });
       
+      console.log('🔑 Usuario encontrado:', userToLogin ? 'Sí' : 'No');
+      
       if(userToLogin){
         // Comparar contraseña usando bcrypt
         let isOkThePassword = bcrypt.compareSync(req.body.contraseña, userToLogin.password);
+        console.log('🔑 Password válido:', isOkThePassword);
         
         if(isOkThePassword){
           // Limpiar intentos fallidos
@@ -43,6 +62,17 @@ const controller = {
             rol: userToLogin.rol,
             image: userToLogin.avatar
           };
+          
+          console.log('🔑 Usuario guardado en sesión:', req.session.userLogged);
+          
+          // Forzar guardado de sesión
+          req.session.save((err) => {
+            if (err) {
+              console.log('❌ Error guardando sesión:', err);
+            } else {
+              console.log('✅ Sesión guardada correctamente');
+            }
+          });
           
           // Log de seguridad para login exitoso
           logSecurityEvent('successful_login', {
