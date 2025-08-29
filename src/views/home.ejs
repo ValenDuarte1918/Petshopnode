@@ -186,13 +186,16 @@
             }
             %>
             <% productosPerros.forEach((producto, index) => { %>
-              <div class="product-card-mini" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
+              <div class="product-card-mini <%= (producto.stock === 0) ? 'out-of-stock-card' : '' %>" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
                 <div class="product-image">
                   <a href="/productos/detalle/<%= producto.id %>">
                     <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
                   </a>
                   <% if (index === 0) { %>
                     <span class="product-badge hot">🔥 Top</span>
+                  <% } %>
+                  <% if (producto.stock === 0) { %>
+                    <div class="stock-overlay">Sin stock</div>
                   <% } %>
                 </div>
                 <div class="product-info-mini">

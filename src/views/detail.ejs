@@ -44,6 +44,9 @@
               <span class="badge badge-bestseller">🔥 Más Vendido</span>
               <span class="badge badge-guarantee">✅ Garantía Premium</span>
             </div>
+            <% if (producto.stock === 0) { %>
+              <div class="image-stock-badge">Sin stock</div>
+            <% } %>
           </div>
           
           <!-- Thumbnail Images -->
@@ -126,24 +129,32 @@
             <div class="option-group">
               <label class="option-label">Cantidad:</label>
               <div class="quantity-selector">
-                <button type="button" class="quantity-btn decrease">-</button>
-                <input type="number" class="quantity-input" value="1" min="1" max="10">
-                <button type="button" class="quantity-btn increase">+</button>
+                <button type="button" class="quantity-btn decrease" <%= producto.stock === 0 ? 'disabled' : '' %>>-</button>
+                <input type="number" class="quantity-input" value="1" min="1" max="10" <%= producto.stock === 0 ? 'disabled' : '' %>>
+                <button type="button" class="quantity-btn increase" <%= producto.stock === 0 ? 'disabled' : '' %>>+</button>
               </div>
             </div>
           </div>
 
           <!-- Add to Cart Section -->
           <div class="add-to-cart-section">
-            <button type="button" 
-                    class="btn-add-to-cart"
-                    data-id="<%= producto.id %>"
-                    data-nombre="<%= producto.nombre %>"
-                    data-precio="<%= producto.precio %>"
-                    data-imagen="<%= producto.img %>">
-              <i class="fas fa-shopping-cart"></i>
-              Agregar al Carrito
-            </button>
+            <% if (producto.stock === 0) { %>
+              <button type="button" class="btn-add-to-cart out-of-stock" disabled>
+                <i class="fas fa-times-circle"></i>
+                Sin stock
+              </button>
+              <!-- out-of-stock detail removed per request -->
+            <% } else { %>
+              <button type="button" 
+                      class="btn-add-to-cart"
+                      data-id="<%= producto.id %>"
+                      data-nombre="<%= producto.nombre %>"
+                      data-precio="<%= producto.precio %>"
+                      data-imagen="<%= producto.img %>">
+                <i class="fas fa-shopping-cart"></i>
+                Agregar al Carrito
+              </button>
+            <% } %>
             
             <div class="secondary-actions">
               <button class="btn-wishlist" title="Agregar a favoritos">
@@ -345,7 +356,7 @@
       <% if (typeof productosRelacionados !== 'undefined' && productosRelacionados.length > 0) { %>
         <div class="related-products-grid">
           <% productosRelacionados.forEach(productoRelacionado => { %>
-            <div class="related-product-card">
+            <div class="related-product-card <%= (productoRelacionado.stock === 0) ? 'out-of-stock-card' : '' %>">
               <a href="/productos/detalle/<%= productoRelacionado.id %>" class="product-link">
                 <div class="product-image">
                   <img src="/images/products/<%= productoRelacionado.img %>" 
@@ -355,6 +366,9 @@
                     <i class="fas fa-eye"></i>
                     <span>Ver detalle</span>
                   </div>
+                  <% if (productoRelacionado.stock === 0) { %>
+                    <div class="stock-overlay">Sin stock</div>
+                  <% } %>
                 </div>
                 <div class="product-info">
                   <h4><%= productoRelacionado.nombre %></h4>
@@ -364,7 +378,8 @@
                           data-nombre="<%= productoRelacionado.nombre %>"
                           data-precio="<%= productoRelacionado.precio %>"
                           data-imagen="<%= productoRelacionado.img %>"
-                          onclick="event.preventDefault(); event.stopPropagation();">
+                          onclick="event.preventDefault(); event.stopPropagation();"
+                          <%= (productoRelacionado.stock === 0) ? 'disabled class="disabled"' : '' %> >
                     <i class="fas fa-cart-plus"></i>
                     Agregar
                   </button>

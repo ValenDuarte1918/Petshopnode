@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener('click', function(event) {
         // Verificar si se hizo clic en un botón de agregar al carrito
         const boton = event.target.closest('.btn-add-cart, .btn-add-to-cart, .btn-quick-add');
-        if (boton) {
+    if (boton) {
             event.preventDefault();
             console.log('🖱️ Click detectado en botón agregar al carrito');
             console.log('🔍 Clases del botón:', boton.className);
@@ -362,6 +362,17 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('🔍 Botón encontrado:', boton);
             
             console.log('📊 TODOS los data attributes:', boton.dataset);
+
+            // Protección: si el botón está deshabilitado o la card indica sin stock, no permitir agregar
+            if (boton.disabled || boton.classList.contains('disabled')) {
+                mostrarNotificacion('Este producto está sin stock', 'warning');
+                return;
+            }
+            const parentCard = boton.closest('.out-of-stock-card');
+            if (parentCard) {
+                mostrarNotificacion('Este producto está sin stock', 'warning');
+                return;
+            }
             
             let card = boton.closest('.product-card-featured, .favorite-item, .producto-card, .product-card-mini');
             console.log('📦 Card encontrada:', card ? 'SÍ' : 'NO');

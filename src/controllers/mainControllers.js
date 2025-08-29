@@ -22,7 +22,8 @@ const controller = {
                 img: producto.image,
                 categoria: producto.category,
                 color: producto.color,
-                precio: producto.price
+                precio: producto.price,
+                stock: producto.stock
             }));
             
             console.log('✅ Usando base de datos:', productosListados.length, 'productos');
@@ -467,7 +468,8 @@ const controller = {
                 img: producto.image,
                 categoria: producto.category,
                 color: producto.color,
-                precio: producto.price
+                precio: producto.price,
+                stock: producto.stock
             }));
             
             console.log('✅ Detalle desde BD:', productFound.nombre);

@@ -212,6 +212,58 @@
   box-shadow: var(--card-shadow-hover);
 }
 
+/* Estado visual para productos sin stock */
+.out-of-stock-card {
+  opacity: 0.6;
+  pointer-events: auto; /* allow internal links but indicate disabled actions */
+}
+
+.out-of-stock-card .card-image img,
+.out-of-stock-card .product-image img {
+  filter: grayscale(40%) contrast(0.95);
+}
+
+.stock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1rem;
+  z-index: 5;
+  border-radius: 0;
+}
+
+/* Ajustes para botones en estado sin stock */
+.out-of-stock-card .btn-add-cart,
+.out-of-stock-card .btn-comprar,
+.out-of-stock-card .btn-quick-add,
+.out-of-stock-card .btn-add-cart:disabled,
+.btn-comprar.disabled,
+.btn-quick-add.disabled {
+  background: var(--text-light) !important;
+  color: rgba(0,0,0,0.45) !important;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Mini cards and related cards specific styling */
+.product-card-mini.out-of-stock-card,
+.product-card-featured.out-of-stock-card,
+.related-product-card.out-of-stock-card {
+  opacity: 0.65;
+}
+
+.product-card-mini .stock-overlay,
+.related-product-card .stock-overlay,
+.product-card-featured .stock-overlay {
+  font-size: 0.95rem;
+  padding: 6px 10px;
+}
+
 .card-image {
   position: relative;
   width: 100%;

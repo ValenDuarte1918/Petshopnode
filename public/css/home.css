@@ -1060,6 +1060,30 @@ main {
   text-align: center;
 }
 
+/* Out of stock visuals for home mini cards */
+.product-card-mini.out-of-stock-card,
+.product-card-featured.out-of-stock-card {
+  opacity: 0.65;
+}
+
+.product-card-mini.out-of-stock-card .product-image img,
+.product-card-featured.out-of-stock-card .product-image img {
+  filter: grayscale(40%) contrast(0.95);
+}
+
+.product-card-mini .stock-overlay,
+.product-card-featured .stock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  font-weight: 700;
+  z-index: 5;
+}
+
 .product-info-mini h4 {
   font-size: 1rem;
   font-weight: 600;

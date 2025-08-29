@@ -426,6 +426,27 @@ body {
   box-shadow: var(--shadow-medium);
 }
 
+/* Out-of-stock button style */
+.btn-add-to-cart.out-of-stock {
+  background: #e0e0e0;
+  color: rgba(0,0,0,0.6);
+  cursor: not-allowed;
+  border: 2px solid #d0d0d0;
+}
+
+/* Badge over the main image when no stock */
+.image-stock-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(231, 76, 60, 0.95);
+  color: white;
+  padding: 8px 12px;
+  font-weight: 700;
+  border-radius: 8px;
+  z-index: 10;
+}
+
 .secondary-actions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

@@ -65,12 +65,12 @@
     <div class="productos-grid" id="productosGrid">
       <% if (productos && productos.length > 0) { %>
         <% productos.forEach(producto => { %>
-          <article class="producto-card" data-marca="<%= producto.brand || '' %>" data-precio="<%= producto.precio %>">
+          <article class="producto-card <%= (!producto.stock || producto.stock === 0) ? 'out-of-stock-card' : '' %>" data-marca="<%= producto.brand || '' %>" data-precio="<%= producto.precio %>">
             <div class="card-image">
               <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'">
-              <% if (producto.stock && producto.stock < 5) { %>
+              <% if (typeof producto.stock !== 'undefined' && producto.stock < 5 && producto.stock > 0) { %>
                 <span class="stock-badge low-stock">¡Últimas <%= producto.stock %>!</span>
-              <% } else if (!producto.stock || producto.stock === 0) { %>
+              <% } else if (producto.stock === 0) { %>
                 <span class="stock-badge out-stock">Sin stock</span>
               <% } %>
               <div class="card-overlay">
@@ -103,7 +103,7 @@
                   <span class="precio-actual">$<%= Number(producto.precio).toLocaleString('es-AR') %></span>
                 </div>
                 
-                <% if (producto.stock && producto.stock > 0) { %>
+                <% if (producto.stock !== 0) { %>
                   <button class="btn-add-cart btn-comprar" 
                           data-id="<%= producto.id %>"
                           data-nombre="<%= producto.nombre %>"
