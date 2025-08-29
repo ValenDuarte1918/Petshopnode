@@ -67,7 +67,7 @@
         <% productos.forEach(producto => { %>
           <article class="producto-card <%= (!producto.stock || producto.stock === 0) ? 'out-of-stock-card' : '' %>" data-marca="<%= producto.brand || '' %>" data-precio="<%= producto.precio %>">
             <div class="card-image">
-              <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'">
+              <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" loading="lazy" decoding="async" width="400" height="250" onerror="this.src='/images/logo_petshop.jpeg'">
               <% if (typeof producto.stock !== 'undefined' && producto.stock < 5 && producto.stock > 0) { %>
                 <span class="stock-badge low-stock">¡Últimas <%= producto.stock %>!</span>
               <% } else if (producto.stock === 0) { %>
@@ -234,6 +234,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- Incluir el JavaScript del carrito -->
-<script src="/js/agregarCarrito.js"></script>
+<script src="/js/agregarCarrito.js" defer></script>
 
 <%- include('partials/footer') %>

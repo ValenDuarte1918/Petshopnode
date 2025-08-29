@@ -28,11 +28,12 @@
         <!-- Product Images -->
         <div class="product-images">
           <div class="main-image-container">
-            <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" 
-                 alt="<%= producto.nombre %>" 
-                 id="main-product-image"
-                 class="main-product-image" 
-                 onerror="this.src='/images/logo_petshop.jpeg'" />
+      <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" 
+        alt="<%= producto.nombre %>" 
+        id="main-product-image"
+        class="main-product-image" 
+        loading="lazy" decoding="async" width="600" height="450"
+        onerror="this.src='/images/logo_petshop.jpeg'" />
             
             <!-- Image Zoom Overlay -->
             <div class="image-zoom-trigger" title="Click para ampliar">
@@ -52,16 +53,16 @@
           <!-- Thumbnail Images -->
           <div class="thumbnail-images">
             <div class="thumbnail active">
-              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 1">
+              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 1" loading="lazy" decoding="async" width="200" height="120">
             </div>
             <div class="thumbnail">
-              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 2">
+              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 2" loading="lazy" decoding="async" width="200" height="120">
             </div>
             <div class="thumbnail">
-              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 3">
+              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 3" loading="lazy" decoding="async" width="200" height="120">
             </div>
             <div class="thumbnail">
-              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 4">
+              <img src="/images/products/<%= producto.img || 'logo_petshop.jpeg' %>" alt="Vista 4" loading="lazy" decoding="async" width="200" height="120">
             </div>
           </div>
         </div>
@@ -139,8 +140,8 @@
           <!-- Add to Cart Section -->
           <div class="add-to-cart-section">
             <% if (producto.stock === 0) { %>
-              <button type="button" class="btn-add-to-cart out-of-stock" disabled>
-                <i class="fas fa-times-circle"></i>
+              <button type="button" class="btn-add-to-cart out-of-stock" disabled aria-disabled="true" aria-label="Sin stock">
+                <i class="fas fa-times-circle" aria-hidden="true"></i>
                 Sin stock
               </button>
               <!-- out-of-stock detail removed per request -->
@@ -359,9 +360,9 @@
             <div class="related-product-card <%= (productoRelacionado.stock === 0) ? 'out-of-stock-card' : '' %>">
               <a href="/productos/detalle/<%= productoRelacionado.id %>" class="product-link">
                 <div class="product-image">
-                  <img src="/images/products/<%= productoRelacionado.img %>" 
+         <img src="/images/products/<%= productoRelacionado.img %>" 
                        alt="<%= productoRelacionado.nombre %>" 
-                       onerror="this.src='/images/logo_petshop.jpeg'">
+           loading="lazy" decoding="async" width="300" height="180" onerror="this.src='/images/logo_petshop.jpeg'">
                   <div class="product-overlay">
                     <i class="fas fa-eye"></i>
                     <span>Ver detalle</span>
@@ -373,16 +374,22 @@
                 <div class="product-info">
                   <h4><%= productoRelacionado.nombre %></h4>
                   <div class="product-price">$<%= Number(productoRelacionado.precio).toLocaleString('es-AR') %></div>
-                  <button class="btn-quick-add" 
-                          data-id="<%= productoRelacionado.id %>"
-                          data-nombre="<%= productoRelacionado.nombre %>"
-                          data-precio="<%= productoRelacionado.precio %>"
-                          data-imagen="<%= productoRelacionado.img %>"
-                          onclick="event.preventDefault(); event.stopPropagation();"
-                          <%= (productoRelacionado.stock === 0) ? 'disabled class="disabled"' : '' %> >
-                    <i class="fas fa-cart-plus"></i>
-                    Agregar
-                  </button>
+                  <% if (productoRelacionado.stock === 0) { %>
+                    <button class="btn-quick-add disabled" disabled aria-disabled="true" aria-label="Sin stock de <%= productoRelacionado.nombre %>">
+                      <i class="fas fa-times-circle" aria-hidden="true"></i>
+                      Sin stock
+                    </button>
+                  <% } else { %>
+                    <button class="btn-quick-add" 
+                            data-id="<%= productoRelacionado.id %>"
+                            data-nombre="<%= productoRelacionado.nombre %>"
+                            data-precio="<%= productoRelacionado.precio %>"
+                            data-imagen="<%= productoRelacionado.img %>"
+                            onclick="event.preventDefault(); event.stopPropagation();">
+                      <i class="fas fa-cart-plus"></i>
+                      Agregar
+                    </button>
+                  <% } %>
                 </div>
               </a>
             </div>

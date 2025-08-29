@@ -254,7 +254,7 @@
             <div class="profile-header">
                 <div class="profile-avatar">
                     <% if (user.image && user.image !== 'default.jpg') { %>
-                        <img src="/images/users/<%= user.image %>" alt="<%= user.firstName %>">
+                            <img src="/images/users/<%= user.image %>" alt="<%= user.firstName %>" loading="lazy" decoding="async" width="120" height="120">
                     <% } else { %>
                         <i class="fas fa-user"></i>
                     <% } %>

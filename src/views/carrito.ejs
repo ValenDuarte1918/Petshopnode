@@ -28,7 +28,7 @@
                     <% carrito.forEach((item, index) => { %>
                         <div class="carrito-item animate-fadeInLeft delay-<%= (index % 3) + 1 %>" data-product-id="<%= item.id %>">
                             <div class="item-image">
-                                <img src="/images/products/<%= item.imagen || item.img || 'default.jpg' %>" alt="<%= item.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
+                                <img src="/images/products/<%= item.imagen || item.img || 'default.jpg' %>" alt="<%= item.nombre %>" loading="lazy" decoding="async" width="120" height="90" onerror="this.src='/images/logo_petshop.jpeg'" />
                             </div>
                             <div class="item-details">
                                 <h3><%= item.nombre %></h3>
@@ -38,19 +38,20 @@
                                 <form action="/carrito/update/<%= item.id %>?_method=PUT" method="POST" class="quantity-form">
                                     <label for="cantidad-<%= item.id %>">Cantidad:</label>
                                     <div class="quantity-controls">
-                                        <button type="button" class="qty-btn" onclick="decreaseQuantity(<%= item.id %>)">
-                                            <i class="fas fa-minus"></i>
+                                        <button type="button" class="qty-btn btn-decrease" data-id="<%= item.id %>">
+                                            <i class="fas fa-minus" aria-hidden="true"></i>
                                         </button>
-                                        <input type="number" 
-                                               id="cantidad-<%= item.id %>" 
-                                               name="cantidad" 
-                                               value="<%= item.cantidad %>" 
-                                               min="1" 
-                                               max="10"
-                                               data-precio="<%= item.precio %>"
-                                               onchange="updateQuantity(<%= item.id %>)">
-                                        <button type="button" class="qty-btn" onclick="increaseQuantity(<%= item.id %>)">
-                                            <i class="fas fa-plus"></i>
+                         <input type="number" 
+                             id="cantidad-<%= item.id %>" 
+                             name="cantidad" 
+                             value="<%= item.cantidad %>" 
+                             min="1" 
+                             max="10"
+                             data-precio="<%= item.precio %>"
+                             class="qty-input"
+                             data-id="<%= item.id %>">
+                                        <button type="button" class="qty-btn btn-increase" data-id="<%= item.id %>">
+                                            <i class="fas fa-plus" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                 </form>
@@ -125,7 +126,42 @@
 
     <%- include('partials/footer') %>
     
-    <script src="/js/carrito-functions.js"></script>
-    <script src="/js/petshop-animations.js"></script>
+    <script src="/js/carrito-functions.js" defer></script>
+    <script src="/js/petshop-animations.js" defer></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Bind quantity controls
+        document.querySelectorAll('.btn-decrease').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const input = document.querySelector('.qty-input[data-id="' + id + '"]');
+                if (!input) return;
+                let val = parseInt(input.value) || 1;
+                if (val > 1) input.value = val - 1;
+                // Optionally, call updateQuantity via global function if available
+                if (typeof updateQuantity === 'function') updateQuantity(id);
+            });
+        });
+
+        document.querySelectorAll('.btn-increase').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const input = document.querySelector('.qty-input[data-id="' + id + '"]');
+                if (!input) return;
+                let val = parseInt(input.value) || 1;
+                input.value = Math.min(val + 1, parseInt(input.max) || 10);
+                if (typeof updateQuantity === 'function') updateQuantity(id);
+            });
+        });
+
+        document.querySelectorAll('.qty-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const id = this.dataset.id;
+                if (typeof updateQuantity === 'function') updateQuantity(id);
+            });
+        });
+    });
+    </script>
 </body>
 </html>

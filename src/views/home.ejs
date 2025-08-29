@@ -31,7 +31,7 @@
           </div>
         </div>
         <div class="hero-image">
-          <img src="/images/home/hero-pet.jpg" alt="Mascotas felices" />
+          <img src="/images/home/hero-pet.jpg" alt="Mascotas felices" loading="lazy" decoding="async" width="800" height="450" />
         </div>
       </div>
     </div>
@@ -48,7 +48,7 @@
       <div class="pets-grid">
         <a href="/productos/categoria/perros" class="pet-card large" data-aos="fade-up">
           <div class="pet-image">
-            <img src="/images/home/dog-category.jpg" alt="Productos para Perros" />
+            <img src="/images/home/dog-category.jpg" alt="Productos para Perros" loading="lazy" decoding="async" width="400" height="250" />
             <div class="pet-overlay">
               <span class="pet-badge">+200 productos</span>
               <span class="pet-discount">Hasta 30% OFF</span>
@@ -68,7 +68,7 @@
         
         <a href="/productos/categoria/gatos" class="pet-card" data-aos="fade-up" data-aos-delay="100">
           <div class="pet-image">
-            <img src="/images/home/cat-category.jpg" alt="Productos para Gatos" />
+            <img src="/images/home/cat-category.jpg" alt="Productos para Gatos" loading="lazy" decoding="async" width="400" height="250" />
             <div class="pet-overlay">
               <span class="pet-badge">+150 productos</span>
             </div>
@@ -87,7 +87,7 @@
         
         <a href="/productos/categoria/aves" class="pet-card" data-aos="fade-up" data-aos-delay="200">
           <div class="pet-image">
-            <img src="/images/home/toys-category.jpg" alt="Productos para Aves" />
+            <img src="/images/home/toys-category.jpg" alt="Productos para Aves" loading="lazy" decoding="async" width="400" height="250" />
           </div>
           <div class="pet-content">
             <i class="fas fa-dove pet-icon"></i>
@@ -103,7 +103,7 @@
         
         <a href="/productos/categoria/peces" class="pet-card" data-aos="fade-up" data-aos-delay="300">
           <div class="pet-image">
-            <img src="/images/home/food-category.jpg" alt="Productos para Peces" />
+            <img src="/images/home/food-category.jpg" alt="Productos para Peces" loading="lazy" decoding="async" width="400" height="250" />
           </div>
           <div class="pet-content">
             <i class="fas fa-fish pet-icon"></i>
@@ -189,7 +189,7 @@
               <div class="product-card-mini <%= (producto.stock === 0) ? 'out-of-stock-card' : '' %>" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
                 <div class="product-image">
                   <a href="/productos/detalle/<%= producto.id %>">
-                    <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
+                    <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" loading="lazy" decoding="async" width="300" height="200" onerror="this.src='/images/logo_petshop.jpeg'" />
                   </a>
                   <% if (index === 0) { %>
                     <span class="product-badge hot">🔥 Top</span>
@@ -245,7 +245,7 @@
               <div class="product-card-mini" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
                 <div class="product-image">
                   <a href="/productos/detalle/<%= producto.id %>">
-                    <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
+                    <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" loading="lazy" decoding="async" width="300" height="200" onerror="this.src='/images/logo_petshop.jpeg'" />
                   </a>
                   <% if (index === 0) { %>
                     <span class="product-badge new">✨ Nuevo</span>
@@ -312,7 +312,7 @@
               <div class="product-card-featured" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
                 <div class="product-image">
                   <a href="/productos/detalle/<%= producto.id %>">
-                    <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" onerror="this.src='/images/logo_petshop.jpeg'" />
+                    <img src="/images/products/<%= producto.img %>" alt="<%= producto.nombre %>" loading="lazy" decoding="async" width="360" height="240" onerror="this.src='/images/logo_petshop.jpeg'" />
                   </a>
                   <% if (index === 0) { %>
                     <span class="product-badge bestseller">🏆 #1 Más vendido</span>
