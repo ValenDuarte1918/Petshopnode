@@ -115,14 +115,6 @@ app.use(methodOverride('X-HTTP-Method-Override'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Middleware para debug de todas las peticiones
-app.use((req, res, next) => {
-    console.log(`📨 ${req.method} ${req.url} - ${new Date().toISOString()}`);
-    if (req.method === 'POST') {
-        console.log('📨 POST Body:', req.body);
-    }
-    next();
-});
 
 // Rutas - DEBEN ir antes de app.listen()
 app.use('/', mainRouter)
@@ -131,29 +123,10 @@ app.use('/productos', productRouter)  // Ruta específica para productos
 app.use('/admin', adminRouter)
 app.use('/api', apiRouter)  // Rutas API
 
-// Middleware de manejo de errores (debe ir al final)
-app.use((err, req, res, next) => {
-    console.error('💥 Error capturado:', err);
-    console.error('💥 Stack trace:', err.stack);
-    res.status(500).render('error', {
-        title: 'Error interno del servidor',
-        message: err.message,
-        error: process.env.NODE_ENV === 'development' ? err : {}
-    });
-});
-
-// Middleware para 404 (debe ir después de todas las rutas)
-app.use((req, res) => {
-    console.log('📨 404 - Ruta no encontrada:', req.url);
-    res.status(404).render('error', {
-        title: 'Página no encontrada',
-        message: 'La página que buscas no existe.',
-        error: { status: 404 }
-    });
-});
 
 app.listen(3000, ()=>{
-    console.log("Servidor corriendo en el puerto 3000")
+    console.log("Servidor corriendo correctamente");
+    console.log("Aplicación disponible en: \u001b]8;;http://localhost:3000\u0007http://localhost:3000\u001b]8;;\u0007");
 })
 
 
