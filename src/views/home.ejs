@@ -558,21 +558,7 @@
   
   <!-- Script de debug temporal -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('🔍 DEBUG: Verificando botones de carrito en home');
-      const botones = document.querySelectorAll('.btn-add-cart');
-      console.log('🔍 DEBUG: Encontrados', botones.length, 'botones');
-      
-      botones.forEach((boton, index) => {
-        console.log(`🔍 DEBUG: Botón ${index + 1}:`, {
-          id: boton.dataset.id,
-          nombre: boton.dataset.nombre,
-          precio: boton.dataset.precio,
-          imagen: boton.dataset.imagen,
-          classes: boton.className
-        });
-      });
-    });
+    // Script de inicialización del carrito ya está en agregarCarrito.js
   </script>
 </body>
 </html>

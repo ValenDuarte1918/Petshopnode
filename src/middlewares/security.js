@@ -8,21 +8,13 @@ const MAX_ATTEMPTS = 5;
 
 // Middleware para autenticación de admin
 const requireAdmin = (req, res, next) => {
-    console.log('🔐 requireAdmin - Verificando acceso admin...');
-    console.log('🔐 userLogged:', req.session.userLogged);
-    
     // Verificar si está logueado
     if (!req.session.userLogged) {
-        console.log('❌ No hay usuario logueado');
         return res.redirect('/users/login?redirect=' + encodeURIComponent(req.originalUrl));
     }
     
-    console.log('🔐 Usuario logueado:', req.session.userLogged.email);
-    console.log('🔐 Categoría del usuario:', req.session.userLogged.category);
-    
     // Verificar si es administrador
     if (req.session.userLogged.category !== 'Administrador') {
-        console.log('❌ Usuario no es administrador. Categoría:', req.session.userLogged.category);
         return res.status(403).render('error', {
             title: 'Acceso Denegado',
             message: 'No tienes permisos para acceder a esta sección.',
@@ -30,7 +22,6 @@ const requireAdmin = (req, res, next) => {
         });
     }
     
-    console.log('✅ Acceso admin autorizado');
     next();
 };
 

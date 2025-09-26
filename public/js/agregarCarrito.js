@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    console.log('🛒 Carrito JavaScript cargado correctamente!');
-    
     // Ya no necesitamos inicializar localStorage - todo va a la base de datos
 
     // Función para mostrar notificaciones modernas
@@ -97,7 +95,6 @@ document.addEventListener("DOMContentLoaded", function () {
     function verificarUsuarioLogueado() {
         // Verificar usando el estado global del header
         if (typeof window.userState === 'undefined') {
-            console.warn('⚠️ Estado de usuario no disponible');
             return false;
         }
         
@@ -299,9 +296,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Función para agregar producto al carrito
     function agregarProductoAlCarrito(productoData) {
-        console.log('📦 Agregando producto:', productoData);
-        console.log('🔢 Cantidad a enviar:', productoData.cantidad);
-        
         // Verificar si el usuario está logueado usando window.userState del header
         if (window.userState && window.userState.isLoggedIn) {
             // Usuario logueado: usar endpoint del servidor
@@ -353,16 +347,10 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener('click', function(event) {
         // Verificar si se hizo clic en un botón de agregar al carrito
         const boton = event.target.closest('.btn-add-cart, .btn-add-to-cart, .btn-quick-add');
+        
+
     if (boton) {
             event.preventDefault();
-            console.log('🖱️ Click detectado en botón agregar al carrito');
-            console.log('🔍 Clases del botón:', boton.className);
-            console.log('🏠 Página actual:', window.location.pathname);
-            console.log('🔍 Elemento clickeado:', event.target);
-            console.log('🔍 Botón encontrado:', boton);
-            
-            console.log('📊 TODOS los data attributes:', boton.dataset);
-
             // Protección: si el botón está deshabilitado o la card indica sin stock, no permitir agregar
             if (boton.disabled || boton.classList.contains('disabled')) {
                 mostrarNotificacion('Este producto está sin stock', 'warning');
@@ -375,20 +363,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             
             let card = boton.closest('.product-card-featured, .favorite-item, .producto-card, .product-card-mini');
-            console.log('📦 Card encontrada:', card ? 'SÍ' : 'NO');
-            if (card) {
-                console.log('📦 Clases de la card:', card.className);
-            }
             
             // Para la página de detalle, los datos están directamente en el botón
             if (boton.classList.contains('btn-add-to-cart')) {
-                console.log('🔍 Detectado botón de página de detalle');
-                
                 // Obtener cantidad seleccionada
                 const cantidadInput = document.querySelector('.quantity-input');
                 const cantidad = cantidadInput ? parseInt(cantidadInput.value) || 1 : 1;
-                console.log('🔢 Cantidad seleccionada:', cantidad);
-                
                 // Método 1: Usar data attributes del botón (más confiable)
                 let productoData = {
                     id: boton.dataset.id,
@@ -416,29 +396,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     };
                 }
                 
-                console.log('📊 Datos del producto de detalle:', productoData);
-                
                 if (productoData.id && productoData.nombre && productoData.precio) {
                     // Agregar con la cantidad especificada
                     agregarProductoAlCarrito({...productoData, cantidad: cantidad});
                 } else {
-                    console.error('❌ Faltan datos del producto:', productoData);
                     mostrarNotificacion('Error: No se pudieron obtener los datos del producto', 'error');
                 }
                 return;
             }
             
             // Para cards de productos en home y favorites (btn-add-cart y btn-quick-add)
-            console.log('🏠 Detectado botón de home/favorites');
-            
             if (!card) {
-                console.error('❌ No se encontró la tarjeta de producto');
-                console.log('🔍 Intentando buscar card con otros selectores...');
-                
                 // Buscar contenedor padre alternativo
                 card = boton.closest('.product-item, .card, .producto, .product, .product-card-mini');
-                console.log('🔍 Card alternativa encontrada:', card ? 'SÍ' : 'NO');
-                
                 if (!card) {
                     mostrarNotificacion('Error: No se pudo identificar el producto', 'error');
                     return;
@@ -456,37 +426,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 color: boton.dataset.color || ''
             };
             
-            console.log('📊 Data attributes del botón:', {
-                id: boton.dataset.id,
-                nombre: boton.dataset.nombre,
-                imagen: boton.dataset.imagen,
-                precio: boton.dataset.precio,
-                precioParseado: parseInt(boton.dataset.precio),
-                categoria: boton.dataset.categoria,
-                color: boton.dataset.color
-            });
-            
-            console.log('📊 Producto procesado:', productoData);
-            
             // Método 2: Si no hay data attributes, intentar extraer del DOM
             if (!productoData.id || !productoData.nombre || productoData.precio <= 0) {
-                console.log('⚠️ Data attributes incompletos, extrayendo del DOM...');
-                
                 // Buscar la card padre
                 const cardElement = boton.closest('.producto-card, .product-card, .product-card-mini, article');
-                console.log('🔍 Card element encontrado:', cardElement);
-                
                 if (cardElement) {
                     // Buscar por diferentes selectores posibles
                     const nombreElement = cardElement.querySelector('.producto-nombre a, .product-name a, .product-title, .product-info-mini h4 a, h3 a, h4 a');
                     const precioElement = cardElement.querySelector('.precio-actual, .current-price, .precio, .price, .product-info-mini .price');
                     const imagenElement = cardElement.querySelector('img');
-                    
-                    console.log('🔍 Elementos encontrados:', {
-                        nombre: nombreElement ? nombreElement.textContent : 'NO ENCONTRADO',
-                        precio: precioElement ? precioElement.textContent : 'NO ENCONTRADO',
-                        imagen: imagenElement ? imagenElement.src : 'NO ENCONTRADO'
-                    });
                     
                     // Solo sobrescribir si no tenemos datos
                     if (!productoData.id) {
@@ -501,19 +449,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (!productoData.imagen || productoData.imagen === 'default.jpg') {
                         productoData.imagen = imagenElement ? imagenElement.src.split('/').pop() : 'default.jpg';
                     }
-                    
-                    console.log('📊 Datos actualizados desde DOM:', productoData);
                 }
             }
             
             // Validar datos antes de agregar (solo campos críticos)
             if (!productoData.id || !productoData.nombre || productoData.precio <= 0) {
-                console.error('❌ Datos del producto incompletos:', productoData);
-                console.error('❌ Validación falló:', {
-                    id: !productoData.id ? 'FALTA ID' : 'OK',
-                    nombre: !productoData.nombre ? 'FALTA NOMBRE' : 'OK',
-                    precio: productoData.precio <= 0 ? 'PRECIO INVÁLIDO' : 'OK'
-                });
                 mostrarNotificacion('Error: No se pudo agregar el producto', 'error');
                 return;
             }
@@ -521,10 +461,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // Si no hay imagen, usar una por defecto
             if (!productoData.imagen) {
                 productoData.imagen = 'default.jpg';
-                console.log('⚠️ Imagen no encontrada, usando default.jpg');
             }
             
-            console.log('✅ Producto válido, agregando al carrito:', productoData);
             agregarProductoAlCarrito(productoData);
         }
     });
@@ -569,7 +507,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Event listener específico para elementos con onclick (compatibilidad hacia atrás)
     const botonesConOnclick = document.querySelectorAll('[onclick*="agregarAlCarrito"]');
     botonesConOnclick.forEach(boton => {
-        console.log('🔧 Botón con onclick encontrado, agregando event listener moderno');
         boton.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -608,11 +545,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 color: color
             };
             
-            console.log('🎯 Producto seleccionado desde onclick:', productoData);
-            
             // Validar que tenemos los datos mínimos
             if (!productoData.id || !productoData.nombre || !productoData.precio) {
-                console.error('❌ Datos del producto incompletos:', productoData);
                 mostrarNotificacion('Error: No se pudo agregar el producto', 'error');
                 return;
             }
@@ -621,10 +555,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    console.log('👤 Estado del usuario:', {
-        isLoggedIn: verificarUsuarioLogueado(),
-        userInfo: window.userState?.user || 'No disponible'
-    });
-    
-    console.log('🚀 Sistema de carrito completamente inicializado');
 });

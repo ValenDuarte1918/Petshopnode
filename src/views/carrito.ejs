@@ -126,42 +126,116 @@
 
     <%- include('partials/footer') %>
     
-    <script src="/js/carrito-functions.js" defer></script>
     <script src="/js/petshop-animations.js" defer></script>
-
+    
     <script>
+    function recalcularTotal() {
+        let total = 0;
+        const items = document.querySelectorAll('.carrito-item');
+        
+        items.forEach(item => {
+            const cantidadInput = item.querySelector('input[type="number"]');
+            const precio = parseFloat(cantidadInput.dataset.precio || 0);
+            const cantidad = parseInt(cantidadInput.value || 0);
+            total += precio * cantidad;
+        });
+        
+        const totalElement = document.querySelector('.total-amount');
+        if (totalElement) {
+            totalElement.textContent = `$${total.toFixed(2)}`;
+        }
+        
+        const subtotalSummary = document.querySelector('.summary-row:first-child span:last-child');
+        if (subtotalSummary) {
+            subtotalSummary.textContent = `$${total.toFixed(2)}`;
+        }
+        
+        return total;
+    }
+
+    function increaseQuantity(productId) {
+        const input = document.getElementById(`cantidad-${productId}`);
+        if (!input) return;
+        
+        const currentValue = parseInt(input.value) || 1;
+        const maxValue = parseInt(input.max) || 10;
+        
+        if (currentValue < maxValue) {
+            input.value = currentValue + 1;
+            
+            const precio = parseFloat(input.dataset.precio || 0);
+            const subtotalElement = document.querySelector(`#subtotal-${productId}`);
+            if (subtotalElement) {
+                subtotalElement.textContent = `$${(precio * (currentValue + 1)).toFixed(2)}`;
+            }
+            
+            recalcularTotal();
+        }
+    }
+
+    function decreaseQuantity(productId) {
+        const input = document.getElementById(`cantidad-${productId}`);
+        if (!input) return;
+        
+        const currentValue = parseInt(input.value) || 1;
+        
+        if (currentValue > 1) {
+            input.value = currentValue - 1;
+            
+            const precio = parseFloat(input.dataset.precio || 0);
+            const subtotalElement = document.querySelector(`#subtotal-${productId}`);
+            if (subtotalElement) {
+                subtotalElement.textContent = `$${(precio * (currentValue - 1)).toFixed(2)}`;
+            }
+            
+            recalcularTotal();
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Bind quantity controls
+        if (!document.querySelector('.carrito-item')) return;
+        
         document.querySelectorAll('.btn-decrease').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const input = document.querySelector('.qty-input[data-id="' + id + '"]');
-                if (!input) return;
-                let val = parseInt(input.value) || 1;
-                if (val > 1) input.value = val - 1;
-                // Optionally, call updateQuantity via global function if available
-                if (typeof updateQuantity === 'function') updateQuantity(id);
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productId = this.dataset.id;
+                decreaseQuantity(productId);
             });
         });
 
         document.querySelectorAll('.btn-increase').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const input = document.querySelector('.qty-input[data-id="' + id + '"]');
-                if (!input) return;
-                let val = parseInt(input.value) || 1;
-                input.value = Math.min(val + 1, parseInt(input.max) || 10);
-                if (typeof updateQuantity === 'function') updateQuantity(id);
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productId = this.dataset.id;
+                increaseQuantity(productId);
             });
         });
-
-        document.querySelectorAll('.qty-input').forEach(input => {
+        
+        document.querySelectorAll('input[type="number"][id^="cantidad-"]').forEach(input => {
             input.addEventListener('change', function() {
-                const id = this.dataset.id;
-                if (typeof updateQuantity === 'function') updateQuantity(id);
+                const productId = this.id.replace('cantidad-', '');
+                const newValue = parseInt(this.value) || 1;
+                
+                if (newValue < 1) {
+                    this.value = 1;
+                    return;
+                }
+                if (newValue > 10) {
+                    this.value = 10;
+                    return;
+                }
+                
+                const precio = parseFloat(this.dataset.precio || 0);
+                const subtotalElement = document.querySelector(`#subtotal-${productId}`);
+                if (subtotalElement) {
+                    subtotalElement.textContent = `$${(precio * newValue).toFixed(2)}`;
+                }
+                
+                recalcularTotal();
             });
         });
     });
     </script>
+
 </body>
 </html>

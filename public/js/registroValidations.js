@@ -1,7 +1,13 @@
 window.onload = function() {
-    const inputNombre = document.querySelector('#nombre');
-    inputNombre.focus();
+    // Verificar que estamos en la página correcta
     const form = document.querySelector('form');
+    if (!form) return;
+    
+    const inputNombre = document.querySelector('#nombre');
+    if (inputNombre) {
+        inputNombre.focus();
+    }
+    
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         let errores = []
@@ -14,6 +20,7 @@ window.onload = function() {
             form.nombre.classList.remove('errors');
             form.nombre.classList.add('valid');
         }
+        
         if(form.apellido.value == '' || form.apellido.value.length < 2) {
             form.apellido.classList.remove('valid');
             form.apellido.classList.add('errors');
@@ -22,6 +29,7 @@ window.onload = function() {
             form.apellido.classList.remove('errors');
             form.apellido.classList.add('valid');
         }
+        
         if(form.correo.value == '' || form.correo.value.length < 2) {
             form.correo.classList.remove('valid');
             form.correo.classList.add('errors');
@@ -30,6 +38,7 @@ window.onload = function() {
             form.correo.classList.remove('errors');
             form.correo.classList.add('valid');
         }
+        
         if(form.contrasena.value == '' || form.contrasena.value.length < 8) {
             form.contrasena.classList.remove('valid');
             form.contrasena.classList.add('errors');
@@ -38,6 +47,7 @@ window.onload = function() {
             form.contrasena.classList.remove('errors');
             form.contrasena.classList.add('valid');
         }
+        
         const ul = document.querySelector('.errores');
 
         if (errores.length != 0) {
@@ -47,20 +57,19 @@ window.onload = function() {
                 const error = errores[i];
                 ul.innerHTML += `<li>${error}</li>`;
             }
-            Swal.fire(
-                {icon : 'error',
+            Swal.fire({
+                icon : 'error',
                 title : 'Hubo un error!',
                 text : 'Revisar los errores!'
-            }
-            )
+            });
         } else {
-          Swal.fire(
-            'Buen trabajo!',
-            'Te registraste con exito!',
-            'success'
-          ).then (()=> {
-            form.submit()
-          })
-          }
-        })
+            Swal.fire(
+                'Buen trabajo!',
+                'Te registraste con exito!',
+                'success'
+            ).then(() => {
+                form.submit()
+            });
+        }
+    });
 }

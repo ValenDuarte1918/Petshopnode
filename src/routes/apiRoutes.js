@@ -5,7 +5,6 @@ const apiController = require('../controllers/apiController');
 
 // Middleware para logging de API
 router.use((req, res, next) => {
-    console.log(`🔗 API: ${req.method} ${req.originalUrl}`);
     res.header('Content-Type', 'application/json');
     next();
 });
@@ -40,10 +39,6 @@ router.get('/cart', requireAuth, (req, res) => {
         
         const cartCount = cartWithNumericPrices.reduce((sum, item) => sum + item.cantidad, 0);
         const subtotal = cartWithNumericPrices.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
-
-        console.log('🛒 Carrito API - Items:', cartWithNumericPrices);
-        console.log('🛒 Carrito API - Count:', cartCount);
-        console.log('🛒 Carrito API - Subtotal:', subtotal);
 
         res.json({
             success: true,

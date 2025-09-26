@@ -183,8 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    console.log('🐾 PetShop JavaScript cargado correctamente!');
-});
+    });
 
 // Agregar estilos para la notificación
 const style = document.createElement('style');

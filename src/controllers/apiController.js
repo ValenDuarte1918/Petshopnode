@@ -37,7 +37,6 @@ const apiController = {
             });
 
         } catch (error) {
-            console.error('❌ Error en getCartInfo API:', error);
             res.status(500).json({
                 success: false,
                 error: 'INTERNAL_ERROR',
@@ -140,7 +139,7 @@ const apiController = {
                 tax: tax,
                 total: total,
                 notes: `Pago procesado - ID: ${paymentResult.transactionId}`,
-                estimated_delivery: getEstimatedDelivery()
+                estimated_delivery: getEstimatedDelivery(shippingAddress.postalCode)
             });
 
             // Crear items de la orden
@@ -176,7 +175,7 @@ const apiController = {
                     amount: total,
                     currency: 'ARS',
                     status: 'confirmed',
-                    estimatedDelivery: getEstimatedDelivery(),
+                    estimatedDelivery: getEstimatedDelivery(shippingAddress.postalCode),
                     breakdown: {
                         subtotal: subtotal,
                         shipping: shipping,
@@ -188,11 +187,12 @@ const apiController = {
             });
 
         } catch (error) {
-            console.error('❌ Error en processPayment API:', error);
+            console.error('Error en processPayment:', error);
             res.status(500).json({
                 success: false,
                 error: 'INTERNAL_ERROR',
-                message: 'Error interno del servidor'
+                message: 'Error interno del servidor',
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
         }
     },
@@ -237,7 +237,6 @@ const apiController = {
             });
 
         } catch (error) {
-            console.error('❌ Error en getPaymentMethods API:', error);
             res.status(500).json({
                 success: false,
                 error: 'INTERNAL_ERROR',
@@ -280,7 +279,6 @@ const apiController = {
             });
 
         } catch (error) {
-            console.error('❌ Error en validateShippingAddress API:', error);
             res.status(500).json({
                 success: false,
                 error: 'INTERNAL_ERROR',
@@ -340,19 +338,24 @@ function getShippingZone(postalCode) {
 
 function getEstimatedDelivery(postalCode) {
     const zone = postalCode ? getShippingZone(postalCode) : 'local';
-    const days = {
-        local: '24-48 horas',
-        regional: '2-3 días',
-        national: '3-5 días'
+    const daysToAdd = {
+        local: 2,      // 2 días para entrega local
+        regional: 3,   // 3 días para entrega regional
+        national: 5    // 5 días para entrega nacional
     };
-    return days[zone] || days.national;
+    
+    const deliveryDays = daysToAdd[zone] || daysToAdd.national;
+    const estimatedDate = new Date();
+    estimatedDate.setDate(estimatedDate.getDate() + deliveryDays);
+    
+    return estimatedDate;
 }
 
 async function validateAddress(addressData) {
     // Simular validación de dirección
     // En un caso real, usarías un servicio como Google Maps API
     
-    if (addressData.address.length < 10) {
+    if (addressData.address.length < 100) {
         return {
             valid: false,
             message: 'La dirección es muy corta'

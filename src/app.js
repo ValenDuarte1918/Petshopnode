@@ -19,10 +19,10 @@ const { sanitizeInput, validateFileAccess, logSecurityEvent } = require('./middl
 // Manejo de errores de sesión EPERM
 process.on('uncaughtException', (err) => {
     if (err.code === 'EPERM' && err.path && err.path.includes('sessions')) {
-        console.log('⚠️ Error de permisos en sesiones (ignorado):', err.message);
+        console.log('Error de permisos en sesiones (ignorado):', err.message);
         return; // Continuar sin crash
     }
-    console.error('💥 Error crítico:', err);
+    console.error('Error crítico:', err);
     process.exit(1);
 });
 
@@ -126,7 +126,7 @@ app.use('/api', apiRouter)  // Rutas API
 
 app.listen(3000, ()=>{
     console.log("Servidor corriendo correctamente");
-    console.log("Aplicación disponible en: \u001b]8;;http://localhost:3000\u0007http://localhost:3000\u001b]8;;\u0007");
+    console.log("Aplicación disponible en: http://localhost:3000");
 })
 
 

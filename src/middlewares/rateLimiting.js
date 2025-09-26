@@ -23,8 +23,8 @@ const loginLimiter = rateLimit({
 
 // Rate limiting general (más permisivo en desarrollo)
 const generalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 1000 requests en dev, 100 en prod
+    windowMs: 1 * 60 * 1000, // 1 minuto
+    max: process.env.NODE_ENV === 'production' ? 100 : 10000, // 10000 requests en dev, 100 en prod
     message: {
         error: 'Demasiadas peticiones desde esta IP. Intenta nuevamente más tarde.',
         type: 'rate_limit_exceeded'

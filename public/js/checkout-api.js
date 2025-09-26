@@ -10,21 +10,10 @@ class CheckoutManager {
     // Inicializar el checkout
     async init() {
         try {
-            console.log('🚀 Iniciando CheckoutManager...');
-            
-            console.log('📡 Cargando métodos de pago...');
             await this.loadPaymentMethods();
-            console.log('✅ Métodos de pago cargados:', this.paymentMethods);
-            
-            console.log('🛒 Cargando información del carrito...');
             await this.loadCartInfo();
-            console.log('✅ Carrito cargado:', this.cartInfo);
-            
-            console.log('🎯 Configurando event listeners...');
             this.setupEventListeners();
-            console.log('✅ Checkout inicializado correctamente');
-        } catch (error) {
-            console.error('❌ Error inicializando checkout:', error);
+            } catch (error) {
             this.showError('Error al cargar información del checkout');
         }
     }
@@ -50,30 +39,18 @@ class CheckoutManager {
     // Cargar información del carrito
     async loadCartInfo() {
         try {
-            console.log('🛒 Haciendo request a:', `${this.apiBase}/cart`);
             const response = await fetch(`${this.apiBase}/cart`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
-            console.log('📦 Response status:', response.status);
-            
             const result = await response.json();
-            console.log('📦 Response data:', result);
-            
             if (result.success) {
                 this.cartInfo = result.data;
-                console.log('✅ CartInfo asignado:', this.cartInfo);
-                console.log('🔍 CartInfo.items:', this.cartInfo.items);
-                console.log('🔍 CartInfo.subtotal:', this.cartInfo.subtotal);
-                
                 // Verificar cada item del carrito
                 if (this.cartInfo.items) {
                     this.cartInfo.items.forEach((item, index) => {
-                        console.log(`🔍 Item ${index}:`, item);
-                        console.log(`🔍 Item ${index} precio:`, item.precio, typeof item.precio);
-                        console.log(`🔍 Item ${index} cantidad:`, item.cantidad, typeof item.cantidad);
-                    });
+                        });
                 }
                 
                 this.renderCartSummary();
@@ -81,7 +58,6 @@ class CheckoutManager {
                 throw new Error(result.message);
             }
         } catch (error) {
-            console.error('❌ Error cargando carrito:', error);
             throw error;
         }
     }
@@ -170,20 +146,15 @@ class CheckoutManager {
     renderCartSummary() {
         const container = document.getElementById('cart-summary');
         if (!container || !this.cartInfo) {
-            console.log('❌ No se encontró container o cartInfo:', { container: !!container, cartInfo: !!this.cartInfo });
             return;
         }
 
-        console.log('🔍 CartInfo en renderCartSummary:', this.cartInfo);
-        
         // Usar subtotal de la API o calcularlo si no existe
         const subtotal = this.cartInfo.subtotal || this.cartInfo.items.reduce((sum, item) => {
             const precio = parseFloat(item.precio) || 0;
             const cantidad = parseInt(item.cantidad) || 0;
             return sum + (precio * cantidad);
         }, 0);
-        
-        console.log('🔍 Subtotal calculado:', subtotal);
         
         const shipping = subtotal >= 45000 ? 0 : 5000;
         const tax = subtotal * 0.21;
@@ -195,8 +166,6 @@ class CheckoutManager {
                     const precio = parseFloat(item.precio) || 0;
                     const cantidad = parseInt(item.cantidad) || 0;
                     const itemTotal = precio * cantidad;
-                    console.log(`🔍 Calculando item: ${item.nombre}, precio: ${precio}, cantidad: ${cantidad}, total: ${itemTotal}`);
-                    
                     return `
                         <div class="summary-item">
                             <span>${item.nombre} x${cantidad}</span>
@@ -409,8 +378,6 @@ class CheckoutManager {
     // Mostrar error
     showError(message, errorCode = null) {
         const fullMessage = errorCode ? `Error (${errorCode}): ${message}` : message;
-        console.error('🚨 Error en Checkout:', fullMessage);
-        
         // Mostrar en la UI en lugar de alert
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-message';
@@ -444,4 +411,3 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-console.log('📦 Checkout API Manager cargado');

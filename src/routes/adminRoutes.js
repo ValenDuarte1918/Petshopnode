@@ -8,10 +8,6 @@ const { uploadLimiter } = require('../middlewares/rateLimiting');
 
 // Middleware para verificar que sea administrador en todas las rutas
 router.use((req, res, next) => {
-    console.log('🔍 AdminRoutes - Verificando sesión...');
-    console.log('🔍 Session ID:', req.sessionID);
-    console.log('🔍 Cookies:', req.headers.cookie);
-    console.log('🔍 UserLogged:', req.session.userLogged);
     next();
 });
 

@@ -6,9 +6,6 @@ const db = require('../database/models');
 const controller = {
     home: async (req, res) => {
         try {
-            console.log('🏠 Cargando productos para home...');
-            
-            // Usar base de datos
             const productosDB = await db.Producto.findAll({
                 where: { borrado: false },
                 limit: 12,
@@ -26,11 +23,10 @@ const controller = {
                 stock: producto.stock
             }));
             
-            console.log('✅ Usando base de datos:', productosListados.length, 'productos');
             res.render('home', { listaProductos: productosListados });
             
         } catch (error) {
-            console.error('❌ Error al cargar productos:', error);
+            console.error('Error al cargar productos:', error);
             res.status(500).render('error', {
                 message: 'Error al cargar productos',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -40,9 +36,6 @@ const controller = {
 
     productos: async (req, res) => {
         try {
-            console.log('📋 Cargando página de productos...');
-            
-            // Usar base de datos
             const productosDB = await db.Producto.findAll({
                 where: { borrado: false },
                 order: [['name', 'ASC']]
@@ -64,8 +57,6 @@ const controller = {
             // Obtener marcas únicas para el filtro
             const marcas = [...new Set(productos.map(p => p.brand).filter(Boolean))];
             
-            console.log('✅ Usando base de datos para productos:', productos.length);
-            
             res.render('productos', {
                 productos: productos,
                 categoria: 'Todos los productos',
@@ -79,7 +70,7 @@ const controller = {
             });
             
         } catch (error) {
-            console.error('❌ Error al cargar productos:', error);
+            console.error('Error al cargar productos:', error);
             res.status(500).render('error', {
                 message: 'Error al cargar productos',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -164,7 +155,6 @@ const controller = {
 
             const totalItems = req.session.cart.reduce((total, item) => total + item.cantidad, 0);
             
-            console.log(`✅ Producto agregado al carrito por usuario: ${req.session.userLogged.email}`);
             res.json({ 
                 success: true, 
                 message: 'Producto agregado al carrito',
@@ -172,7 +162,7 @@ const controller = {
             });
             
         } catch (error) {
-            console.error('❌ Error al agregar al carrito:', error);
+            console.error('Error al agregar al carrito:', error);
             res.status(500).json({ 
                 success: false, 
                 message: 'Error interno del servidor' 
@@ -209,7 +199,6 @@ const controller = {
             });
             
         } catch (error) {
-            console.error('❌ Error al cargar producto para editar:', error);
             res.status(500).render('error', {
                 message: 'Error al cargar producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -240,11 +229,10 @@ const controller = {
                 where: { id: req.params.id }
             });
 
-            console.log('✅ Producto actualizado en BD');
             res.redirect('/productos');
             
         } catch (error) {
-            console.error('❌ Error al actualizar producto:', error);
+            console.error('Error al actualizar producto:', error);
             res.status(500).render('error', {
                 message: 'Error al actualizar producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -259,11 +247,10 @@ const controller = {
                 { where: { id: req.params.id } }
             );
             
-            console.log('✅ Producto marcado como borrado en BD');
             res.redirect('/productos');
             
         } catch (error) {
-            console.error('❌ Error al borrar producto:', error);
+            console.error('Error al borrar producto:', error);
             res.status(500).render('error', {
                 message: 'Error al borrar producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -321,8 +308,6 @@ const controller = {
                 res.redirect('/carrito');
             }
         } catch (error) {
-            console.error('❌ Error al actualizar carrito:', error);
-            
             if (isAjax) {
                 return res.status(500).json({ success: false, message: 'Error interno del servidor' });
             }
@@ -354,8 +339,6 @@ const controller = {
             // Si es petición normal, redirigir al carrito
             res.redirect('/carrito');
         } catch (error) {
-            console.error('❌ Error al eliminar del carrito:', error);
-            
             if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
                 return res.status(500).json({ success: false, message: 'Error interno del servidor' });
             }
@@ -376,8 +359,6 @@ const controller = {
             // Si es una petición normal del navegador, redirigir al carrito
             res.redirect('/carrito');
         } catch (error) {
-            console.error('❌ Error al vaciar carrito:', error);
-            
             // Si es AJAX, devolver error JSON
             if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
                 return res.status(500).json({ success: false, message: 'Error interno del servidor' });
@@ -409,11 +390,10 @@ const controller = {
                 borrado: false
             });
             
-            console.log('✅ Producto creado en BD');
             res.redirect('/productos');
             
         } catch (error) {
-            console.error('❌ Error al crear producto:', error);
+            console.error('Error al crear producto:', error);
             res.status(500).render('error', {
                 message: 'Error al crear producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -423,8 +403,6 @@ const controller = {
 
     detail: async (req, res) => {
         try {
-            console.log(`🔍 Detalle producto ID: ${req.params.id}`);
-            
             // Usar base de datos
             const productoDB = await db.Producto.findByPk(req.params.id, {
                 where: { borrado: false }
@@ -472,15 +450,13 @@ const controller = {
                 stock: producto.stock
             }));
             
-            console.log('✅ Detalle desde BD:', productFound.nombre);
-            
             return res.render('detail', { 
                 producto: productFound, 
                 productosRelacionados: productosRelacionados 
             });
             
         } catch (error) {
-            console.error('❌ Error al cargar producto:', error);
+            console.error('Error al cargar producto:', error);
             return res.status(500).render('error', { 
                 message: 'Error al cargar producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}

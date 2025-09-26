@@ -7,9 +7,6 @@ const { validationResult } = require('express-validator')
 const controller = {
     list: async (req, res) => {
         try {
-            console.log('📋 Cargando lista de productos...');
-            
-            // Usar base de datos
             const productosDB = await db.Producto.findAll({
                 where: { borrado: false },
                 order: [['name', 'ASC']]
@@ -24,8 +21,6 @@ const controller = {
                 color: producto.color,
                 precio: producto.price
             }));
-            
-            console.log('✅ Lista desde BD:', productosListados.length, 'productos');
             res.render('productos', { 
                 productos: productosListados,
                 categoria: 'Todos los productos',
@@ -39,7 +34,6 @@ const controller = {
             });
             
         } catch (error) {
-            console.error('❌ Error al cargar productos:', error);
             res.status(500).render('error', { 
                 message: 'Error al cargar productos',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -51,7 +45,6 @@ const controller = {
     category: async (req, res) => {
         try {
             const { categoria, subcategoria } = req.params;
-            console.log(`🔍 Filtrando por categoría: ${categoria}, subcategoría: ${subcategoria}`);
             
             // Función helper para normalizar nombres con guiones
             const normalizeUrlParam = (param) => {
@@ -90,8 +83,6 @@ const controller = {
                 stock: producto.stock
             }));
             
-            console.log('✅ Filtros desde BD:', productosFiltrados.length, 'productos');
-            
             const categoriaTitle = categoria ? normalizeUrlParam(categoria) : 'Productos';
             const subcategoriaTitle = subcategoria ? ` - ${normalizeUrlParam(subcategoria)}` : '';
             
@@ -110,7 +101,6 @@ const controller = {
                 }
             });
         } catch (error) {
-            console.error('❌ Error al filtrar productos:', error);
             res.status(500).render('error', {
                 message: 'Error al filtrar productos',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -153,8 +143,6 @@ const controller = {
             // Obtener marcas únicas para el filtro
             const marcas = [...new Set(productosMappeados.map(p => p.brand).filter(Boolean))];
             
-            console.log(`✅ Productos para mascota ${mascota} desde BD:`, productosMappeados.length);
-            
             res.render('productos', {
                 productos: productosMappeados,
                 categoria: `Productos para ${mascotaCapitalized}`,
@@ -167,7 +155,6 @@ const controller = {
                 }
             });
         } catch (error) {
-            console.error('❌ Error al cargar productos por mascota:', error);
             res.status(500).render('error', {
                 message: 'Error al cargar productos',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -177,8 +164,6 @@ const controller = {
     
     detail: async (req, res) => {
         try {
-            console.log(`🔍 Detalle producto ID: ${req.params.id}`);
-            
             // Usar base de datos
             const productoDB = await db.Producto.findByPk(req.params.id, {
                 where: { borrado: false }
@@ -225,15 +210,12 @@ const controller = {
                 precio: producto.price
             }));
             
-            console.log('✅ Detalle desde BD:', productFound.nombre);
-            
             return res.render('detail', { 
                 producto: productFound, 
                 productosRelacionados: productosRelacionados 
             });
             
         } catch (error) {
-            console.error('❌ Error al cargar producto:', error);
             return res.status(500).render('error', { 
                 message: 'Error al cargar producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -263,11 +245,9 @@ const controller = {
                 borrado: false
             });
             
-            console.log('✅ Producto creado en BD');
             res.redirect('/admin/productos');
             
         } catch (error) {
-            console.error('❌ Error al crear producto:', error);
             res.status(500).render('error', {
                 message: 'Error al crear producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -303,7 +283,6 @@ const controller = {
                 }
             });
         } catch (error) {
-            console.error('❌ Error al cargar producto para editar:', error);
             res.status(500).render('error', {
                 message: 'Error al cargar producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -357,11 +336,9 @@ const controller = {
                 where: { id: req.params.id }
             });
 
-            console.log('✅ Producto actualizado en BD');
             res.redirect('/admin/productos');
             
         } catch (error) {
-            console.error('❌ Error al actualizar producto:', error);
             res.status(500).render('error', {
                 message: 'Error al actualizar producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -377,11 +354,9 @@ const controller = {
                 { where: { id: req.params.id } }
             );
             
-            console.log('✅ Producto marcado como borrado en BD');
             res.redirect('/admin/productos');
             
         } catch (error) {
-            console.error('❌ Error al borrar producto:', error);
             res.status(500).render('error', {
                 message: 'Error al borrar producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}
@@ -397,11 +372,9 @@ const controller = {
                 { where: { id: req.params.id } }
             );
             
-            console.log('✅ Producto restaurado en BD');
             res.redirect('/admin/productos');
             
         } catch (error) {
-            console.error('❌ Error al restaurar producto:', error);
             res.status(500).render('error', {
                 message: 'Error al restaurar producto',
                 error: process.env.NODE_ENV === 'development' ? error : {}

@@ -1,50 +1,46 @@
 window.onload = function() {
-    const inputUsuario = document.querySelector('#usuario');
-    inputUsuario.focus();
+    // Verificar que estamos en la página correcta
     const form = document.querySelector('form');
+    if (!form) return;
+    
+    const inputEmail = document.querySelector('#email');
+    if (inputEmail) {
+        inputEmail.focus();
+    }
+    
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         let errores = []
         
-        if(form.usuario.value == '') {
-            form.usuario.classList.remove('.valid');
-            form.usuario.classList.add('.errors');
-            errores.push('El campo "usuario" es obligatorio.');
+        if(form.email.value == '') {
+            form.email.classList.remove('valid');
+            form.email.classList.add('errors');
+            errores.push('El campo "email" es obligatorio.');
         } else {
-            form.usuario.classList.remove('errors');
-            form.usuario.classList.add('valid');
+            form.email.classList.remove('errors');
+            form.email.classList.add('valid');
         }
+        
         if(form.contraseña.value == '') {
-            form.contraseña.classList.remove('.valid');
-            form.contraseña.classList.add('.errors');
+            form.contraseña.classList.remove('valid');
+            form.contraseña.classList.add('errors');
             errores.push('El campo "contraseña" es obligatorio.');
         } else {
             form.contraseña.classList.remove('errors');
             form.contraseña.classList.add('valid');
         }
-        const ul = document.querySelector('.errores');
 
         if (errores.length != 0) {
-            ul.innerHTML = ''
-            ul.classList.add('alert-warning');
-            for (let i = 0; i < errores.length; i++) {
-                const error = errores[i];
-                ul.innerHTML += `<li>${error}</li>`;
-            }
-            Swal.fire(
-                {icon : 'error',
-                title : 'Hubo un error!',
-                text : 'Revisa los errores!'
-            }
-            )
-        }else {
-            Swal.fire(
-              'Buen trabajo!',
-              'Te registraste con exito!',
-              'success'
-            ).then (()=> {
-                form.submit()
-              })
-            }
-          })
-  }
+            // Mostrar errores usando SweetAlert
+            let mensajeErrores = errores.join('\n');
+            Swal.fire({
+                icon : 'error',
+                title : 'Error en el formulario',
+                text : mensajeErrores
+            });
+        } else {
+            // Si no hay errores, enviar el formulario
+            form.submit();
+        }
+    });
+}

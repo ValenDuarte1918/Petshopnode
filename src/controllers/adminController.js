@@ -134,7 +134,6 @@ const adminController = {
     });
     
     } catch (error) {
-      console.error('❌ Error en dashboard admin:', error);
       res.render('admin/dashboard', { 
         user: req.session.userLogged,
         stats: {
@@ -185,7 +184,6 @@ const adminController = {
         usuarios: usuarios 
       });
     } catch (error) {
-      console.error('❌ Error al cargar usuarios:', error);
       res.render('admin/usuarios', { 
         user: req.session.userLogged,
         usuarios: [] 
@@ -211,7 +209,6 @@ const adminController = {
       
       res.redirect('/admin/usuarios');
     } catch (error) {
-      console.error('❌ Error al eliminar usuario:', error);
       res.status(500).json({ error: 'Error del servidor' });
     }
   },
@@ -232,7 +229,6 @@ const adminController = {
       
       res.redirect('/admin/usuarios');
     } catch (error) {
-      console.error('❌ Error al cambiar rol:', error);
       res.status(500).json({ error: 'Error del servidor' });
     }
   },
@@ -264,7 +260,6 @@ const adminController = {
         productos: productos
       });
     } catch (error) {
-      console.error('❌ Error al obtener productos para admin:', error);
       res.render('admin/productos', { 
         user: req.session.userLogged,
         productos: []
@@ -299,10 +294,9 @@ const adminController = {
         borrado: false
       });
       
-      console.log('✅ Producto creado en BD por admin:', newProduct.name);
       res.redirect('/admin/productos?created=true');
     } catch (error) {
-      console.error('❌ Error en admin crear producto:', error);
+      console.error('Error en admin crear producto:', error);
       res.render('admin/crear-producto', { 
         user: req.session.userLogged,
         error: 'Error al crear el producto: ' + error.message
@@ -349,7 +343,6 @@ const adminController = {
         producto: productoMapeado
       });
     } catch (error) {
-      console.error('❌ Error al obtener producto para editar:', error);
       return res.status(404).render('error', { 
         message: 'Error al cargar el producto',
         backUrl: '/admin/productos'
@@ -390,10 +383,9 @@ const adminController = {
         destacado: req.body.destacado === 'on'
       });
       
-      console.log('✅ Producto actualizado en BD por admin:', productoDB.name);
       res.redirect('/admin/productos');
     } catch (error) {
-      console.error('❌ Error en admin editar producto:', error);
+      console.error('Error en admin editar producto:', error);
       res.redirect('/admin/productos?error=edit');
     }
   },
@@ -413,10 +405,9 @@ const adminController = {
       // Marcar como borrado en lugar de eliminar físicamente
       await productoDB.update({ borrado: true });
       
-      console.log('✅ Producto eliminado (marcado como borrado) en BD por admin:', productoDB.name);
       res.redirect('/admin/productos');
     } catch (error) {
-      console.error('❌ Error en admin eliminar producto:', error);
+      console.error('Error en admin eliminar producto:', error);
       res.redirect('/admin/productos?error=delete');
     }
   },
@@ -483,7 +474,6 @@ const adminController = {
         estadisticas 
       });
     } catch (error) {
-      console.error('❌ Error al obtener estadísticas:', error);
       res.render('admin/estadisticas', { 
         user: req.session.userLogged,
         estadisticas: {
@@ -567,8 +557,6 @@ const adminController = {
   // Gestión de pedidos
   pedidos: async (req, res) => {
     try {
-      console.log('🔍 Iniciando método pedidos...');
-      
       const page = parseInt(req.query.page) || 1;
       const limit = 10;
       const offset = (page - 1) * limit;
@@ -627,8 +615,6 @@ const adminController = {
         prevPage: page - 1
       });
     } catch (error) {
-      console.error('❌ Error al obtener pedidos:', error);
-      console.error('❌ Stack trace:', error.stack);
       res.status(500).render('error', { 
         title: 'Error en pedidos',
         message: 'Error al cargar pedidos: ' + error.message,
@@ -677,7 +663,6 @@ const adminController = {
         orden
       });
     } catch (error) {
-      console.error('❌ Error al obtener pedido:', error);
       res.status(500).render('error', { message: 'Error al cargar pedido' });
     }
   },
@@ -705,7 +690,6 @@ const adminController = {
         newStatus: status
       });
     } catch (error) {
-      console.error('❌ Error al cambiar estado del pedido:', error);
       res.status(500).json({ success: false, message: 'Error al actualizar estado' });
     }
   }
