@@ -1,13 +1,56 @@
-![Logo del Pethshop](./logo_petshop.gif)
+# 🐾 PetShop Innovador
 
----
-###
-***PetShop Innovador*** es una tienda en línea revolucionaria para amantes de las mascotas. Con un diseño vanguardista y una amplia variedad de productos de alta calidad, ofrecemos una experiencia innovadora en el cuidado de tus mascotas. Además de productos innovadores, brindamos servicios exclusivos como peluquería, adiestramiento y asesoramiento nutricional. Nuestra comunidad en línea y nuestro compromiso con la sostenibilidad nos distinguen. Descubre el futuro del cuidado de las mascotas en PetShop Innovador.
-###
----
-###
-La web de PetShop Innovador está diseñada para apuntar a un público diverso de amantes de las mascotas. Nuestro enfoque innovador y la amplia variedad de productos y servicios ofrecidos son adecuados para propietarios de mascotas de todas las edades y de diferentes tipos de mascotas, incluyendo perros, gatos, aves, reptiles, roedores y peces. Además, nuestra comunidad en línea proporciona un espacio para conectarse con otros amantes de los animales y compartir experiencias. En resumen, nuestra web está dirigida a cualquier persona que valore la innovación, la calidad y el bienestar de sus mascotas.
-###
+E-commerce completo para productos de mascotas desarrollado con **Node.js**, **Express**, **MySQL** y **Railway**.
+
+![Logo PetShop](./design/logo_petshop.gif)
+
+## 🚀 Características
+
+- ✅ **Sistema de usuarios completo** con autenticación y sesiones
+- ✅ **Carrito de compras dinámico** con actualización en tiempo real
+- ✅ **Procesamiento de pagos** y gestión de órdenes
+- ✅ **Panel administrativo** para gestión de productos
+- ✅ **Base de datos en la nube** con Railway
+- ✅ **Seguridad robusta** con rate limiting y validaciones
+- ✅ **Responsive design** optimizado para móviles
+- ✅ **Animaciones modernas** y UX pulida
+
+## 🛠️ Tecnologías Utilizadas
+
+### Backend
+- **Node.js** + **Express.js**
+- **Sequelize ORM** para MySQL
+- **Railway** (Base de datos en la nube)
+- **Express-session** para autenticación
+- **Helmet** + **Rate Limiting** para seguridad
+- **Multer** para carga de archivos
+
+### Frontend
+- **EJS** templating engine
+- **CSS3** con animaciones
+- **JavaScript ES6+**
+- **Font Awesome** iconos
+- **SweetAlert** notificaciones
+
+### Base de Datos
+- **MySQL** (Railway hosted)
+- Tablas: usuarios, productos, categorías, órdenes, etc.
+
+## 🎯 Funcionalidades Principales
+
+### Para Usuarios
+- 🔐 **Registro e inicio de sesión**
+- 🛒 **Carrito de compras dinámico**
+- 💳 **Checkout completo con simulación de pagos**
+- 📱 **Interfaz responsive**
+- 🔍 **Búsqueda y filtrado de productos**
+
+### Para Administradores
+- 📊 **Panel de administración**
+- ➕ **CRUD completo de productos**
+- 📈 **Gestión de órdenes**
+- 👥 **Gestión de usuarios**
+
 ---
 ### Páginas de referencia : ###
 [Natural Life](https://www.natural-life.com.ar/)    

@@ -18,16 +18,21 @@
     "sequelize-cli": "^6.6.2",
     "session-file-store": "^1.5.0"
   },
-  "name": "grupo_7_petshop",
-  "description": "![Logo del Pethshop](./logo_petshop.gif)",
+  "name": "petshop-innovador",
+  "description": "E-commerce completo para productos de mascotas con Node.js, Express, MySQL y Railway",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "./src/app.js",
   "scripts": {
     "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js",
-    "test": "nodemon ./src/app.js"
+    "build": "echo 'Build completed'",
+    "test": "echo 'No tests specified'"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": ["petshop", "ecommerce", "nodejs", "express", "mysql"],
+  "author": "Valen Duarte",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
 }
