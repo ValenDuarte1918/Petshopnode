@@ -36,9 +36,71 @@ const controller = {
 
     productos: async (req, res) => {
         try {
+            const { search, categoria, marca, minPrice, maxPrice, sort } = req.query;
+            const { Op } = require('sequelize');
+            
+            // Construir condiciones de búsqueda
+            let whereConditions = { borrado: false };
+            
+            // Búsqueda por texto
+            if (search && search.trim()) {
+                const searchTerm = search.trim().toLowerCase();
+                whereConditions[Op.or] = [
+                    { name: { [Op.like]: `%${searchTerm}%` } },
+                    { description: { [Op.like]: `%${searchTerm}%` } },
+                    { category: { [Op.like]: `%${searchTerm}%` } },
+                    { subcategory: { [Op.like]: `%${searchTerm}%` } },
+                    { brand: { [Op.like]: `%${searchTerm}%` } }
+                ];
+            }
+            
+            // Filtro por categoría
+            if (categoria && categoria !== 'todos') {
+                whereConditions.category = { [Op.like]: `%${categoria}%` };
+            }
+            
+            // Filtro por marca
+            if (marca && marca !== 'todas') {
+                whereConditions.brand = { [Op.like]: `%${marca}%` };
+            }
+            
+            // Filtro por precio
+            if (minPrice || maxPrice) {
+                whereConditions.price = {};
+                if (minPrice) whereConditions.price[Op.gte] = parseFloat(minPrice);
+                if (maxPrice) whereConditions.price[Op.lte] = parseFloat(maxPrice);
+            }
+            
+            // Determinar orden
+            let orderBy = [['name', 'ASC']];
+            switch (sort) {
+                case 'price_asc':
+                    orderBy = [['price', 'ASC']];
+                    break;
+                case 'price_desc':
+                    orderBy = [['price', 'DESC']];
+                    break;
+                case 'name_desc':
+                    orderBy = [['name', 'DESC']];
+                    break;
+                case 'newest':
+                    orderBy = [['created_at', 'DESC']];
+                    break;
+                default:
+                    // Si hay búsqueda, priorizar coincidencias exactas
+                    if (search && search.trim()) {
+                        const searchTerm = search.trim().toLowerCase();
+                        orderBy = [
+                            [db.Sequelize.literal(`CASE WHEN LOWER(name) LIKE '%${searchTerm}%' THEN 1 ELSE 2 END`), 'ASC'],
+                            ['name', 'ASC']
+                        ];
+                    }
+                    break;
+            }
+
             const productosDB = await db.Producto.findAll({
-                where: { borrado: false },
-                order: [['name', 'ASC']]
+                where: whereConditions,
+                order: orderBy
             });
             
             const productos = productosDB.map(producto => ({
@@ -54,18 +116,36 @@ const controller = {
                 stock: producto.stock
             }));
             
-            // Obtener marcas únicas para el filtro
-            const marcas = [...new Set(productos.map(p => p.brand).filter(Boolean))];
+            // Obtener todas las marcas y categorías para los filtros
+            const allProductsDB = await db.Producto.findAll({
+                where: { borrado: false },
+                attributes: ['brand', 'category']
+            });
+            
+            const marcas = [...new Set(allProductsDB.map(p => p.brand).filter(Boolean))].sort();
+            const categorias = [...new Set(allProductsDB.map(p => p.category).filter(Boolean))].sort();
+            
+            // Determinar título de la página
+            let tituloCategoria = 'Todos los productos';
+            if (search && search.trim()) {
+                tituloCategoria = `Resultados para "${search.trim()}"`;
+            } else if (categoria && categoria !== 'todos') {
+                tituloCategoria = `Productos de ${categoria}`;
+            }
             
             res.render('productos', {
                 productos: productos,
-                categoria: 'Todos los productos',
+                categoria: tituloCategoria,
                 totalProductos: productos.length,
                 marcas: marcas,
+                categorias: categorias,
                 currentFilters: {
-                    categoria: null,
-                    mascota: null,
-                    marca: null
+                    search: search || '',
+                    categoria: categoria || null,
+                    marca: marca || null,
+                    minPrice: minPrice || '',
+                    maxPrice: maxPrice || '',
+                    sort: sort || 'name_asc'
                 }
             });
             

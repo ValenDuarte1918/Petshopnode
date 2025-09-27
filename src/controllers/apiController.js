@@ -1,6 +1,160 @@
 const db = require('../database/models');
+const { Op } = require('sequelize');
+const ResponseFactory = require('../utils/ResponseFactory');
+const ProductRepository = require('../repositories/ProductRepository');
 
 const apiController = {
+    // API para búsqueda de productos
+    searchProducts: async (req, res) => {
+        try {
+            
+            const { q: query, limit = 8, category, minPrice, maxPrice, sortBy } = req.query;
+            
+            if (!query || query.trim().length < 2) {
+                
+                const errorResponse = ResponseFactory.validationError(
+                    [{ field: 'q', message: 'La búsqueda debe tener al menos 2 caracteres' }],
+                    'Parámetros de búsqueda inválidos'
+                );
+                return res.status(400).json(errorResponse);
+            }
+
+            const searchTerm = query.trim().toLowerCase();
+            
+            
+            // Usar Repository Pattern
+            const productRepository = new ProductRepository();
+            
+            // Buscar productos usando Repository
+            const productosDB = await productRepository.searchProducts(searchTerm, {
+                limit,
+                category,
+                minPrice,
+                maxPrice,
+                sortBy
+            });
+
+            
+
+            // Mapear productos para respuesta
+            const productos = productosDB.map(producto => ({
+                id: producto.id,
+                nombre: producto.name,
+                descripcion: producto.description,
+                img: producto.image,
+                categoria: producto.category,
+                subcategoria: producto.subcategory,
+                brand: producto.brand,
+                color: producto.color,
+                precio: producto.price,
+                stock: producto.stock
+            }));
+
+            // Usar ResponseFactory para respuesta estandarizada
+            const response = ResponseFactory.success(
+                {
+                    productos: productos,  // Mantener compatibilidad con frontend
+                    stats: {
+                        totalFound: productos.length,
+                        query: query,
+                        hasMore: productos.length === parseInt(limit)
+                    },
+                    filters: { category, minPrice, maxPrice }
+                },
+                `Búsqueda completada para: "${query}"`
+            );
+            
+
+            
+            res.status(200).json(response);
+
+        } catch (error) {
+            
+            const errorResponse = ResponseFactory.error(
+                'SEARCH_ERROR',
+                'Error al buscar productos',
+                500,
+                { query: req.query }
+            );
+            res.status(500).json(errorResponse);
+        }
+    },
+
+    // API para obtener sugerencias de búsqueda
+    getSearchSuggestions: async (req, res) => {
+        try {
+            const { q: query } = req.query;
+            
+            if (!query || query.trim().length < 2) {
+                const response = ResponseFactory.success({ suggestions: [] }, 'No hay sugerencias disponibles');
+                return res.status(200).json(response);
+            }
+
+            const searchTerm = query.trim().toLowerCase();
+            const productRepository = new ProductRepository();
+
+            // Obtener sugerencias de categorías, marcas y nombres de productos
+            const [categories, brands, products] = await Promise.all([
+                // Categorías únicas
+                db.Producto.findAll({
+                    attributes: [[db.Sequelize.fn('DISTINCT', db.Sequelize.col('category')), 'category']],
+                    where: {
+                        borrado: false,
+                        category: { [Op.like]: `%${searchTerm}%` }
+                    },
+                    limit: 3,
+                    raw: true
+                }),
+                
+                // Marcas únicas
+                db.Producto.findAll({
+                    attributes: [[db.Sequelize.fn('DISTINCT', db.Sequelize.col('brand')), 'brand']],
+                    where: {
+                        borrado: false,
+                        brand: {
+                            [Op.and]: [
+                                { [Op.like]: `%${searchTerm}%` },
+                                { [Op.ne]: null }
+                            ]
+                        }
+                    },
+                    limit: 3,
+                    raw: true
+                }),
+                
+                // Nombres de productos populares
+                db.Producto.findAll({
+                    attributes: ['name'],
+                    where: {
+                        borrado: false,
+                        name: { [Op.like]: `%${searchTerm}%` }
+                    },
+                    limit: 4,
+                    order: [['name', 'ASC']],
+                    raw: true
+                })
+            ]);
+
+            const suggestions = [
+                ...categories.map(c => ({ type: 'category', text: c.category })),
+                ...brands.map(b => ({ type: 'brand', text: b.brand })),
+                ...products.map(p => ({ type: 'product', text: p.name }))
+            ].slice(0, 8);
+
+            res.status(200).json({
+                success: true,
+                data: { suggestions }
+            });
+
+        } catch (error) {
+            console.error('Error en sugerencias:', error);
+            res.status(500).json({
+                success: false,
+                error: 'SUGGESTIONS_ERROR',
+                message: 'Error al obtener sugerencias'
+            });
+        }
+    },
     // API para obtener información del carrito
     getCartInfo: async (req, res) => {
         try {

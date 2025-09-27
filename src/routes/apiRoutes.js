@@ -9,6 +9,17 @@ router.use((req, res, next) => {
     next();
 });
 
+// === RUTAS DE BÚSQUEDA ===
+// GET /api/search - Buscar productos
+router.get('/search', (req, res) => {
+    return apiController.searchProducts(req, res);
+});
+
+// GET /api/search/suggestions - Obtener sugerencias de búsqueda
+router.get('/search/suggestions', (req, res) => {
+    return apiController.getSearchSuggestions(req, res);
+});
+
 // === RUTAS DE PAGO ===
 // GET /api/payment/methods - Obtener métodos de pago disponibles
 router.get('/payment/methods', (req, res) => {

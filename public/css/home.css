@@ -417,19 +417,25 @@ main {
 
 .products-track {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 350px));
   gap: 30px;
+  justify-content: center;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .product-card-featured {
-  background: #FFFFFF !important; /* Forzar color blanco */
+  background: var(--white);
   border-radius: var(--card-border-radius);
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important; /* Sombra más visible */
+  box-shadow: var(--shadow-light);
   transition: var(--transition);
   position: relative;
-  border: 2px solid #e0e0e0; /* Borde para hacer visible la card */
-  min-height: 400px; /* Altura mínima para debugging */
+  max-width: 350px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card-featured:hover {
@@ -2184,15 +2190,103 @@ main {
   }
   
   .hero-title {
-    font-size: 3rem;
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
   }
   
   .hero-stats {
     justify-content: center;
     gap: 30px;
+    flex-wrap: wrap;
   }
   
   .hero-section {
-    padding: 80px 0 60px;
+    padding: 60px 0 50px;
+  }
+  
+  .hero-actions {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+  
+  .btn {
+    min-height: 48px;
+    padding: 14px 24px;
+    font-size: 1.1rem;
+    justify-content: center;
+  }
+  
+  /* Mejorar categorías en móvil */
+  .categories-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    height: auto;
+    gap: 20px;
+  }
+  
+  .category-card.large {
+    grid-row: auto;
+  }
+  
+  /* Productos destacados móvil */
+  .products-track {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  
+  .product-card {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .hero-stats {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .stat-number {
+    font-size: 1.8rem;
+  }
+  
+  .products-track {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-padding {
+    padding: 40px 0;
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .benefit-item {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 15px;
+  }
+  
+  .benefit-item i {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
   }
 }

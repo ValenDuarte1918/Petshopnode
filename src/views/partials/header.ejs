@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/css/header.css">
   <link rel="stylesheet" href="/css/footer.css">
   <link rel="stylesheet" href="/css/animations.css">
+  <script src="/js/search-system.js" defer></script>
   <% if (typeof page !== 'undefined' && page === 'home') { %>
     <link rel="stylesheet" href="/css/home.css">
     <title>🐾 PetShop Innovador - Todo para tu mascota</title>
@@ -36,17 +37,11 @@
   <script>
     window.petshopConfig = {
       isLoggedIn: <%= locals.isLoggedIn ? 'true' : 'false' %>,
-      userInfo: {
-        <% if (locals.isLoggedIn && locals.userLogged) { %>
-          firstName: '<%= userLogged.firstName %>',
-          email: '<%= userLogged.email %>',
-          category: '<%= userLogged.category %>'
-        <% } else { %>
-          firstName: null,
-          email: null,
-          category: null
-        <% } %>
-      }
+      userInfo: <%= (locals.isLoggedIn && locals.userLogged) ? JSON.stringify({
+        firstName: userLogged.firstName,
+        email: userLogged.email,
+        category: userLogged.category
+      }) : null %>
     };
   </script>
 </head>
@@ -54,72 +49,27 @@
 
 <!-- Header Principal Responsivo -->
 <header class="main-header">
-  <div class="header-container">
-    <!-- Logo -->
-    <div class="logo-section">
-      <a href="/" class="logo-link">
-        <img src="/images/logo_petshop.jpeg" alt="PetShop Innovador" class="logo-img">
-        <span class="logo-text">PetShop Innovador</span>
-      </a>
-    </div>
+  <!-- Header Superior: Logo, Buscador, Usuario -->
+  <div class="header-top">
+    <div class="header-container">
+      <!-- Logo -->
+      <div class="logo-section">
+        <a href="/" class="logo-link">
+          <img src="/images/logo_petshop.jpeg" alt="PetShop Innovador" class="logo-img">
+          <span class="logo-text">PetShop Innovador</span>
+        </a>
+      </div>
 
-    <!-- Navegación Principal (Desktop) -->
-    <nav class="main-nav desktop-nav">
-      <ul class="nav-list">
-        <!-- Dropdown Perros -->
-        <li class="dropdown">
-          <a href="/productos/categoria/perros" class="nav-link dropdown-toggle">
-            <i class="fas fa-dog"></i> Perros
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/productos/categoria/perros/alimentos"><i class="fas fa-utensils"></i> Alimentos</a></li>
-            <li><a href="/productos/categoria/perros/accesorios"><i class="fas fa-bone"></i> Accesorios</a></li>
-            <li><a href="/productos/categoria/perros/higiene-y-salud"><i class="fas fa-spa"></i> Higiene y Salud</a></li>
-            <li><a href="/productos/categoria/perros/juguetes"><i class="fas fa-gamepad"></i> Juguetes</a></li>
-            <li><a href="/productos/categoria/perros/comodidad"><i class="fas fa-bed"></i> Comodidad</a></li>
-          </ul>
-        </li>
-        
-        <!-- Dropdown Gatos -->
-        <li class="dropdown">
-          <a href="/productos/categoria/gatos" class="nav-link dropdown-toggle">
-            <i class="fas fa-cat"></i> Gatos
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/productos/categoria/gatos/alimentos"><i class="fas fa-utensils"></i> Alimentos</a></li>
-            <li><a href="/productos/categoria/gatos/accesorios"><i class="fas fa-bone"></i> Accesorios</a></li>
-            <li><a href="/productos/categoria/gatos/higiene-y-salud"><i class="fas fa-spa"></i> Higiene y Salud</a></li>
-            <li><a href="/productos/categoria/gatos/juguetes"><i class="fas fa-gamepad"></i> Juguetes</a></li>
-            <li><a href="/productos/categoria/gatos/comodidad"><i class="fas fa-bed"></i> Comodidad</a></li>
-          </ul>
-        </li>
-        
-        <!-- Dropdown Aves -->
-        <li class="dropdown">
-          <a href="/productos/categoria/aves" class="nav-link dropdown-toggle">
-            <i class="fas fa-dove"></i> Aves
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/productos/categoria/aves/alimentos"><i class="fas fa-utensils"></i> Alimentos</a></li>
-            <li><a href="/productos/categoria/aves/accesorios"><i class="fas fa-home"></i> Accesorios</a></li>
-            <li><a href="/productos/categoria/aves/higiene-y-salud"><i class="fas fa-spa"></i> Higiene y Salud</a></li>
-            <li><a href="/productos/categoria/aves/juguetes"><i class="fas fa-gamepad"></i> Juguetes</a></li>
-          </ul>
-        </li>
-        
-        <!-- Dropdown Peces -->
-        <li class="dropdown">
-          <a href="/productos/categoria/peces" class="nav-link dropdown-toggle">
-            <i class="fas fa-fish"></i> Peces
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/productos/categoria/peces/alimentos"><i class="fas fa-utensils"></i> Alimentos</a></li>
-            <li><a href="/productos/categoria/peces/accesorios"><i class="fas fa-water"></i> Accesorios</a></li>
-            <li><a href="/productos/categoria/peces/higiene-y-salud"><i class="fas fa-spa"></i> Higiene y Salud</a></li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
+      <!-- Buscador Central (Desktop) -->
+      <div class="header-search">
+        <div class="search-container">
+          <input type="text" class="search-input" id="header-search" placeholder="Buscar productos..." autocomplete="off">
+          <button type="button" class="search-btn" id="search-btn">
+            <i class="fas fa-search"></i>
+          </button>
+          <div class="search-results" id="search-results"></div>
+        </div>
+      </div>
 
     <!-- Iconos de Usuario y Carrito -->
     <div class="header-actions">
@@ -171,6 +121,69 @@
       <span class="hamburger-line"></span>
       <span class="hamburger-line"></span>
     </button>
+    </div>
+  </div>
+
+  <!-- Navegación Inferior (Desktop) -->
+  <div class="header-nav">
+    <div class="header-container">
+      <nav class="main-nav desktop-nav">
+        <ul class="nav-list">
+          <!-- Dropdown Perros -->
+          <li class="dropdown">
+            <a href="/productos/categoria/perros" class="nav-link dropdown-toggle">
+              <i class="fas fa-dog"></i> Perros
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/productos/categoria/perros/alimentos"><i class="fas fa-utensils"></i> Alimentos</a></li>
+              <li><a href="/productos/categoria/perros/accesorios"><i class="fas fa-bone"></i> Accesorios</a></li>
+              <li><a href="/productos/categoria/perros/higiene-y-salud"><i class="fas fa-spa"></i> Higiene y Salud</a></li>
+              <li><a href="/productos/categoria/perros/juguetes"><i class="fas fa-gamepad"></i> Juguetes</a></li>
+              <li><a href="/productos/categoria/perros/comodidad"><i class="fas fa-bed"></i> Comodidad</a></li>
+            </ul>
+          </li>
+          
+          <!-- Dropdown Gatos -->
+          <li class="dropdown">
+            <a href="/productos/categoria/gatos" class="nav-link dropdown-toggle">
+              <i class="fas fa-cat"></i> Gatos
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/productos/categoria/gatos/alimentos"><i class="fas fa-utensils"></i> Alimentos</a></li>
+              <li><a href="/productos/categoria/gatos/accesorios"><i class="fas fa-bone"></i> Accesorios</a></li>
+              <li><a href="/productos/categoria/gatos/higiene-y-salud"><i class="fas fa-spa"></i> Higiene y Salud</a></li>
+              <li><a href="/productos/categoria/gatos/juguetes"><i class="fas fa-gamepad"></i> Juguetes</a></li>
+              <li><a href="/productos/categoria/gatos/comodidad"><i class="fas fa-bed"></i> Comodidad</a></li>
+            </ul>
+          </li>
+          
+          <!-- Dropdown Aves -->
+          <li class="dropdown">
+            <a href="/productos/categoria/aves" class="nav-link dropdown-toggle">
+              <i class="fas fa-dove"></i> Aves
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/productos/categoria/aves/alimentos"><i class="fas fa-utensils"></i> Alimentos</a></li>
+              <li><a href="/productos/categoria/aves/accesorios"><i class="fas fa-home"></i> Accesorios</a></li>
+              <li><a href="/productos/categoria/aves/higiene-y-salud"><i class="fas fa-spa"></i> Higiene y Salud</a></li>
+              <li><a href="/productos/categoria/aves/juguetes"><i class="fas fa-gamepad"></i> Juguetes</a></li>
+            </ul>
+          </li>
+          
+          <!-- Dropdown Peces -->
+          <li class="dropdown">
+            <a href="/productos/categoria/peces" class="nav-link dropdown-toggle">
+              <i class="fas fa-fish"></i> Peces
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/productos/categoria/peces/alimentos"><i class="fas fa-utensils"></i> Alimentos</a></li>
+              <li><a href="/productos/categoria/peces/accesorios"><i class="fas fa-water"></i> Accesorios</a></li>
+              <li><a href="/productos/categoria/peces/higiene-y-salud"><i class="fas fa-spa"></i> Higiene y Salud</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
   </div>
 
   <!-- Menu Mobile -->
@@ -201,6 +214,17 @@
       <% } %>
     </ul>
   </nav>
+
+  <!-- Buscador Móvil -->
+  <div class="mobile-search">
+    <div class="search-container">
+      <input type="text" class="search-input" id="mobile-search" placeholder="Buscar productos..." autocomplete="off">
+      <button type="button" class="search-btn" id="mobile-search-btn">
+        <i class="fas fa-search"></i>
+      </button>
+      <div class="search-results" id="mobile-search-results"></div>
+    </div>
+  </div>
 </header>
 
 <script>
@@ -310,6 +334,9 @@ if (!window.userState.isLoggedIn) {
     });
 }
 </script>
+
+<!-- Script del sistema de búsqueda -->
+<script src="/js/search-system.js"></script>
 
 </header>
 
