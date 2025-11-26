@@ -180,7 +180,7 @@
         <% if (listaProductos && listaProductos.length > 0) { %>
           <div class="products-row">
             <% 
-            const productosPerros = listaProductos.filter(p => p.categoria && p.categoria.toLowerCase().includes('perro')).slice(0, 4);
+            let productosPerros = listaProductos.filter(p => p.categoria && p.categoria.toLowerCase().includes('perro')).slice(0, 4);
             if (productosPerros.length === 0) {
               productosPerros = listaProductos.slice(0, 4); // Fallback a primeros productos
             }
@@ -236,7 +236,7 @@
         <% if (listaProductos && listaProductos.length > 4) { %>
           <div class="products-row">
             <% 
-            const productosGatos = listaProductos.filter(p => p.categoria && p.categoria.toLowerCase().includes('gato')).slice(0, 4);
+            let productosGatos = listaProductos.filter(p => p.categoria && p.categoria.toLowerCase().includes('gato')).slice(0, 4);
             if (productosGatos.length === 0) {
               productosGatos = listaProductos.slice(4, 8); // Fallback a siguientes productos
             }

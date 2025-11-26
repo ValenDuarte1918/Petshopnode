@@ -27,9 +27,45 @@ const controller = {
             
         } catch (error) {
             console.error('Error al cargar productos:', error);
-            res.status(500).render('error', {
-                message: 'Error al cargar productos',
-                error: process.env.NODE_ENV === 'development' ? error : {}
+            
+            // Datos de ejemplo para cuando la DB no esté disponible
+            const productosEjemplo = [
+                {
+                    id: 1,
+                    nombre: "Alimento Premium para Perros",
+                    descripcion: "Alimento balanceado de alta calidad",
+                    img: "imagen1.jpg",
+                    categoria: "food",
+                    color: "marrón",
+                    precio: 25000,
+                    stock: 10
+                },
+                {
+                    id: 2,
+                    nombre: "Juguete para Gatos",
+                    descripcion: "Ratón de peluche interactivo",
+                    img: "imagen2.jpg",
+                    categoria: "toys",
+                    color: "gris",
+                    precio: 8500,
+                    stock: 15
+                },
+                {
+                    id: 3,
+                    nombre: "Correa para Perros",
+                    descripcion: "Correa resistente de nylon",
+                    img: "imagen3.jpg",
+                    categoria: "accessories",
+                    color: "negro",
+                    precio: 12000,
+                    stock: 8
+                }
+            ];
+            
+            res.render('home', { 
+                listaProductos: productosEjemplo,
+                dbError: true,
+                message: 'Usando datos de ejemplo - Revisa la conexión a la base de datos'
             });
         }
     },

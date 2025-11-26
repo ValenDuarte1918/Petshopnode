@@ -35,10 +35,15 @@ module.exports = {
     "dialect": "mysql",
     "logging": false,
     "dialectOptions": {
-      "ssl": {
-        "require": true,
-        "rejectUnauthorized": false
-      }
+      "connectTimeout": 60000,
+      "acquireTimeout": 60000,
+      "timeout": 60000
+    },
+    "pool": {
+      "max": 5,
+      "min": 0,
+      "acquire": 30000,
+      "idle": 10000
     }
   }
 }
